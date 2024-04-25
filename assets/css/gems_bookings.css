@@ -1,0 +1,625 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Gems Booking Section */
+
+.progress-bar{
+    color: black;
+    background-color: rgba(197,231,28,1);
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px ;
+      -webkit-box-shadow: none ;
+  	  -moz-box-shadow: none;
+	  box-shadow: none;
+}
+
+.progress{
+    border-radius: 0px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: white;
+      -webkit-box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
+	  -moz-box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
+	  box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
+    border: none;
+    height: 24px;
+    margin: 20px 0;
+}
+
+.btn-form-step {
+    background: rgb(150,180,0);
+    background: linear-gradient(0deg, rgba(150,180,0,1) 0%, rgba(197,231,28,1) 100%);
+    border: none;
+    width: 100%;
+    border-radius: 0;
+    padding: 7px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.6px;
+    color: #fff;
+    margin-top: 0px;
+    /* margin-bottom: -32px; */
+}
+
+.btn-form-step:hover,
+.btn-form-step:focus {
+    color: #fff;
+    background: rgb(197,231,28);
+    background: linear-gradient(0deg, rgba(197,231,28,1) 0%, rgba(150,180,0,1) 100%);
+}
+
+#booking_form .card {
+    border: 0px;
+    border-radius: 0;
+}
+
+#booking_form .card-header {
+    background: #ECF2FA;
+}
+
+#booking_form .card-header h2 button {
+    font-family: 'Rubik', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #0093CB;
+    text-decoration: none;
+}
+
+#booking_form span.steps {
+    font-family: 'Rubik', 'Poppins', sans-serif;
+    font-size: 50px;
+    font-weight: 900;
+    color: rgba(197,231,28,0.34);
+    /* color: rgba(197,231,28,1); */
+    /* color: linear-gradient(0deg, rgba(150,180,0,1) 0%, rgba(197,231,28,1) 100%); */
+    margin-left: -27px;
+}
+
+#booking_form form input,
+#booking_form form select {
+    /* width: 100%; */
+    background: transparent;
+    color: #919EA6;
+    border: 1px solid #4f4f4f;
+    outline: none;
+    padding: 0 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    transition: .3s;
+    letter-spacing: .04em;
+    border-radius: 0px !important;
+    /* color: #4f4f4f; */
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.input-group {
+    align-items: center;
+}
+
+.custom-checkbox {
+    display: flex;
+    /* padding-left: 12px; */
+}
+
+.insurance-options-check {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    position: relative;
+    top: 2px;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    /* line-height: 22px !important; */
+    color: #0A0A0A;
+    left: 10px;
+}
+
+/*
+.form-input-checkbox {
+	position: absolute;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	width: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+}
+
+.form-input-checkbox+label {
+	position: relative;
+	font-size: 14px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	height: 20px;
+	color: rgb(0, 0, 0);
+}
+
+.form-input-checkbox+label::before {
+	content: " ";
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 3px;
+	width: 16px;
+	height: 16px;
+	background-color: white;
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgb(204, 204, 204);
+	border-radius: 2px;
+	box-shadow: none;
+}
+
+.form-input-checkbox:checked+label::after {
+	content: " ";
+    background-size: 14px 14px;
+    background-color: #0093CB;
+	position: absolute;
+	display: flex;
+	text-align: center;
+	font-size: 10px;
+	height: 14px;
+	width: 14px;
+}
+*/
+
+  
+#booking_form input.form-control {
+    border: solid 1px #D5DEE2;
+    padding: 0 10px;
+    min-height: 40px;
+}
+
+#booking_form .card-header button:hover,
+#booking_form .card-header button:focus {
+    background: #ECF2FA;
+    /* background: rgb(197,231,28);
+    background: linear-gradient(0deg, rgba(197,231,28,1) 0%, rgba(150,180,0,1) 100%); */
+}
+
+#booking_form .plus-minus-input input {
+    text-align: center;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 1rem;
+    width: 30%;
+    border-radius: 0 !important;
+    line-height: normal;
+}
+
+#booking_form .plus-minus-input .input-group-button .circle {
+    border-radius: 0;
+    padding: 0.25em 0.8em;
+    height: 40px;
+}
+
+#booking_form form .form-label-blue {
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0093CB;
+}
+
+#booking_form form .sub-label {
+    font-family: 'Rubik', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #919EA6;
+}
+
+#booking_form form .field-label {
+    font-family: 'Rubik', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0A0A0A;
+    line-height: 30px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+/* Remove arrows input */
+/* Chrome, Safari, Edge, Opera */
+#booking_form form input::-webkit-outer-spin-button,
+#booking_form form input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+#booking_form form input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.full-form-container {
+    background-color: #ffffff;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
+    padding: 20px;
+}
+
+.price-value {
+    font-family: 'Rubik', sans-serif;
+    font-size: 45px;
+    font-weight: 900;
+    color: #0093CB;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+#booking_form .select2-container {
+    width: 100% !important;
+}
+
+#booking_form .select2-container--default .select2-selection--single {
+    background-color: #fff;
+    border: solid 1px #D5DEE2;
+    padding: 0 1px;
+    min-height: 40px;
+    border-radius: 0px;
+    /* font-family: 'Rubik', sans-serif; */
+    color: #0A0A0A;
+ }
+
+#booking_form input.form-control {
+    border: solid 1px #D5DEE2;
+    padding: 0 10px;
+    min-height: 40px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    /* color: #919EA6; */
+    color: #4f4f4f;
+    line-height: 40px;
+    font-size: 16px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px;
+    width: 40px;
+}
+
+.select2-container--default .select2-results__options {
+    font-size: 16px;
+}
+
+
+/* HOTELS AND ROOMS */
+
+.radio-btn-grp-row {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+    flex-direction: row;
+    margin-bottom: 30px;
+}
+
+.row.radio-btn-grp-row:before{
+    display: none;
+}
+
+/*
+.col-radio-btn-cards {
+	width: 32%;
+	margin-left: 5px;
+	margin-right: 5px;
+    padding: 0px;
+    flex: 0 0 32%;
+    max-width: 32%;
+}
+	
+	label {
+    width: 100%;
+}
+*/
+	
+label {
+    display: block;
+}
+
+.badge {
+    color: unset;
+    font-size: unset;
+}
+
+.card-header {
+	display: flex;
+	align-items: center;
+}
+
+.card-header.hotels-details-header {
+    min-height: 80px;
+}
+	
+.card-title {
+	width: 70%;
+	padding: 10px;
+    font-family: 'RuckSack', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0093CB;
+}
+
+.card-title-icon {
+	width: 30%;
+	text-align: right;
+	padding: 10px;
+}
+
+.card-title-icon svg {
+	width: 25px;
+	height: auto;
+}
+	
+.card-body {
+	padding: 10px;
+}
+	
+.card-body-descr {
+	margin-bottom: 20px;
+    font-family: 'RuckSack', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.card-body-price-heading {
+    display: block;
+}
+
+.card-body-price-vanaf-sub {
+    font-family: 'RuckSack', sans-serif;
+    font-size: 12px;
+    color: #919EA6;
+    font-weight: 200;
+}
+
+.card-body-price {
+    font-family: 'RuckSack', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #00ADEF;
+}
+
+.card-input-element {
+    display: none !important;
+}
+
+.card-input {
+    margin: 10px;
+    padding: 0px;
+	border: solid 1px #D5DEE2;
+}
+
+.card-input:hover {
+    cursor: pointer;
+}
+
+.card-input-element:checked + .card-input {
+     box-shadow: 0 0 10px 2px rgba(0,173,239,0.5);
+}
+
+.col-radio-btn-cards-rooms{
+    width: 48%;
+	margin-left: 5px;
+	margin-right: 5px;
+    padding: 0px;
+    flex: 0 0 48%;
+    max-width: 48%;
+}
+
+.selecteer-kamer-title {
+    font-family: 'RuckSack', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #00ADEF;
+}
+
+.card-body-hotel-room-qty-sel{
+    margin-top: 30px;
+}
+
+
+/* EXTRAS */
+.row.extras-details-row:before{
+    display: none;
+}
+
+.extras-sub-label {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #919EA6;
+}
+
+.extras-heading-three {
+    font-family: 'Rubik', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #00ADEF;
+    text-transform: none;
+}
+
+/* TRANSPORT */
+div#flights_container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col.vervoer-radio-btn-group {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.flight-details-box-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .col-flight-depart-details, .col-flight-arrival-details {
+    max-width: 48%;
+    width: 48%;
+    flex: 1 0 auto;
+    border: solid 1px #D5DEE2;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 20px;
+}
+
+  .flight-seat-select-box {
+    max-width: 100%;
+    width: 100%;
+    flex: 1 0 auto;
+    margin-left: 5px;
+    padding-right: 22px !important;
+  }
+
+  .col-flight-baggage-details {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+  .extra-bagage-check {
+    display: flex;
+    align-items: center;
+  }
+  input#extra-bagage {
+    padding: 0 !important;
+    line-height: 0 !important;
+    max-height: 20px !important;
+    height: 20px !important;
+    display: flex;
+    margin-right: 10px;
+    width: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    overflow: hidden;
+    -webkit-appearance: checkbox;
+}
+
+.heenvlucht-details h5, .flight-baggage h5, h5.heenvlucht-details {
+    font-family: 'Rubik', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #00ADEF;
+    text-transform: none;
+  }
+
+  .flight-seat-select-box {
+    margin-top: 20px;
+  }
+
+  .departure-flight-airport, .arrival-flight-airport {
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0093CB;
+    margin-bottom: 15px;
+  }
+
+  .col-flight-depart-details, .col-flight-arrival-details {
+    font-family: 'Rubik', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #0A0A0A;
+    line-height: 30px;
+  }
+
+  .extra-bagage-check-label {
+    font-family: 'Rubik', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #0A0A0A;
+  }
+
+  #flight-seat-flight-one {
+    padding: 5px 10px !important;
+  }
+
+
+/* VERZEKERINGEN */
+.insurance-options {
+    width: 30px;
+}
+
+.insurancetype-check-label {
+    text-align: left;
+}
+
+.insurance-table thead{
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+
+  input.insurance-options {
+    -webkit-appearance: checkbox;
+    display: inline;
+    width: 14px;
+    height: 14px;
+    margin-right: 15px;
+  }
+
+  .insurance-options-check {
+    display: flex;
+    align-items: center;
+  }
+
+  .insurance-table-headings {
+    font-family: 'Rubik', sans-serif !important;
+    font-size: 18px  !important;
+    font-weight: 500  !important;
+    margin-top: 20px  !important;
+    margin-bottom: 10px  !important;
+    color: #00ADEF  !important;
+    text-transform: none  !important;
+  }
+
+  .type-verzekering-col {
+    font-family: 'Rubik', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #0A0A0A;
+    width: 70%;
+    padding: 8px !important;
+  }
+
+.verzekering-description-box {
+    padding: 12px 30px;
+}
+
+.verzekering-optie-col{
+    padding-top: 18px !important;
+}
+
+.insurancetype-check-label, .verzekering-optie-col {
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0093CB;
+}
+
+  .verzekering-description-box p {
+    font-family: 'Rubik', sans-serif;
+    font-size: 12px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #0A0A0A;
+}
+
+.verzekering-table-footer {
+    background-color: #ECF2FA;
+  }

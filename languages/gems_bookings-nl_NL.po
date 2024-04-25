@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GEMS Bookings\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-16 12:53+0000\n"
+"PO-Revision-Date: 2024-04-16 13:07+0000\n"
+"Last-Translator: Arie\n"
+"Language-Team: Nederlands\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.7; wp-6.5.2\n"
+"X-Domain: gems_bookings"
+
+#: gems_bookings.php:187
+msgid "Base API endpoint"
+msgstr ""
+
+#: gems_bookings.php:159
+msgid "Copy shortcode"
+msgstr "Kopieer shortcode"
+
+#. Name of the plugin
+msgid "GEMS Bookings"
+msgstr ""
+
+#. Description of the plugin
+msgid "GEMS Bookings form"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://m2-d2.com/"
+msgstr ""
+
+#. Author of the plugin
+msgid "M2-D2"
+msgstr ""
+
+#: gems_bookings.php:181
+msgid "Merchant key"
+msgstr "Handelaars key"
+
+#: gems_bookings.php:167
+msgid "Settings"
+msgstr "Instellingen"
