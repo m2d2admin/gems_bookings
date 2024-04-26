@@ -5,8 +5,7 @@ jQuery(document).ready(function($) {
 
         alert('Copy shortcode to clipboard');
 
-
-		var text = "Example text to appear on clipboard";
+		var text = "[gems_bookings]";
 		navigator.clipboard.writeText(text).then(function() {
 		  console.log('Async: Copying to clipboard was successful!');
 		}, function(err) {
