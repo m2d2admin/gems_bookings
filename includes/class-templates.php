@@ -14,6 +14,7 @@ class GEMStemplate {
   private $template;
 
   public $merchant_key;
+  public $img_endpoint;
   public $api_endpoint;
   public $event_key;
 

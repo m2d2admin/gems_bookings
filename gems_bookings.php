@@ -24,7 +24,8 @@ if (!class_exists('Gamajo_Template_Loader')) {
  */
 add_action( 'init', 'gems_bookings_languages');
 add_filter( 'plugin_row_meta', 'gems_bookings_row_meta', 10, 2 );
-add_action( 'wp_enqueue_scripts', 'gems_bookings_assets', 1005);
+add_action( 'wp_enqueue_scripts', 'gems_bookings_assets', 9999);
+add_filter( 'query_vars', 'gems_query_vars' );
 
 /***********************************************************************
  Admin init
@@ -60,16 +61,27 @@ function gems_bookings_row_meta( $links, $file ) {
  Enqueue assets
 */	
 function gems_bookings_assets( $page ) {
+	wp_dequeue_script('jquery-chosen' ); // Remove chosen script
 	wp_enqueue_script('bootstrap_script', plugins_url('/assets/js/bootstrap.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('bootstrap-datepicker_script', plugins_url('/assets/js/bootstrap-datepicker.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
-	wp_enqueue_script('select2_script', plugins_url('/assets/js/select2.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
+	wp_enqueue_script('jquery_select2_script', plugins_url('/assets/js/select2.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
+	wp_enqueue_script('jquery_select2_language_script', plugins_url('/assets/js/i18n/nl.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('gems_bookings_script', plugins_url('/assets/js/gems_bookings.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 
+	wp_dequeue_style('jquery-chosen'); // Remove chosen styles
 	wp_enqueue_style('bootstrap_style', plugins_url('/assets/css/bootstrap.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('bootstrap-datepicker_style', plugins_url('/assets/css/bootstrap-datepicker.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('select2_style', plugins_url('/assets/css/select2.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('fontawesome_style', plugins_url('/assets/css/fontawesome.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('gems_bookings_style', plugins_url('/assets/css/gems_bookings.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
+}
+
+/***********************************************************************
+ Parameter for query vars
+*/
+function gems_query_vars( $qvars ) {
+	$qvars[] = 'event';
+	return $qvars;
 }
 
 /***********************************************************************
@@ -161,7 +173,7 @@ function gems_bookings_options() {
 		?>
 
 		<h2 class="nav-tab-wrapper">
-			<a href="?page=gems_bookingss&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Settings', 'gems_bookings'); ?></a>
+			<a href="?page=gems_bookings&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Settings', 'gems_bookings'); ?></a>
 
 		</h2>
 	</div>
