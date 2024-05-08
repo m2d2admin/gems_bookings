@@ -9,7 +9,12 @@ jQuery(document).ready(function($) {
 
 	// Initialize value selection
 	$('.form-select').select2({
-		placeholder: 'Selecteer'
+		//allowClear: true,
+		//placeholder: 'Selecteer'
 	});
+
+	//$('body').on('DOMNodeInserted', 'select', function () {
+	//	$(this).select2();
+	//});
 
 });
