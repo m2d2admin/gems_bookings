@@ -1,5 +1,6 @@
 <?php
-    $eventkey = '64cbb86c14fb2';
+    $eventkey = get_query_var( 'event', 'abc123XYZ456' );
+    //$eventkey = '64cbb86c14fb2';
 ?>
 
 <script>
@@ -100,9 +101,7 @@
             $('#progress-bar').css('width', progress + '%').html(progress + '%');
         }
 
-
-        // Update summaries
-
+        // Update summaries stepss
         function updateSummaryStep1() {
             $('#summary_adults_count').html( $('#adults_count').val() );
             $('#summary_children_count').html( $('#children_count').val());
@@ -360,10 +359,10 @@
             $('#summary_children_under_3_count').html(children_under_3_count);
 
             var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
-            var travellers_amount_current = $('#travellers_amount').val();
-            if (parseInt(travelers) > parseInt(travellers_amount_current)) {
+ 
+            if (parseInt(travelers) > 1) {
                 addTravellerToForm(travelers);
-            } else if (parseInt(travelers) < parseInt(travellers_amount_current)) {
+            } else if (parseInt(travelers) < 2) {
                 removeTravellerToForm();
             }
             $('#travellers_amount').val(travelers);
@@ -453,7 +452,7 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                <select placeholder="Titel" name="v_title[]" id="v_title_${i}" class="pl-2 form-control form-select" required>
+                                <select placeholder="Titel" data-placeholder="Titel" name="v_title[]" id="v_title_${i}" class="pl-2 form-control form-select" required>
                                     <option value="dhr.">dhr.</option>
                                     <option value="mevr.">mevr.</option>
                                 </select>
@@ -494,6 +493,7 @@
     
             // Append the HTML to the runners_div
             $('#runners_div').append(htmlToAdd);
+
             $('.form-select').select2();
         }
 
@@ -725,7 +725,7 @@
                             // Generate the HTML content for each item
                             hotels_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards">
                                 <label class="hotel-labels">
-                                    <input type="radio" class="card-input-element" name="hotel_selection[]" id="hotel_selection_${item.id}" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
+                                    <input type="radio" class="card-input-element" name="hotel_id" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>
@@ -1017,7 +1017,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="flight-departure form-select">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-departure">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option>                                            
                                             <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1045,7 +1045,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="flight-arrival form-select">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-arrival">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option> 
                                             <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1105,14 +1105,16 @@
             
                     // Append all flight plan HTML to container
                     $('#flights_container').append(allFlightPlanHtml);
+                    $('.form-select').select2({
+                        // dropdownParent: $('.flight-seat-select-box')
+                        // dropdownParent: $(this).parent()
+                    });
 
                 } else {
                     // Handle the case when the response type is not success
                     console.error('Error: ' + response.message);
                 }
-                $('.form-select').select2({
-                    dropdownParent: $('.flight-seat-select-box')
-                });
+
             },
             error: function(xhr, status, error) {
                 // Handle AJAX errors
@@ -1348,9 +1350,10 @@
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
+     
+   console.log(data);         
 
-            console.log('data:', data);
-            
+
             // Ajax call to post data
             $.ajax({
                 url: '<?php echo $data->api_endpoint; ?>/booking/save',
@@ -1542,7 +1545,7 @@
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" name="gl_title" id="gl_title" class="pl-2 form-control form-select" required>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="gl_title" id="gl_title" class="pl-2 form-control form-select" required>
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1620,7 +1623,7 @@
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Land <span class="required">*</span></label>
-                                                <select placeholder="Land" class="form-control form-select" name="gl_country" id="gl_country" required>
+                                                <select placeholder="Land" dataplaceholder="Land" class="form-control form-select" name="gl_country" id="gl_country" required>
                                                     <option value="">Land</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
@@ -1662,7 +1665,7 @@
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select" required>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select" required>
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1734,7 +1737,7 @@
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Land <span class="required">*</span></label>
-                                                <select placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country" required>
+                                                <select placeholder="Land" data-placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country" required>
                                                     <option value="">Land</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
@@ -2572,5 +2575,6 @@
         </div>
     </div>
 </div>
+
 
 
