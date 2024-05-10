@@ -35,6 +35,57 @@ if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
 }
 
+// register_deactivation_hook(__FILE__,'email_template_activate');
+function email_template_settings(){
+    global $wpdb;
+    global $table_prefix;
+
+	// $charset_collate = $wpdb->get_charset_collate();
+    // $table         = $table_prefix.'email_template_settings';
+    // $sql           = "CREATE TABLE IF NOT EXISTS $table(`emailTemplateId` bigint(50) NOT NULL AUTO_INCREMENT,
+    //     `emailSubject` varchar(255) NOT NULL,
+    //     `emailHeader` text NOT NULL,
+    //     `emailFooter` text NOT NULL,
+    //     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; ";
+    // // $wpdb->query($sql);
+	// require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    // dbDelta( $sql );
+    // $is_error = empty( $wpdb->last_error );
+	// return $is_error;
+
+
+	try{
+		$table  	= $table_prefix . 'email_template_settings';
+		$sql    	= $wpdb->prepare("SELECT `emailTemplateId`, `emailSubject`, `emailHeader`, `emailFooter`, `userId` FROM $table WHERE userId = '%s'", get_current_user_id());
+		$results 	= $wpdb->get_results($sql);
+		$email_settings		= array();
+
+		if (empty($results)) {
+			$email_settings[] = array(
+				'emailSubject' 			=> '',
+				'emailHeader' 			=> '',
+				'emailFooter' 			=> '',
+			);
+		}
+		foreach ($results as $result) {
+			$email_settings[] = array(
+				'emailTemplateId' 		=> $result->emailTemplateId,
+				'emailSubject' 			=> $result->emailSubject,
+				'emailHeader' 			=> $result->emailHeader,
+				'emailFooter' 			=> $result->emailFooter,
+				'userId' 			=> $result->userId,
+			);
+		}
+		return $email_settings;
+	} catch (\Throwable  $e) {
+		return $email_settings[] = array(
+				'emailSubject' 			=> '',
+				'emailHeader' 			=> '',
+				'emailFooter' 			=> '',
+			);
+	}
+}
+
 /***********************************************************************
  Load textdomain
  */
@@ -161,7 +212,8 @@ function gems_bookings_options() {
 		?>
 
 		<h2 class="nav-tab-wrapper">
-			<a href="?page=gems_bookingss&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Settings', 'gems_bookings'); ?></a>
+			<a href="?page=gems_bookings&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Settings', 'gems_bookings'); ?></a>
+			<a href="?page=gems_bookings&tab=mailtemplate" class="nav-tab <?php echo $active_tab == 'mailtemplate' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Email Template', 'gems_bookings'); ?></a>
 
 		</h2>
 	</div>
@@ -198,8 +250,79 @@ function gems_bookings_options() {
 		<?php
 			submit_button();
 		}
-		?>
+			?>
 	</form>
+	<?php
+		if ($active_tab == 'mailtemplate') {
+			$template_loader = new GEMS_Template_Loader();
+			$template_loader->get_template_part('email-template');
+			?>
+		      <form action="">
+				<h3>Configure your email content</h3>
+				<table class="form-table">
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Subject', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_subject" id="email_subject" rows="3" cols="100"><?php echo esc_attr(email_template_settings()[0]['emailSubject']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Header', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_header" id="email_header" rows="6" cols="100"><?php echo esc_attr(email_template_settings()[0]['emailHeader']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Footer', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_footer" id="email_footer" rows="6" cols="100"><?php echo esc_attr(email_template_settings()[0]['emailFooter']); ?></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input type="submit" value="Save" id="email-settings">
+						</td>
+					</tr>
+				</table>
+			  </form>
+			<?php
+		}
+	?>
+	<script>
+		var $jQ = jQuery.noConflict();
+		jQuery(document).ready(function($) {
+			function saveEmailSettings(userId, subject, header, footer) {
+				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+				$jQ.ajax({
+					method: "POST",
+					dataType: "json",
+					url: url,
+					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer },
+					success: function(data) {
+						var result = JSON.parse(data);
+						alert('Settings saved');
+					},
+					error: function(xhr, status, error) {
+						console.error('Error saving email settings:', error);
+					}
+				});
+			}
+
+			var saveBtn = document.getElementById('email-settings')
+			saveBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var userId = "<?php echo get_current_user_id(); ?>"
+				var subject = document.querySelector('#email_subject').value;
+				var header = document.querySelector('#email_header').value;
+				var footer = document.querySelector('#email_footer').value;
+				if(subject && header && footer)
+					saveEmailSettings(userId, subject, header, footer);
+				else
+					alert('Please fill all fields');
+			});
+		});
+	</script>
 <?php
 }
 

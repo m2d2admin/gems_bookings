@@ -1313,12 +1313,29 @@
         - special_message
         - booking_price
         */
+
+        function mailBookingData(data){
+            var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+            $jQ.ajax({
+                method: "POST",
+                dataType: "json",
+                url: url,
+                data: { action: 'mail_booking_details', data: data },
+                success: function(data) {
+                    var result = JSON.parse(data);
+                    console.log('booking details mailed successfully!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error saving email settings:', error);
+                }
+            });
+        }
         
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;
             data += '&children_count=' + childrenCount;
             data += '&children_under_3_count=' + childrenUnder3Count;
-            data += '&' + glFormData;
+            data += '&' + glFormData; // json object with user informations(name, email etc..)
             data += '&' + sahFormData;
             data += '&' + optionalFormData;
             data += '&' + bibsFormData;
@@ -1331,6 +1348,8 @@
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
+
+            console.log('data:', data);
             
             // Ajax call to post data
             $.ajax({
@@ -1344,6 +1363,7 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
+                    mailBookingData(data);
                     alert('Booking details posted successfully!');
                 },
                 error: function(xhr, status, error) {
