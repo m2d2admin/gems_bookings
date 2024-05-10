@@ -1371,6 +1371,9 @@
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
+                    alert('error');
+                    console.log('data', data);
+                    mailBookingData(data);
                     console.error(xhr.responseText);
                     alert('Error posting booking details. Please try again.');
                 }
@@ -2209,6 +2212,11 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
                                 <span class="steps body-18 regular-400 numb">09</span>
+                                /* The above code is a comment in PHP. Comments are used to add
+                                explanations or notes to the code for better understanding. In this
+                                case, the comment is a multi-line comment enclosed between /* and */
+                                symbols. It is not executable code and is ignored by the PHP
+                                interpreter. */
                                 Samenvatting & betaling
                             </button>
                             </h2>
@@ -2575,6 +2583,4 @@
         </div>
     </div>
 </div>
-
-
-
+                       
