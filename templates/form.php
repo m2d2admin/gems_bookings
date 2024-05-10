@@ -725,7 +725,7 @@
                             // Generate the HTML content for each item
                             hotels_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards">
                                 <label class="hotel-labels">
-                                    <input type="radio" class="card-input-element" name="hotel_selection[]" id="hotel_selection_${item.id}" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
+                                    <input type="radio" class="card-input-element" name="hotel_id" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>
