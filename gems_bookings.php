@@ -61,14 +61,12 @@ function gems_bookings_row_meta( $links, $file ) {
  Enqueue assets
 */	
 function gems_bookings_assets( $page ) {
-	wp_dequeue_script('jquery-chosen' ); // Remove chosen script
 	wp_enqueue_script('bootstrap_script', plugins_url('/assets/js/bootstrap.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('bootstrap-datepicker_script', plugins_url('/assets/js/bootstrap-datepicker.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('jquery_select2_script', plugins_url('/assets/js/select2.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('jquery_select2_language_script', plugins_url('/assets/js/i18n/nl.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_script('gems_bookings_script', plugins_url('/assets/js/gems_bookings.js', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 
-	wp_dequeue_style('jquery-chosen'); // Remove chosen styles
 	wp_enqueue_style('bootstrap_style', plugins_url('/assets/css/bootstrap.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('bootstrap-datepicker_style', plugins_url('/assets/css/bootstrap-datepicker.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
 	wp_enqueue_style('select2_style', plugins_url('/assets/css/select2.css', __FILE__ ), '', GEMS_PLUGIN_VERSION );
