@@ -36,24 +36,36 @@ if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
 }
 
-// register_deactivation_hook(__FILE__,'email_template_activate');
+function create_email_settings_db()
+{
+	global $wpdb;
+    global $table_prefix;
+
+	$charset_collate = $wpdb->get_charset_collate();
+    $table = $table_prefix.'email_template_settings';
+    $sql = "CREATE TABLE IF NOT EXISTS $table (
+			emailTemplateId bigint(50) NOT NULL AUTO_INCREMENT,
+			emailSubject varchar(255) NOT NULL,
+			emailHeader text NOT NULL,
+			emailFooter text NOT NULL,
+			userId int(10) NOT NULL,
+			PRIMARY KEY  (emailTemplateId)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; ";
+
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta( $sql );
+    $is_error = empty( $wpdb->last_error );
+
+	return $is_error;
+}
+// register_activation_hook(__FILE__, 'create_email_settings_db');
+if(!create_email_settings_db()){
+	create_email_settings_db();
+}
+
 function email_template_settings(){
     global $wpdb;
     global $table_prefix;
-
-	// $charset_collate = $wpdb->get_charset_collate();
-    // $table         = $table_prefix.'email_template_settings';
-    // $sql           = "CREATE TABLE IF NOT EXISTS $table(`emailTemplateId` bigint(50) NOT NULL AUTO_INCREMENT,
-    //     `emailSubject` varchar(255) NOT NULL,
-    //     `emailHeader` text NOT NULL,
-    //     `emailFooter` text NOT NULL,
-    //     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; ";
-    // // $wpdb->query($sql);
-	// require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    // dbDelta( $sql );
-    // $is_error = empty( $wpdb->last_error );
-	// return $is_error;
-
 
 	try{
 		$table  	= $table_prefix . 'email_template_settings';
@@ -310,11 +322,14 @@ function gems_bookings_options() {
 					url: url,
 					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer },
 					success: function(data) {
-						var result = JSON.parse(data);
-						alert('Settings saved');
+						// var result = JSON.parse(data);
+						alert("Email settings saved successfully");
 					},
 					error: function(xhr, status, error) {
-						console.error('Error saving email settings:', error);
+						if(xhr.status == 200)
+							alert('Email settings saved successfully');
+						else
+							alert('Error saving email settings');
 					}
 				});
 			}
@@ -322,7 +337,7 @@ function gems_bookings_options() {
 			var saveBtn = document.getElementById('email-settings')
 			saveBtn.addEventListener('click', function(e) {
 				e.preventDefault();
-				var userId = "<?php echo get_current_user_id(); ?>"
+				var userId = parseInt("<?php echo get_current_user_id(); ?>")
 				var subject = document.querySelector('#email_subject').value;
 				var header = document.querySelector('#email_header').value;
 				var footer = document.querySelector('#email_footer').value;
