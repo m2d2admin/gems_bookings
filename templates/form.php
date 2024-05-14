@@ -1328,6 +1328,10 @@
                     console.log('booking details mailed successfully!');
                 },
                 error: function(xhr, status, error) {
+                    if(xhr.status == 200)
+                        alert('booking details mailed successfully!');
+                    else
+                        alert('Error saving email settings');
                     console.error('Error saving email settings:', error);
                 }
             });
