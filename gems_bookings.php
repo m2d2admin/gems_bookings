@@ -637,33 +637,6 @@ function save_email_settings() {
 			'email_footer' => $footer
 		);
 
-
-		// $sql = $wpdb->update(
-		// 	$table_prefix.'email_template_settings',
-		// 	array(
-		// 		'emailSubject'    => $subject,
-		// 		'emailHeader' => $header,
-		// 		'emailFooter' => $footer
-		// 	),
-		// 	array('userId' => get_current_user_id())
-		// ); 
-
-		// get wp options
-
-
-		# insert new record if no record found
-		// if($sql == 0){
-		// 	$sql = $wpdb->insert(
-		// 		$table_prefix.'email_template_settings',
-		// 		array(
-		// 			'userId' => get_current_user_id(),
-		// 			'emailSubject'    => $subject,
-		// 			'emailHeader' => $header,
-		// 			'emailFooter' => $footer
-		// 		)
-		// 	);
-		// }
-
 		if(!get_option('mail_setting_'.$user_id)){
 			add_option('mail_setting_'.$user_id, $mail_settings);
 		}

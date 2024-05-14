@@ -1318,7 +1318,7 @@
 
         function mailBookingData(data){
             var url = "<?php echo admin_url('admin-ajax.php'); ?>";
-            $jQ.ajax({
+            $.ajax({
                 method: "POST",
                 dataType: "json",
                 url: url,
