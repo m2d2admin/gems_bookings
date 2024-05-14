@@ -17,6 +17,7 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
+	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
@@ -193,278 +194,12 @@ function mail_booking_details($booking_details) {
 			);
 		}
 
-		var_dump($email_settings);
-		var_dump('====================================');
 		var_dump($booking_details);
+		var_dump('====================================');
 		// mail booking details
 		$name = 'Yanick';
 		$email = 'kevineasky@gmail.com';
-		$message = '
-			<html>
-				<head>
-					<title>Review Request Reminder</title>
-				</head>
-				<body>
-					<p>'.$email_settings["email_header"].'</p>
-					<div id="form_section9" class="collapse" aria-labelledby="heading9" data-parent="#booking_form">
-						<div class="card-body">
-
-						<div class="card summary-card">
-							<div class="row">
-								<div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Volwassene(n)</p>
-											<span id="summary_adults_count">0</span>    
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Kinderen</p>
-											<span id="summary_children_count">0</span>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Baby s</p>
-											<span id="summary_children_under_3_count">0</span>
-										</div>                                                    
-									</div>
-								</div>
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading"><!-- -->Bezoekersinformatie</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Naam</p>
-											Groepsleider: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Contactgegevens</p>
-											<div class="d-flex">
-												<div class="mr-2">
-													<i class="fa-solid fa-location-dot"></i>
-												</div>
-												<div class="address"><span id="booking_visitor_address_div"></span><br></div>
-											</div>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Geboortedatum &amp; Nationaliteit</p>
-											<span id="booking_visitor_birthdate_div">
-										</div>                                                    
-									</div>
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Naam</p>
-											Thuisblijver: <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Contactgegevens</p>
-											<div class="d-flex">
-												<div class="mr-2">
-													<i class="fa-solid fa-location-dot"></i>
-												</div>
-												<div class="address"><span id="booking_stayathome_address_div"></span><br></div>
-											</div>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Geboortedatum &amp; Nationaliteit</p>
-											<span id="booking_stayathome_birthdate_div">
-										</div>                                                    
-									</div>
-
-								</div>
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading"><!-- -->Startbewijzen</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Challenge</p>
-										</div>
-										<div class="col-md-6 col-lg-8 col-xl-8">
-											<p>Aantal startbewijzen</p>
-										</div>
-									</div>
-
-									<div id="summary_bibs_div">
-									</div>
-
-								</div>
-
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading"><!-- -->Datums</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-8 col-xl-8">
-											<p>Vertrek</p>
-											<span id="summary_departure_date">-</span>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Aankomst</p>
-											<span id="summary_arrival_date">-</span>
-										</div>
-									</div>
-
-								</div>
-
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">05</span><span class="summ-heading">Hotel</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Hotel naam</p>
-											<span id="summary_hotel_name">-</span>
-										</div>
-										<div class="col-md-6 col-lg-8 col-xl-8">
-											<p>Prijs</p>
-											<span id="summary_room_price">-</span>
-										</div>
-									</div>
-
-								</div>
-
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extras</span></h3>
-								</div>
-								<div class="col-12 mob-hide">
-									<h4 class="body-14  regular-400 gray-1 mb-1">Extras van hotel</h4>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Opties</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Personen</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Prijs</p>
-										</div>
-									</div>
-
-									<div id="summary_extra_div">
-									</div>
-
-								</div>
-								<div class="col-12 mt-3 mob-hide">
-									<h4 class="body-14  regular-400 gray-1 mb-1">Extras buiten het hotel</h4>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Opties</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Personen</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Prijs</p>
-										</div>
-									</div>
-
-									<div id="summary_nonextra_div">
-									</div>
-
-
-								</div>
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading"><!-- -->Transport</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Vlucht</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Vertrek</p>
-										</div>
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Aankomst</p>
-										</div>
-									</div>
-
-									<div id="summary_flight_div">
-									</div>
-
-
-								</div>
-								<div class="col-12 my-3 mob-hide summ-head-box">
-									<h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading"><!-- -->Verzekering</span></h3>
-								</div>
-								<div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-									<div class="row form-fields-rows">
-										<div class="col-md-6 col-lg-4 col-xl-4">
-											<p>Verzekering</p>
-										</div>
-										<div class="col-md-6 col-lg-8 col-xl-8">
-											<p>Prijs</p>
-										</div>
-									</div>
-
-									<div id="summary_insurance_div">
-									</div>
-
-								</div>
-								<div class="col-12 my-3 box-padding-mob">
-									<h3 class="form-label-blue">Overige kosten</h3>
-								</div>
-								<div class="col-12">
-									<div class="row mb-1">
-										<div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											SGR fee
-										</div>
-										<div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											+ € <span id="booking_sgr_fee_div"></span> per persoon
-										</div>
-									</div>
-									<div class="row mb-1">
-										<div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											Administratiekosten verzekering
-										</div>
-										<div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											+ <span id="booking_insurance_fee_div"></span> % per verzekering
-										</div>
-									</div>
-									<div class="row">
-										<div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											Calamiteitenfonds
-										</div>
-										<div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-											+ € <span id="booking_calamity_fund_div"></span>
-										</div>
-									</div>
-								</div>
-								<div class="col-12">
-									<hr>
-								</div>
-								<div class="col-12">
-									<div class="row mb-2">
-										<div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
-											Totaal
-										</div>
-										<div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-											€ <span>0.00</span>
-										</div>
-									</div>
-								</div>
-							</div>
-					<p>'.$email_settings["email_footer"].'</p>
-				</body>
-			</html>
-		';
+		$message = email_template($booking_details, $email_settings, $email, $name);
 
 		//php mailer variables
 		$from = get_option('admin_email');
@@ -548,7 +283,7 @@ function gems_bookings_options() {
 			$template_loader = new GEMS_Template_Loader();
 			$template_loader->get_template_part('email-template');
 			?>
-		      <form action="">
+		      <form action="" class='email-temp-settings'>
 				<h3>Configure your email content</h3>
 				<table class="form-table">
 					<tr valign="top">
@@ -578,6 +313,12 @@ function gems_bookings_options() {
 				</table>
 			  </form>
 			<?php
+			$email_settings = array(
+				'email_subject'    => '$subject',
+				'email_header' => '$header',
+				'email_footer' => '$footer'
+			);
+			// email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
 		}
 	?>
 	<script>
@@ -643,6 +384,13 @@ function save_email_settings() {
 		else{
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
+		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		$message = email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
+		$from = get_option('admin_email');
+		$subject = $email_settings['email_subject'];
+		$headers = 'From: '. $from . "\r\n" .
+			'Reply-To: ' . $email . "\r\n";
+		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
 
 		return true;
 
