@@ -1316,13 +1316,13 @@
         - booking_price
         */
 
-        function mailBookingData(data){
+        function mailBookingData(bookingData){
             var url = "<?php echo admin_url('admin-ajax.php'); ?>";
             $.ajax({
                 method: "POST",
                 dataType: "json",
                 url: url,
-                data: { action: 'mail_booking_details', data: data },
+                data: { action: 'mail_booking_details', bookingData: bookingData },
                 success: function(data) {
                     var result = JSON.parse(data);
                     console.log('booking details mailed successfully!');
@@ -1355,8 +1355,26 @@
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
      
-   console.log(data);         
-
+   
+            var bookingData = {
+                adults_count: adultsCount,
+                children_count: childrenCount,
+                children_under_3_count: childrenUnder3Count,
+                glFormData: glFormData,
+                sahFormData: sahFormData,
+                optionalFormData: optionalFormData,
+                bibsFormData: bibsFormData,
+                arrival_date: arrivalDate,
+                departure_date: departureDate,
+                hotel_id: hotelId,
+                roomtypeFormData: roomtypeFormData,
+                extrasFormData: extrasFormData,
+                flight_plan_id: flightPlanId,
+                insuranceFormData: insuranceFormData,
+                special_message: specialMessage,
+                booking_price: bookingPrice
+            }
+            console.log('bookingData', bookingData);
 
             // Ajax call to post data
             $.ajax({
@@ -1370,15 +1388,15 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                    mailBookingData(data);
+                    mailBookingData(bookingData);
                     alert('Booking details posted successfully!');
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
-                    alert('error');
                     console.log('data', data);
-                    mailBookingData(data);
-                    console.error(xhr.responseText);
+                    console.error('Error posting booking details:', error);
+                    if(xhr.status == 200)
+                        mailBookingData(bookingData);
                     alert('Error posting booking details. Please try again.');
                 }
             });
