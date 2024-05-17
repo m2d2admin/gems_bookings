@@ -1355,14 +1355,13 @@
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
      
-   
+            //optionalFormData: optionalFormData,
             var bookingData = {
                 adults_count: adultsCount,
                 children_count: childrenCount,
                 children_under_3_count: childrenUnder3Count,
                 glFormData: glFormData,
                 sahFormData: sahFormData,
-                optionalFormData: optionalFormData,
                 bibsFormData: bibsFormData,
                 arrival_date: arrivalDate,
                 departure_date: departureDate,
