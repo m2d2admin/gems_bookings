@@ -316,7 +316,6 @@ function gems_bookings_options() {
 				'email_header' => '$header',
 				'email_footer' => '$footer'
 			);
-			var_dump(email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick'));
 		}
 	?>
 	<script>
