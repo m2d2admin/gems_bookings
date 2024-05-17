@@ -17,6 +17,7 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
+	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
@@ -34,6 +35,24 @@ if (is_admin()) {
 	add_action('admin_menu', 'gems_bookings_menu');
 	add_action('admin_init', 'gems_bookings_register_settings');
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
+}
+
+function email_template_settings(){
+    global $wpdb;
+    global $table_prefix;
+
+	$email_settings = get_option('mail_setting_'.get_current_user_id());
+	$results = array();
+
+	if (!$email_settings) {
+		$email_settings[] = array(
+			'emailSubject' 			=> '',
+			'emailHeader' 			=> '',
+			'emailFooter' 			=> '',
+		);
+	}
+	
+	return $email_settings;
 }
 
 /***********************************************************************
@@ -136,23 +155,71 @@ function gems_bookings_shortcode($atts) {
 				$GEMS_template->bookingform($atts);
 				break;
 			case '-b-':
-				// $sportlinkClient->showStandings($atts);
+				// $GEMS_template->showStandings($atts);
 				break;
 			case '-c-':
-				// $sportlinkClient->showResults($atts);
+				// $GEMS_template->showResults($atts);
 				break;
 			case '-d-':
-				// $sportlinkClient->showMatchDetail($atts);
+				// $GEMS_template->showMatchDetail($atts);
 				break;
 		}
 	} catch (Exception $e) {
-		echo '<div class="sportlink-error"><p>Er kan momenteel geen verbinding worden gemaakt met de Sportlink API</p></div>';
+		echo '<div class="gems-error"><p>Er is een probleem opgetreden</p></div>';
 	}
 
 	return ob_get_clean();
 }
 add_shortcode('gems_bookings', 'gems_bookings_shortcode');
 
+
+function mail_booking_details($booking_details) {
+	global $wpdb;
+	global $table_prefix;
+
+	if(isset($_POST['action']) && $_POST['action'] == 'mail_booking_details') {
+		# get email template settings
+		// $table  	= $table_prefix . 'email_template_settings';
+		// $sql    	= $wpdb->prepare("SELECT `emailTemplateId`, `emailSubject`, `emailHeader`, `emailFooter`, `userId` FROM $table WHERE userId = '%s'", (int)get_current_user_id());
+		// $results 	= $wpdb->get_results($sql);
+		// $email_settings		= array();
+
+		$email_settings = get_option('mail_setting_'.get_current_user_id());
+
+		if (!$email_settings) {
+			$email_settings[] = array(
+				'emailSubject' 			=> '',
+				'emailHeader' 			=> '',
+				'emailFooter' 			=> '',
+			);
+		}
+
+		var_dump($booking_details);
+		var_dump('====================================');
+		// mail booking details
+		$name = 'Yanick';
+		$email = 'kevineasky@gmail.com';
+		$message = email_template($booking_details, $email_settings, $email, $name);
+
+		//php mailer variables
+		$from = get_option('admin_email');
+		$subject = $email_settings['email_subject'];
+		$headers = 'From: '. $from . "\r\n" .
+			'Reply-To: ' . $email . "\r\n";
+
+		// //Here put your Validation and send mail
+		$sent = wp_mail($email, $subject, strip_tags($message), $headers);
+			
+		// if($sent) {
+		// //message sent!       
+		// }
+		// else  {
+		// //message wasn't sent       
+		// }
+	}
+	add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
+		
+}
 /***********************************************************************
  Rendering options page
  */
@@ -172,6 +239,7 @@ function gems_bookings_options() {
 
 		<h2 class="nav-tab-wrapper">
 			<a href="?page=gems_bookings&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Settings', 'gems_bookings'); ?></a>
+			<a href="?page=gems_bookings&tab=mailtemplate" class="nav-tab <?php echo $active_tab == 'mailtemplate' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Email Template', 'gems_bookings'); ?></a>
 
 		</h2>
 	</div>
@@ -208,10 +276,129 @@ function gems_bookings_options() {
 		<?php
 			submit_button();
 		}
-		?>
+			?>
 	</form>
+	<?php
+		if ($active_tab == 'mailtemplate') {
+			$template_loader = new GEMS_Template_Loader();
+			$template_loader->get_template_part('email-template');
+			?>
+		      <form action="" class='email-temp-settings'>
+				<h3>Configure your email content</h3>
+				<table class="form-table">
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Subject', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_subject" id="email_subject" rows="3" cols="100"><?php echo esc_attr(email_template_settings()['email_subject']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Header', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_header" id="email_header" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_header']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Footer', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_footer" id="email_footer" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_footer']); ?></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input type="submit" value="Save" id="email-settings">
+						</td>
+					</tr>
+				</table>
+			  </form>
+			<?php
+			$email_settings = array(
+				'email_subject'    => '$subject',
+				'email_header' => '$header',
+				'email_footer' => '$footer'
+			);
+			// email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
+		}
+	?>
+	<script>
+		var $jQ = jQuery.noConflict();
+		jQuery(document).ready(function($) {
+			function saveEmailSettings(userId, subject, header, footer) {
+				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+				$jQ.ajax({
+					method: "POST",
+					dataType: "json",
+					url:  url,
+					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer },
+					success: function(data) {
+						// var result = JSON.parse(data);
+						alert("Email settings saved successfully");
+					},
+					error: function(xhr, status, error) {
+						if(xhr.status == 200)
+							alert('Email settings saved successfully');
+						else
+							alert('Error saving email settings');
+					}
+				});
+			}
+
+			var saveBtn = document.getElementById('email-settings')
+			saveBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var userId = parseInt("<?php echo get_current_user_id(); ?>")
+				var subject = document.querySelector('#email_subject').value;
+				var header = document.querySelector('#email_header').value;
+				var footer = document.querySelector('#email_footer').value;
+				if(subject && header && footer)
+					saveEmailSettings(userId, subject, header, footer);
+				else
+					alert('Please fill all fields');
+			});
+		});
+	</script>
 <?php
 }
+
+// save email template settings
+function save_email_settings() {
+	global $wpdb;
+    global $table_prefix;
+
+	if(isset($_POST['action'])  && $_POST['action'] == 'save_email_settings'){
+		$subject = $_POST['email_subject'];
+		$header = $_POST['email_header'];
+		$footer = $_POST['email_footer'];
+		$user_id = $_POST['user_id'];
+
+		$mail_settings = array(
+			'email_subject'    => $subject,
+			'email_header' => $header,
+			'email_footer' => $footer
+		);
+
+		if(!get_option('mail_setting_'.$user_id)){
+			add_option('mail_setting_'.$user_id, $mail_settings);
+		}
+		else{
+			update_option('mail_setting_'.$user_id, $mail_settings);
+		}
+		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		$message = email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
+		$from = get_option('admin_email');
+		$subject = $email_settings['email_subject'];
+		$headers = 'From: '. $from . "\r\n" .
+			'Reply-To: ' . $email . "\r\n";
+		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
+
+		return true;
+
+	}
+	return true;
+}
+add_action( 'wp_ajax_save_email_settings', 'save_email_settings' );
+
 
 /***********************************************************************
  Template loader
