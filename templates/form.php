@@ -1218,6 +1218,26 @@
 			}
 		});
 
+        function mailBookingData(bookingData){
+            var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: url,
+                data: { action: 'mail_booking_details', bookingData: bookingData },
+                success: function(data) {
+                    var result = JSON.parse(data);
+                    console.log('booking details mailed successfully!');
+                },
+                error: function(xhr, status, error) {
+                    if(xhr.status == 200)
+                        alert('booking details mailed successfully!');
+                    else
+                        alert('Error saving email settings');
+                    console.error('Error saving email settings:', error);
+                }
+            });
+        }
 
         // Function to post booking details
         function postBookingDetails() {
@@ -1316,26 +1336,6 @@
         - booking_price
         */
 
-        function mailBookingData(bookingData){
-            var url = "<?php echo admin_url('admin-ajax.php'); ?>";
-            $.ajax({
-                method: "POST",
-                dataType: "json",
-                url: url,
-                data: { action: 'mail_booking_details', bookingData: bookingData },
-                success: function(data) {
-                    var result = JSON.parse(data);
-                    console.log('booking details mailed successfully!');
-                },
-                error: function(xhr, status, error) {
-                    if(xhr.status == 200)
-                        alert('booking details mailed successfully!');
-                    else
-                        alert('Error saving email settings');
-                    console.error('Error saving email settings:', error);
-                }
-            });
-        }
         
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;

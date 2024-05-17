@@ -214,10 +214,9 @@ function mail_booking_details() {
 		// else  {
 		// //message wasn't sent       
 		// }
-	}
-	add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
-		
+	}	
 }
+add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
 /***********************************************************************
  Rendering options page
  */
@@ -337,6 +336,8 @@ function gems_bookings_options() {
 							alert('Email settings saved successfully');
 						else
 							alert('Error saving email settings');
+
+						console.log('Error saving email settings: ', error)
 					}
 				});
 			}
