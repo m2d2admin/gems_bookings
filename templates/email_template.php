@@ -1,14 +1,15 @@
 <?php
  function email_template($booking_details, $email_settings, $email, $name) {
-    ?>
-<style>
+$temp =
+ '<html><body>
+    <head>
+        <style>
 .row {
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: space-between;
+    background-color: #ffffff;
 }
 .form-fields-rows {
     display: flex;
@@ -23,14 +24,9 @@
   flex-direction: column;
   min-width: 0;
   height: var(--bs-card-height);
-  color: var(--bs-body-color);
   word-wrap: break-word;
   background-color: #ffffff;
-  background-clip: border-box;
-  border: var(--bs-card-border-width) solid var(--bs-card-border-color);
-  border-radius: var(--bs-card-border-radius);
   width: 100%;
-  /* padding: 20px; */
 }
 
 #booking_form .card-header h2 button{display:flex;align-items:center;}
@@ -84,9 +80,10 @@ i.fa-circle-info {margin-left: 20px;}
 .other-costs .row .box-padding-mob{font-weight: bold;font-size: 14px;}
 .total .row .box-padding-mob{font-weight: 700;font-size: 17px;}
 </style>
-<div class='card'>
+    </head>
+    <div class="card">
 		<div class="row">
-			<p><?php echo $email_settings["email_header"]; ?></p>
+			<p>'.$email_settings["email_header"].'</p>
                                 <div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
                                     <h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
                                 </div>
@@ -102,7 +99,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             <span id="summary_children_count">0</span>
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
-                                            <p>Baby's</p>
+                                            <p>Baby\'s</p>
                                             <span id="summary_children_under_3_count">0</span>
                                         </div>                                                    
                                     </div>
@@ -209,10 +206,10 @@ i.fa-circle-info {margin-left: 20px;}
                                 </div>
 
                                 <div class="col-12 my-3 mob-hide summ-head-box">
-                                    <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra's</span></h3>
+                                    <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra\'s</span></h3>
                                 </div>
                                 <div class="col-12 mob-hide">
-                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's van hotel</h4>
+                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra\'s van hotel</h4>
                                 </div>
                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -233,7 +230,7 @@ i.fa-circle-info {margin-left: 20px;}
 
                                 </div>
                                 <div class="col-12 mt-3 mob-hide">
-                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's buiten het hotel</h4>
+                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra\'s buiten het hotel</h4>
                                 </div>
                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -346,8 +343,8 @@ i.fa-circle-info {margin-left: 20px;}
         </div>
         
     </div>
-    <p><?php echo $email_settings["email_footer"]; ?></p>
-</div>
-<?php
- }
+    <p>'.$email_settings["email_footer"].'</p>
+</div></body></html>';
+    return  $temp;
+}
 ?>

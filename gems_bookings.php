@@ -173,18 +173,13 @@ function gems_bookings_shortcode($atts) {
 add_shortcode('gems_bookings', 'gems_bookings_shortcode');
 
 
-function mail_booking_details($booking_details) {
+function mail_booking_details() {
 	global $wpdb;
 	global $table_prefix;
 
 	if(isset($_POST['action']) && $_POST['action'] == 'mail_booking_details') {
-		# get email template settings
-		// $table  	= $table_prefix . 'email_template_settings';
-		// $sql    	= $wpdb->prepare("SELECT `emailTemplateId`, `emailSubject`, `emailHeader`, `emailFooter`, `userId` FROM $table WHERE userId = '%s'", (int)get_current_user_id());
-		// $results 	= $wpdb->get_results($sql);
-		// $email_settings		= array();
-
 		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		$booking_details = $_POST['bookingData'];
 
 		if (!$email_settings) {
 			$email_settings[] = array(
@@ -208,7 +203,10 @@ function mail_booking_details($booking_details) {
 			'Reply-To: ' . $email . "\r\n";
 
 		// //Here put your Validation and send mail
-		$sent = wp_mail($email, $subject, strip_tags($message), $headers);
+		add_filter('wp_mail_content_type', function( $content_type ) {
+            return 'text/html';
+		});
+		$sent = wp_mail($email, $subject, $message, $headers);
 			
 		// if($sent) {
 		// //message sent!       
@@ -318,7 +316,6 @@ function gems_bookings_options() {
 				'email_header' => '$header',
 				'email_footer' => '$footer'
 			);
-			// email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
 		}
 	?>
 	<script>
@@ -385,12 +382,18 @@ function save_email_settings() {
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
 		$email_settings = get_option('mail_setting_'.get_current_user_id());
-		$message = email_template('$booking_details', $email_settings, 'kevineasky@gmail.com', 'Yanick');
-		$from = get_option('admin_email');
-		$subject = $email_settings['email_subject'];
-		$headers = 'From: '. $from . "\r\n" .
-			'Reply-To: ' . $email . "\r\n";
-		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
+		// $message = email_template('$booking_details', $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
+
+
+		// $from = get_option('admin_email');
+		// $subject = $email_settings['email_subject'];
+		// $headers = 'From: '. $from . "\r\n" .
+		// 	'Reply-To: ' . $email . "\r\n";
+		
+		// add_filter('wp_mail_content_type', function( $content_type ) {
+        //     return 'text/html';
+		// });
+		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $message, $headers);
 
 		return true;
 
