@@ -1,4 +1,9 @@
 <?php
+    define("GEMS_PLUGIN_DIR", plugin_dir_path(__FILE__));
+
+    if (!class_exists('Gamajo_Template_Loader')) {
+        require plugin_dir_path(__FILE__) . 'templates/email_template.php';
+    }
     $eventkey = get_query_var( 'event', 'abc123XYZ456' );
     //$eventkey = '64cbb86c14fb2';
 ?>
@@ -2604,4 +2609,64 @@
         </div>
     </div>
 </div>
+<?php
+function mail_booking_details() {
+	global $wpdb;
+	global $table_prefix;
+
+	if(isset($_POST['action']) && $_POST['action'] == 'mail_booking_details') {
+		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		$booking_details = $_POST['bookingData'];
+
+		if (!$email_settings) {
+			$email_settings[] = array(
+				'emailSubject' 			=> '',
+				'emailHeader' 			=> '',
+				'emailFooter' 			=> '',
+			);
+		}
+
+		var_dump($booking_details);
+		var_dump('====================================');
+		// mail booking details
+		$name = 'Yanick';
+		$email = 'kevineasky@gmail.com';
+		$message = email_template($booking_details, $email_settings, $email, $name);
+
+		//php mailer variables
+		$from = get_option('admin_email');
+		$subject = $email_settings['email_subject'];
+		$headers = 'From: '. $from . "\r\n" .
+			'Reply-To: ' . $email . "\r\n";
+
+		// //Here put your Validation and send mail
+		add_filter('wp_mail_content_type', function( $content_type ) {
+            return 'text/html';
+		});
+		$sent = wp_mail($email, $subject, $message, $headers);
+			
+		// if($sent) {
+		// //message sent!       
+		// }
+		// else  {
+		// //message wasn't sent       
+		// }
+	}	
+}
+add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
+
+/***********************************************************************
+ Template loader
+ */
+class GEMS_Template_Loader extends Gamajo_Template_Loader {
+
+	protected $filter_prefix = 'gems_bookings';  // Prefix for filter names.
+
+	protected $theme_template_directory = 'gems_bookings'; // Directory name where custom templates for this plugin should be found in the theme.
+
+	protected $plugin_directory = GEMS_PLUGIN_DIR; // Reference to the root directory path of this plugin.
+
+	protected $plugin_template_directory = 'templates'; // Directory name where templates are found in this plugin. e.g. 'templates' or 'includes/templates', etc.
+}
+?>
                        
