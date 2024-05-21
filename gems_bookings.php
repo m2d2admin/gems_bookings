@@ -17,7 +17,7 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
-	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
+	// require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
