@@ -1,9 +1,9 @@
 <?php
     define("GEMS_PLUGIN_DIR", plugin_dir_path(__FILE__));
 
-    if (!class_exists('Gamajo_Template_Loader')) {
+    // if (!class_exists('Gamajo_Template_Loader')) {
         require plugin_dir_path(__FILE__) . 'templates/email_template.php';
-    }
+    // }
     $eventkey = get_query_var( 'event', 'abc123XYZ456' );
     //$eventkey = '64cbb86c14fb2';
 ?>
@@ -2654,19 +2654,5 @@ function mail_booking_details() {
 	}	
 }
 add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
-
-/***********************************************************************
- Template loader
- */
-class GEMS_Template_Loader extends Gamajo_Template_Loader {
-
-	protected $filter_prefix = 'gems_bookings';  // Prefix for filter names.
-
-	protected $theme_template_directory = 'gems_bookings'; // Directory name where custom templates for this plugin should be found in the theme.
-
-	protected $plugin_directory = GEMS_PLUGIN_DIR; // Reference to the root directory path of this plugin.
-
-	protected $plugin_template_directory = 'templates'; // Directory name where templates are found in this plugin. e.g. 'templates' or 'includes/templates', etc.
-}
 ?>
                        
