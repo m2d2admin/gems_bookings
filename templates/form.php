@@ -1355,7 +1355,6 @@
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
      
-            //optionalFormData: optionalFormData,
             var bookingData = {
                 adults_count: adultsCount,
                 children_count: childrenCount,
@@ -1363,6 +1362,7 @@
                 glFormData: glFormData,
                 sahFormData: sahFormData,
                 bibsFormData: bibsFormData,
+                /*optionalFormData: optionalFormData,
                 arrival_date: arrivalDate,
                 departure_date: departureDate,
                 hotel_id: hotelId,
@@ -1371,7 +1371,7 @@
                 flight_plan_id: flightPlanId,
                 insuranceFormData: insuranceFormData,
                 special_message: specialMessage,
-                booking_price: bookingPrice
+                booking_price: bookingPrice */
             }
             console.log('bookingData', bookingData);
 
