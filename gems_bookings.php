@@ -392,8 +392,8 @@ function mail_booking_details() {
 		// mail booking details
 		$name = 'Yanick';
 		$email = 'kevineasky@gmail.com';
-		// $message = email_template($booking_details, $email_settings, $email, $name);
-		$message = wp_kses_post($_POST['bookingSummary']);
+		$message = email_template($booking_details, $email_settings, $email, $name);
+		// $message = wp_kses_post($_POST['bookingSummary']);
 
 		//php mailer variables
 		$from = get_option('admin_email');

@@ -1231,7 +1231,7 @@
                 method: "POST",
                 dataType: "json",
                 url: url,
-                data: { action: 'mail_booking_details', bookingData: bookingData, bookingSummary: $('#form_section9').html() },
+                data: { action: 'mail_booking_details', bookingData: bookingData },
                 success: function(data) {
                     var result = JSON.parse(data);
                     console.log('booking details mailed successfully!');
@@ -1361,25 +1361,47 @@
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
-     
+            
+            var options = { year: 'numeric', month: 'short', day: 'numeric' };
+            var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
+            var country_visitor = $('#gl_country').select2('data');
+            var title_stayathome = $('#sah_title').select2('data');
+            var country_visitor = $('#gl_country').select2('data');
+            var country_stayathome = $('#sah_country').select2('data');
+            var bibs = []
+            var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
+            $( '#form_section3 input.bibs_count' ).each(function(){
+                bibs.push($(this).data)
+            })
+            var start_date = $('#booking_start_date').val();
+            var end_date = $('#booking_end_date').val();
+            var eventSettings = response.data.event_settings;
+            var booking_start_date = eventSettings.start_date;
+            var booking_end_date = eventSettings.end_date;
+            var booking_sgr_fee = eventSettings.sgr_fee;
+            var booking_insurance_fee = eventSettings.insurance_fee;
+            var booking_calamity_fund = eventSettings.calamity_fund;
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+                        options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' },
+                        start_date = new Date(booking_start_date),
+                        end_date = new Date(booking_end_date);
+
+            var booking_date_info = booking_start_date + ' - ' + booking_end_date;
+
             var bookingData = {
                 adults_count: $('#adults_count').val(),
-                children_count: childrenCount,
-                children_under_3_count: childrenUnder3Count,
+                children_count: $('#children_count').val(),
+                children_under_3_count: $('#children_under_3_count').val(),
                 visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
-                glFormData: glFormData,
-                sahFormData: sahFormData,
-                bibsFormData: bibsFormData,
-                /*optionalFormData: optionalFormData,
-                arrival_date: arrivalDate,
-                departure_date: departureDate,
-                hotel_id: hotelId,
-                roomtypeFormData: roomtypeFormData,
-                extrasFormData: extrasFormData,
-                flight_plan_id: flightPlanId,
-                insuranceFormData: insuranceFormData,
-                special_message: specialMessage,
-                booking_price: bookingPrice */
+                gl_title: $('#gl_title').select2('data')[0].text,
+                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text
+                country_stayathome: title_stayathome[0].text,
+                booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
+                booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
+                booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
+                summary_bibs: bibs,
+                summary_departure_date: $('#summary_departure_date').text(start_date.toLocaleDateString("nl-NL", options_summary)),
+                summary_arrival_date: $('#summary_arrival_date').text(end_date.toLocaleDateString("nl-NL", options_summary)),
             }
             console.log('bookingData', bookingData);
 
