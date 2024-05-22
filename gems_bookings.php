@@ -17,7 +17,7 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
-	// require plugin_dir_path(__FILE__) . 'templates/email_template.php';
+	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
@@ -338,7 +338,7 @@ function save_email_settings() {
 		else{
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
-		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		// $email_settings = get_option('mail_setting_'.get_current_user_id());s
 		// $message = email_template('$booking_details', $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
 
 
@@ -350,7 +350,7 @@ function save_email_settings() {
 		// add_filter('wp_mail_content_type', function( $content_type ) {
         //     return 'text/html';
 		// });
-		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $message, $headers);
+		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
 
 		return true;
 
@@ -387,7 +387,7 @@ function mail_booking_details() {
 		$from = get_option('admin_email');
 		$subject = $email_settings['email_subject'];
 		$headers = 'From: '. $from . "\r\n" .
-			'Reply-To: ' . $email . "\r\n";
+			'Reply-To: ' . $from . "\r\n";
 
 		// //Here put your Validation and send mail
 		add_filter('wp_mail_content_type', function( $content_type ) {

@@ -1235,8 +1235,8 @@
                     if(xhr.status == 200)
                         alert('booking details mailed successfully!');
                     else
-                        alert('Error saving email settings');
-                    console.error('Error saving email settings:', error);
+                        alert('Error sending email');
+                    console.error('Error sending email:', error);
                 }
             });
         }
