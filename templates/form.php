@@ -1363,9 +1363,10 @@
             data += '&booking_price=' + bookingPrice;
      
             var bookingData = {
-                adults_count: adultsCount,
+                adults_count: $('#adults_count').val(),
                 children_count: childrenCount,
                 children_under_3_count: childrenUnder3Count,
+                visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
                 glFormData: glFormData,
                 sahFormData: sahFormData,
                 bibsFormData: bibsFormData,
