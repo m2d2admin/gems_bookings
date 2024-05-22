@@ -109,6 +109,7 @@
             $('#summary_children_count').html( $('#children_count').val());
             $('#summary_children_under_3_count').html( $('#children_under_3_count').val() );
             $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );	
+
         }
 
         function updateSummaryStep2() {
@@ -129,6 +130,7 @@
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
             $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
+
             updateProgressBar();
         }
 
@@ -150,6 +152,7 @@
                     </div>`);
                 }
             });
+
         }
 
         function updateSummaryStep6() {
@@ -173,6 +176,7 @@
                         </div>
                     </div>`);
                 }
+
             });
 
             $( '#form_section6 input.nonextra_count' ).each(function() {
@@ -193,6 +197,7 @@
                         </div>
                     </div>`);
                 }
+                
             });
 
         }
@@ -1226,7 +1231,7 @@
                 method: "POST",
                 dataType: "json",
                 url: url,
-                data: { action: 'mail_booking_details', bookingData: bookingData },
+                data: { action: 'mail_booking_details', bookingData: bookingData, bookingSummary: $('#form_section9').html() },
                 success: function(data) {
                     var result = JSON.parse(data);
                     console.log('booking details mailed successfully!');

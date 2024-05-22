@@ -235,10 +235,11 @@ function gems_bookings_options() {
 		if ($active_tab == 'mailtemplate') {
 			$template_loader = new GEMS_Template_Loader();
 			$template_loader->get_template_part('email-template');
+			$email_subject = '';
 			?>
-		      <form action="" class='email-temp-settings'>
+		      <form action="" class='email-temp-settings' id='email-temp-settings_id'>
 				<h3>Configure your email content</h3>
-				<table class="form-table">
+				<table class="form-table" id='capture-area'>
 					<tr valign="top">
 						<th scope="row"><?php esc_html_e('Email Subject', 'gems_bookings'); ?></th>
 						<td>
@@ -278,11 +279,12 @@ function gems_bookings_options() {
 		jQuery(document).ready(function($) {
 			function saveEmailSettings(userId, subject, header, footer) {
 				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+				var form =  $('#capture-area').html();
 				$jQ.ajax({
 					method: "POST",
 					dataType: "json",
 					url:  url,
-					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer },
+					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer, email_form:  $('#capture-area').html()},
 					success: function(data) {
 						// var result = JSON.parse(data);
 						alert("Email settings saved successfully");
@@ -338,8 +340,9 @@ function save_email_settings() {
 		else{
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
-		// $email_settings = get_option('mail_setting_'.get_current_user_id());s
-		// $message = email_template('$booking_details', $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
+		// $email_settings = get_option('mail_setting_'.get_current_user_id());
+		// // $message = email_template('$booking_details', $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
+		// $message = $_POST['email_form'];
 
 
 		// $from = get_option('admin_email');
@@ -352,6 +355,14 @@ function save_email_settings() {
 		// });
 		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
 
+		// $dom = new DOMDocument;
+		// $html = file_get_contents('http://yarvin.local/wp-admin/options-general.php?page=gems_bookings&tab=mailtemplate/');
+		// libxml_use_internal_errors(true);
+		// $dom->loadHTML($html);
+		// $node = $dom->getElementById('email-temp-settings_id');
+		// if ($node) {
+		// 	return $dom->saveXML($node);
+		// }
 		return true;
 
 	}
@@ -381,7 +392,8 @@ function mail_booking_details() {
 		// mail booking details
 		$name = 'Yanick';
 		$email = 'kevineasky@gmail.com';
-		$message = email_template($booking_details, $email_settings, $email, $name);
+		// $message = email_template($booking_details, $email_settings, $email, $name);
+		$message = $_POST['bookingSummary'];
 
 		//php mailer variables
 		$from = get_option('admin_email');
