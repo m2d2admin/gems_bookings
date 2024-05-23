@@ -1365,7 +1365,7 @@
             var options = { year: 'numeric', month: 'short', day: 'numeric' };
             var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
             var country_visitor = $('#gl_country').select2('data');
-            var title_visitor = $('#gl_title').select2('data'),;
+            var title_visitor = $('#gl_title').select2('data');
             var title_stayathome = $('#sah_title').select2('data');
             var country_visitor = $('#gl_country').select2('data');
             var country_stayathome = $('#sah_country').select2('data');
