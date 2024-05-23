@@ -1375,16 +1375,16 @@
             })
             var start_date = $('#booking_start_date').val();
             var end_date = $('#booking_end_date').val();
-            var eventSettings = response.data.event_settings;
-            var booking_start_date = eventSettings.start_date;
-            var booking_end_date = eventSettings.end_date;
-            var booking_sgr_fee = eventSettings.sgr_fee;
-            var booking_insurance_fee = eventSettings.insurance_fee;
-            var booking_calamity_fund = eventSettings.calamity_fund;
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
-                        options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' },
-                        start_date = new Date(booking_start_date),
-                        end_date = new Date(booking_end_date);
+            // var eventSettings = response.data.event_settings;
+            // var booking_start_date = eventSettings.start_date;
+            // var booking_end_date = eventSettings.end_date;
+            // var booking_sgr_fee = eventSettings.sgr_fee;
+            // var booking_insurance_fee = eventSettings.insurance_fee;
+            // var booking_calamity_fund = eventSettings.calamity_fund;
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            var options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            var start_date = new Date(booking_start_date);
+            var end_date = new Date(booking_end_date);
 
             var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
@@ -1400,8 +1400,8 @@
                 booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
                 booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
                 summary_bibs: bibs,
-                summary_departure_date: $('#summary_departure_date').text(start_date.toLocaleDateString("nl-NL", options_summary)),
-                summary_arrival_date: $('#summary_arrival_date').text(end_date.toLocaleDateString("nl-NL", options_summary)),
+                // summary_departure_date: $('#summary_departure_date').text(start_date.toLocaleDateString("nl-NL", options_summary)),
+                // summary_arrival_date: $('#summary_arrival_date').text(end_date.toLocaleDateString("nl-NL", options_summary)),
             }
             console.log('bookingData', bookingData);
 
