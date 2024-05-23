@@ -1400,13 +1400,13 @@
                 })
             })
             var non_extra_of_hotels = [];
-            $( '#form_section6 input.nonextra_count' ).each(function() {
-                non_extra_of_hotels.push({
-                    non_extra_name: $(this).data('extras_name'),
-                    non_extra_count: $(this).val(),
-                    non_extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
-                })
-            })
+            // $( '#form_section6 input.nonextra_count' ).each(function() {
+            //     non_extra_of_hotels.push({
+            //         non_extra_name: $(this).data('extras_name'),
+            //         non_extra_count: $(this).val(),
+            //         non_extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
+            //     })
+            // })
 
             // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
