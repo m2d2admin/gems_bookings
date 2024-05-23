@@ -1369,7 +1369,7 @@
             var title_stayathome = $('#sah_title').select2('data');
             var country_visitor = $('#gl_country').select2('data');
             var country_stayathome = $('#sah_country').select2('data');
-            var bibs = []
+            var bibs = [];
             var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
             $( '#form_section3 input.bibs_count' ).each(function(){
                 bibs.push({
@@ -1389,8 +1389,8 @@
             // var booking_calamity_fund = eventSettings.calamity_fund;
             var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             var options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            var start_date = new Date(booking_start_date);
-            var end_date = new Date(booking_end_date);
+            // var start_date = new Date(booking_start_date);
+            // var end_date = new Date(booking_end_date);
             var extra_of_hotels = [];
             $( '#form_section6 input.extra_count' ).each(function(){
                 extra_of_hotels.push({
@@ -1404,11 +1404,11 @@
                 non_extra_of_hotels.push({
                     non_extra_name: $(this).data('extras_name'),
                     non_extra_count: $(this).val(),
-                    non_extra_price: parseInt(non_extra_count) * parseFloat($(this).data('price'))
+                    non_extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
                 })
             })
 
-            var booking_date_info = booking_start_date + ' - ' + booking_end_date;
+            // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
             var bookingData = {
                 adults_count: $('#adults_count').val(),
