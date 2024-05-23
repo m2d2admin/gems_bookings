@@ -1365,13 +1365,19 @@
             var options = { year: 'numeric', month: 'short', day: 'numeric' };
             var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
             var country_visitor = $('#gl_country').select2('data');
+            var title_visitor = $('#gl_title').select2('data'),;
             var title_stayathome = $('#sah_title').select2('data');
             var country_visitor = $('#gl_country').select2('data');
             var country_stayathome = $('#sah_country').select2('data');
             var bibs = []
             var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
             $( '#form_section3 input.bibs_count' ).each(function(){
-                bibs.push($(this).data)
+                bibs.push({
+                    bibs_id: $(this).data('bib-id'),
+                    bibs_name: $(this).data('bibs_name'),
+                    bibs_count: $(this).val(),
+                    bibs_price: $(this).data('price')
+                })
             })
             var start_date = $('#booking_start_date').val();
             var end_date = $('#booking_end_date').val();
@@ -1385,6 +1391,22 @@
             var options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             var start_date = new Date(booking_start_date);
             var end_date = new Date(booking_end_date);
+            var extra_of_hotels = [];
+            $( '#form_section6 input.extra_count' ).each(function(){
+                extra_of_hotels.push({
+                    extra_name: $(this).data('extras_name'),
+                    extra_count: $(this).val(),
+                    extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
+                })
+            })
+            var non_extra_of_hotels = [];
+            $( '#form_section6 input.nonextra_count' ).each(function() {
+                non_extra_of_hotels.push({
+                    non_extra_name: $(this).data('extras_name'),
+                    non_extra_count: $(this).val(),
+                    non_extra_price: parseInt(non_extra_count) * parseFloat($(this).data('price'))
+                })
+            })
 
             var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
@@ -1392,6 +1414,8 @@
                 adults_count: $('#adults_count').val(),
                 children_count: $('#children_count').val(),
                 children_under_3_count: $('#children_under_3_count').val(),
+                visitor_title: title_visitor[0].text,
+                visitor_name: $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val(),
                 visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
                 gl_title: $('#gl_title').select2('data')[0].text,
                 birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
@@ -1400,8 +1424,18 @@
                 booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
                 booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
                 summary_bibs: bibs,
-                // summary_departure_date: $('#summary_departure_date').text(start_date.toLocaleDateString("nl-NL", options_summary)),
-                // summary_arrival_date: $('#summary_arrival_date').text(end_date.toLocaleDateString("nl-NL", options_summary)),
+                departure_date: $('#summary_departure_date').text(),
+                arrival_date: $('#summary_arrival_date').text(),
+                hotel_name = $('#summary_hotel_name').text(),
+                hotel_price = $('#summary_room_price').text(),
+                extra_of_hotels: extra_of_hotels,
+                non_extra_of_hotels: non_extra_of_hotels,
+                flight: $('#summary_flight_div').text(),
+                insurance: $('#summary_insurance_div').text(),
+                sgr_fee: $('#booking_sgr_fee_div').text(),
+                insurance_fee: $('#booking_insurance_fee_div').text(),
+                calamity_fund: $('#booking_calamity_fund_div').text(),
+
             }
             console.log('bookingData', bookingData);
 

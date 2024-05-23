@@ -355,14 +355,6 @@ function save_email_settings() {
 		// });
 		// $sent = wp_mail('kevineasky@gmail.com', $subject, $message, $headers);
 
-		// $dom = new DOMDocument;
-		// $html = file_get_contents('http://yarvin.local/wp-admin/options-general.php?page=gems_bookings&tab=mailtemplate/');
-		// libxml_use_internal_errors(true);
-		// $dom->loadHTML($html);
-		// $node = $dom->getElementById('email-temp-settings_id');
-		// if ($node) {
-		// 	return $dom->saveXML($node);
-		// }
 		return true;
 
 	}
