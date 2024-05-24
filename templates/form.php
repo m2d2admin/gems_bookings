@@ -11,17 +11,16 @@
     }
 
     function calculateInsurancePrice(adults_count, children_count, children_under_3_count, ins_price, ins_price_type, ins_price_per_participant, total_booking_price) {
- //console.log(adults_count);
- //console.log(children_count);
- //console.log(children_under_3_count);
- //console.log(ins_price);
- //console.log(ins_price_type);
- //console.log(ins_price_per_participant);
- //console.log(total_booking_price);
- //console.log('-----------------');
+        //console.log(adults_count);
+        //console.log(children_count);
+        //console.log(children_under_3_count);
+        //console.log(ins_price);
+        //console.log(ins_price_type);
+        //console.log(ins_price_per_participant);
+        //console.log(total_booking_price);
+        //console.log('-----------------');
  
         var this_ins_price = 0,
-            nights = 1; // bcoz for insurance need day count
             travellers = 0;
 
         if(ins_price_type == 1) {
@@ -127,6 +126,7 @@
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
             $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
+
             updateProgressBar();
         }
 
@@ -148,6 +148,7 @@
                     </div>`);
                 }
             });
+
         }
 
         function updateSummaryStep6() {
@@ -171,6 +172,7 @@
                         </div>
                     </div>`);
                 }
+
             });
 
             $( '#form_section6 input.nonextra_count' ).each(function() {
@@ -191,6 +193,7 @@
                         </div>
                     </div>`);
                 }
+                
             });
 
         }
@@ -256,44 +259,16 @@
         });
 
         $(document).on('click', '.hotel-labels input', function(e) {
-            var hotel_id = $(this).data('hotel_name'),
+            var hotel_id = $(this).val(),
                 hotel_name = $(this).data('hotel_name'),
                 hotel_rating = $(this).data('rating'),
                 hotel_photo = $(this).data('photo'),
                 hotel_max_persons_per_room = $(this).data('max_persons_per_room'),
                 hotel_price_from = $(this).data('price_from');
-
+            $('#hotel_id').val(hotel_id);
             $('#summary_hotel_name').html(hotel_name);      
         });
 
-        $(document).on('click', '.vervoer-radio-btn-label input', function(e) {
-            var flightplan_id = $(this).val(),
-                flight_name = $(this).data('planname'),
-                flight_departure_flight = $(this).parent().find('.departure-flight-airport').html(),
-                flight_departure_datetime = $(this).parent().find('.departure-flight-date').html() + ' | ' + $(this).parent().find('.departure-flight-time').html(),
-
-                flight_arrival_flight = $(this).parent().find('.departure-flight-airport').html(),
-                flight_arrival_datetime = $(this).parent().find('.departure-flight-date').html() + ' | ' + $(this).parent().find('.departure-flight-time').html();
-
-            //$('.vervoer-radio-btn-label input').prop('checked', false).removeAttr('checked'); 
-            $('#flightplan_id').val(flightplan_id);
-            //$( this).find('input').prop('checked', true).attr('checked', 'checked');
-
-            $('#summary_flight_div').html('');
-            $('#summary_flight_div').append(`<div class="row form-fields-rows">
-                <div class="col-md-6 col-lg-4 col-xl-4">
-                    <p>${flight_name}: ${flight_departure_flight}</p>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-4">
-                    <p>${flight_name}: ${flight_arrival_flight}</p>
-                </div>
-                <div class="col-md-6 col-lg-4 col-xl-4">
-                    <p>&euro; ${flight_departure_datetime}</p>
-                </div>
-            </div>`);
-            
-        });
-		
         $(document).on('click', '.insurance-options', function(e) {
 
             updateSummaryStep8();
@@ -352,6 +327,7 @@
                 } else {
                     updateSummaryStep1();
                 }
+
             }
 
         });
@@ -385,12 +361,12 @@
             $('#summary_children_count').html(children_count);
             $('#summary_children_under_3_count').html(children_under_3_count);
 
-            $('#runners_div').html('');
-            
             var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
-                
-            for (let i = 0; i < travelers; i++) {
-                addTravellerToForm(i);
+ 
+            if (parseInt(travelers) > 1) {
+                addTravellerToForm(travelers);
+            } else if (parseInt(travelers) < 2) {
+                removeTravellerToForm();
             }
             $('#travellers_amount').val(travelers);
 
@@ -447,6 +423,10 @@
 
         });
     
+        function removeTravellerToForm() {
+            $('#runners_div .runner_info').last().remove();
+        }
+
         function addTravellerToForm(i = 1) {
     
             var htmlToAdd = `
@@ -455,16 +435,16 @@
                         <div class="col-12">
                             <div class="visitor">
                                 <div class="align-self-center">
-                                    <p class="caption theme-color-secondary mb-0 form-label-blue">REIZIGER #${i + 1}</p>
+                                    <p class="caption theme-color-secondary mb-0 form-label-blue">TRAVELLER #${i}</p>
                                 </div>
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="traveller_is_runner[]" value="1" class="custom-control-input form-input-checkbox">
+                                            <input type="checkbox" name="traveller_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox">
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
-                                            <span class="checkbox-label ml-2">Is REIZIGER #${i + 1 } een hardloper?</span>
+                                            <span class="checkbox-label ml-2">Is TRAVELLER #${i} een hardloper?</span>
                                         </label>
                                     </div>
                                 </div>
@@ -475,7 +455,7 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                <select placeholder="Titel" data-placeholder="Titel" name="v_title[]" class="pl-2 form-control form-select" required>
+                                <select placeholder="Titel" data-placeholder="Titel" name="v_title[]" id="v_title_${i}" class="pl-2 form-control form-select" required>
                                     <option value="dhr.">dhr.</option>
                                     <option value="mevr.">mevr.</option>
                                 </select>
@@ -520,8 +500,14 @@
             $('.form-select').select2();
         }
 
+
+        $(document).on("click",".vervoer-radio-btn-group",function(){
+            var transport_id = $(this).find('input').val();
+            $('#transport_id').val(transport_id);
+        });
+
         // Recalculate the total price when the number of travellers changes
-        $(document).on("change", ".flight-departure",function(){
+        $(document).on("change",".flight-departure",function(){
             //alert(this.value);
             var travelers_amount = $('#travellers_amount').val(),
                 departure_price = $(this).data('price');
@@ -531,7 +517,7 @@
         });
 
         // Recalculate the total price when the number of travellers changes
-        $(document).on("change", ".flight-arrival",function(){
+        $(document).on("change",".flight-arrival",function(){
             //alert(this.value);
             var travelers_amount = $('#travellers_amount').val(),
                 arrival_price = $(this).data('price');
@@ -788,8 +774,6 @@
         $(document).on('click', '.card-input-element', function() {
             var hotel_id = $(this).val();
 
-            $('#hotel_id').val(hotel_id);
-			
             getHotelRoomDetails(hotel_id);
         });
 
@@ -826,7 +810,7 @@
                             hotel_rooms_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms  booking-card">
 
                                 <label class="hotel-rooms-labels">
-                                    <input type="radio" name="hotel_room_id_OLD" value="${item.hotel_room_id}" selected checked class="_card-input-element" />
+                                    <input type="radio" name="hotel_room_id" value="${item.hotel_room_id}" selected checked class="_card-input-element" />
 
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header">
@@ -846,14 +830,14 @@
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room"  data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
-                                                    <input type="hidden" name="hotel_rooms[${item.id}]" value="0">
+                                                    <input type="hidden" name="hotel_rooms[]" value="${item.id}">
                                                     <input placeholder="Hotelroom" class="input-group-field rooms_count number" type="number" name="rooms[${item.hotel_room_id}]" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room"  data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
@@ -907,7 +891,7 @@
                             
                             hotel_extras_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms booking-card">
                                 <label class="hotel-rooms-labels">
-                                    <input type="radio" name="extras" selected checked class="card-input-element" />
+                                    <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>											
@@ -925,8 +909,8 @@
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
-                                                    <input type="hidden" name="hotel_extras[]" id="hotel_extras_${item.id}" value="${item.id}">
-                                                    <input placeholder="Extra hotel" class="input-group-field extra_count number" type="number" name="extras_count[]" id="extras_count_${item.id}" value="0" required data-extras_name="${item.name}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
+                                                    <input type="hidden" name="hotel_extras[]" value="${item.id}">
+                                                    <input placeholder="Extra hotel" class="input-group-field extra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
                                                         <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -943,7 +927,7 @@
                             non_hotel_extras_html 		+= `
                             <div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms booking-card">
                                 <label class="hotel-rooms-labels">
-                                    <input type="radio" name="extras" selected checked class="card-input-element" />
+                                    <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>											
@@ -961,8 +945,8 @@
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
-                                                    <input type="hidden" name="nonhotel_extras[]" id="hotel_extras_${item.id}" value="${item.id}">
-                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras_count[]" id="extras_count_${item.id}" value="0" required data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
+                                                    <input type="hidden" name="nonhotel_extras[]" value="${item.id}">
+                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
                                                         <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -1042,7 +1026,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" id="flight-departure" name="flight-departure" class="form-select flight-departure">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-departure">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option>                                            
                                             <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1070,7 +1054,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" id="flight-arrival"  name="flight-arrival" class="form-select flight-arrival">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-arrival">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option> 
                                             <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1087,7 +1071,7 @@
                         var flightPlanHtml = `
                         <div class="col vervoer-radio-btn-group">
                             <label class="vervoer-radio-btn-label">
-                                <input type="radio" name="flight_plan_id_OLD" value="${index}" data-fp_id="${j.fp_id}" data-planName="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
+                                <input type="radio" name="flightplan_id_OLD" value="${j.fp_id}" data-planname="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
                                 <div class="card card-default card-input">
                                     <div class="card-header">
                                         <div class="card-title">${j.plan_name}</div>
@@ -1214,7 +1198,7 @@
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
                                 <div class="insurance-options-check">
-                                    <input class="insurance-options form-input-checkbox" type="checkbox" name="insurance[${index + 1}]" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
+                                    <input class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
                                     <label for="extra-bagage" class="insurancetype-check-label">${item.insurance_name}</label>
                                 </div>
                                 <div class="verzekering-description-box">
@@ -1243,6 +1227,26 @@
 			}
 		});
 
+        function mailBookingData(bookingData){
+            var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+            $.ajax({
+                method: "POST",
+                dataType: "json",
+                url: url,
+                data: { action: 'mail_booking_details', bookingData: bookingData },
+                success: function(data) {
+                    var result = JSON.parse(data);
+                    console.log('booking details mailed successfully!');
+                },
+                error: function(xhr, status, error) {
+                    if(xhr.status == 200)
+                        alert('booking details mailed successfully!');
+                    else
+                        alert('Error sending email');
+                    console.error('Error sending email:', error);
+                }
+            });
+        }
 
         // Function to post booking details
         function postBookingDetails() {
@@ -1251,9 +1255,13 @@
             var childrenCount 				= $('#children_count').val();
             var childrenUnder3Count 		= $('#children_under_3_count').val();
         
+            var arrivalDate 				= $('#arrival_date').val();
+            var departureDate 				= $('#departure_date').val();
+            var hotelId 					= $('#hotel_id').val();
+        
             var glFormData 					= $('#gl_form').serialize();
             var sahFormData 				= $('#sah_form').serialize();
-            var datesFormData 				= $('#dates_form').serialize();
+            var optionalFormData 			= $('#optional_form').serialize();
             var bibsFormData 				= $('#bibs_form').serialize();
             var roomtypeFormData 			= $('#roomtype_form').serialize();
             var extrasFormData				= $('#extras_form').serialize();
@@ -1261,7 +1269,11 @@
             
             var flightsFormData 			= $('#flights_form').serialize();
             var hotelFormData 				= $('#hotel_form').serialize();
+            var visitor_listFormData 		= $('#visitor_list_form').serialize();
+            var visitor_dtlFormData 		= $('#visitor_dtl_from').serialize();
+            var datesFormData 				= $('#dates_form').serialize();
         
+            var flightPlanId 				= $('#flight_plan_id').val();
             var specialMessage 				= $('#special_message').val();
             var bookingPrice 				= $('#booking_price').val();
         
@@ -1326,33 +1338,13 @@
         - extras_quantity[]
         
         - flight_plan_id -> value={flightplan id}
-        - flight_plan_id -> value=0 (own transport)
+        - flight_plan_id -> value=-1 (own transport)
         
-        - insurance[{insurance id}]  -> value={price}
+        - insurance_id[{insurance id}]  -> value={price}
         - special_message
         - booking_price
         */
 
-        function mailBookingData(data){
-            var url = "<?php echo admin_url('admin-ajax.php'); ?>";
-            $.ajax({
-                method: "POST",
-                dataType: "json",
-                url: url,
-                data: { action: 'mail_booking_details', data: data },
-                success: function(data) {
-                    var result = JSON.parse(data);
-                    console.log('booking details mailed successfully!');
-                },
-                error: function(xhr, status, error) {
-                    if(xhr.status == 200)
-                        alert('booking details mailed successfully!');
-                    else
-                        alert('Error saving email settings');
-                    console.error('Error saving email settings:', error);
-                }
-            });
-        }
         
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;
@@ -1360,35 +1352,94 @@
             data += '&children_under_3_count=' + childrenUnder3Count;
             data += '&' + glFormData; // json object with user informations(name, email etc..)
             data += '&' + sahFormData;
-            data += '&' + datesFormData;
+            data += '&' + optionalFormData;
             data += '&' + bibsFormData;
-			data += '&' + hotelFormData;
+            data += '&arrival_date=' + arrivalDate;
+            data += '&departure_date=' + departureDate;
+            data += '&hotel_id=' + hotelId;
             data += '&' + roomtypeFormData;
             data += '&' + extrasFormData;
-			data += '&' + flightsFormData;
+            data += '&flight_plan_id=' + flightPlanId;
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
-     
+            
+            var options = { year: 'numeric', month: 'short', day: 'numeric' };
+            var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
+            var country_visitor = $('#gl_country').select2('data');
+            var title_visitor = $('#gl_title').select2('data');
+            var title_stayathome = $('#sah_title').select2('data');
+            var country_visitor = $('#gl_country').select2('data');
+            var country_stayathome = $('#sah_country').select2('data');
+            var bibs = [];
+            var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
+            $( '#form_section3 input.bibs_count' ).each(function(){
+                bibs.push({
+                    bibs_id: $(this).data('bib-id'),
+                    bibs_name: $(this).data('bibs_name'),
+                    bibs_count: $(this).val(),
+                    bibs_price: $(this).data('price')
+                })
+            })
+            var start_date = $('#booking_start_date').val();
+            var end_date = $('#booking_end_date').val();
+            // var eventSettings = response.data.event_settings;
+            // var booking_start_date = eventSettings.start_date;
+            // var booking_end_date = eventSettings.end_date;
+            // var booking_sgr_fee = eventSettings.sgr_fee;
+            // var booking_insurance_fee = eventSettings.insurance_fee;
+            // var booking_calamity_fund = eventSettings.calamity_fund;
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            var options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            // var start_date = new Date(booking_start_date);
+            // var end_date = new Date(booking_end_date);
+            var extra_of_hotels = [];
+            $( '#form_section6 input.extra_count' ).each(function(){
+                extra_of_hotels.push({
+                    extra_name: $(this).data('extras_name'),
+                    extra_count: $(this).val(),
+                    extra_price: parseInt($(this).val()) * parseFloat($(this).data('price'))
+                })
+            })
+            var non_extra_of_hotels = [];
+            $( '#form_section6 input.nonextra_count' ).each(function() {
+                non_extra_of_hotels.push({
+                    non_extra_name: $(this).data('extras_name'),
+                    non_extra_count: $(this).val(),
+                    non_extra_price: parseInt($(this).val()) * parseFloat($(this).data('price'))
+                })
+            })
+
+            var booking_date_info = booking_start_date + ' - ' + booking_end_date;
+
             var bookingData = {
-                adults_count: adultsCount,
-                children_count: childrenCount,
-                children_under_3_count: childrenUnder3Count,
-                glFormData: glFormData,
-                sahFormData: sahFormData,
-                optionalFormData: optionalFormData,
-                bibsFormData: bibsFormData,
-                arrival_date: arrivalDate,
-                departure_date: departureDate,
-                hotel_id: hotelId,
-                roomtypeFormData: roomtypeFormData,
-                extrasFormData: extrasFormData,
-                flight_plan_id: flightPlanId,
-                insuranceFormData: insuranceFormData,
-                special_message: specialMessage,
-                booking_price: bookingPrice
+                adults_count: $('#adults_count').val(),
+                children_count: $('#children_count').val(),
+                children_under_3_count: $('#children_under_3_count').val(),
+                visitor_title: title_visitor[0].text,
+                visitor_name: $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val(),
+                visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
+                gl_title: $('#gl_title').select2('data')[0].text,
+                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
+                country_stayathome: title_stayathome[0].text,
+                booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
+                booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
+                booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
+                summary_bibs: bibs,
+                departure_date: $('#summary_departure_date').text(),
+                arrival_date: $('#summary_arrival_date').text(),
+                hotel_name: $('#summary_hotel_name').text(),
+                hotel_price: $('#summary_room_price').text(),
+                extra_of_hotels: extra_of_hotels,
+                non_extra_of_hotels: non_extra_of_hotels,
+                flight: $('#summary_flight_div').text(),
+                insurance: $('#summary_insurance_div').text(),
+                sgr_fee: $('#booking_sgr_fee_div').text(),
+                insurance_fee: $('#booking_insurance_fee_div').text(),
+                calamity_fund: $('#booking_calamity_fund_div').text(),
+
             }
-            console.log('bookingData', bookingData);      
+            console.log('bookingData', bookingData);
 
             // Ajax call to post data
             $.ajax({
@@ -1415,6 +1466,8 @@
                 }
             });
         }
+
+
 
     });
 </script>
@@ -1566,7 +1619,7 @@
                                                 <div class="mt-2">
                                                     <div class="custom-control custom-checkbox">
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" name="gl_is_runner" value="1" class="form-input-checkbox">
+                                                            <input type="checkbox" name="gl_is_runner" id="gl_is_runner" class="form-input-checkbox">
                                                             <label title="" for="gl_is_runner" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-label">
@@ -1582,7 +1635,7 @@
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" data-placeholder="Titel" id="gl_title" name="gl_title" class="pl-2 form-control form-select" required>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="gl_title" id="gl_title" class="pl-2 form-control form-select" required>
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1592,7 +1645,7 @@
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
-                                                <input class="form-control" type="date" name="dateofbirth" placeholder="Geboortedatum" required>
+                                                <input class="form-control" type="date" id="gl_dateofbirth" name="dateofbirth" placeholder="Geboortedatum" required>
                                             </div>
                                         </div>
                                     </div>
@@ -1601,37 +1654,41 @@
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
-                                                <input type="text" placeholder="Voornaam" name="gl_first_name" class="form-control" required>
+                                                <input type="text" placeholder="Voornaam" name="gl_first_name" id="gl_first_name" class="form-control" required>
 
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Tussenvoegsel (optioneel)</label>
-                                                <input type="text" placeholder="Tussenvoegsel" name="gl_middle_name" class="form-control">
+                                                <input type="text" placeholder="Tussenvoegsel" name="gl_middle_name" id="gl_middle_name" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
-                                                <input type="text" placeholder="Achternaam" name="gl_last_name" class="form-control" required>
+                                                <input type="text" placeholder="Achternaam" name="gl_last_name" id="gl_last_name" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div id="runners_div">
+
                                     </div>
 
                                     <div class="row">
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Straat <span class="required">*</span></label>
-                                                <input type="text" placeholder="Straat" name="gl_street" class="form-control" required>
+                                                <input type="text" placeholder="Straat" name="gl_street" id="gl_street" class="form-control" required>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Huisnummer <span class="required">*</span></label>
-                                                <input type="text" placeholder="Huisnummer" name="gl_house_number" class="form-control" required>
+                                                <input type="text" placeholder="Huisnummer" name="gl_house_number" id="gl_house_number" class="form-control" required>
                                             </div>
                                         </div>
                                     </div>
@@ -1640,14 +1697,14 @@
                                         <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Postcode <span class="required">*</span></label>
-                                                <input type="text" placeholder="Postcode" name="gl_postal_code" class="form-control" required>
+                                                <input type="text" placeholder="Postcode" name="gl_postal_code" id="gl_postal_code" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Woonplaats <span class="required">*</span></label>
-                                                <input type="text" placeholder="Woonplaats" name="gl_residence" class="form-control" required>
+                                                <input type="text" placeholder="Woonplaats" name="gl_residence" id="gl_residence" class="form-control" required>
                                             </div>
                                         </div>
                                     </div>
@@ -1688,10 +1745,6 @@
                                         </div>
                                     </div>
 
-                                    <div id="runners_div">
-
-                                    </div>
-									
                                 </form>
 
                                 <form name="sah_form" id="sah_form" method="POST">
@@ -1702,7 +1755,7 @@
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" data-placeholder="Titel" id="sah_title" name="sah_title" class="pl-2 form-control form-select" required>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select" required>
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1891,9 +1944,8 @@
 
                                 <form name="dates_form" id="dates_form">
 
-                                    <input type="hidden" id="booking_start_date" name="event_arrival" value="">
-                                    <input type="hidden" id="booking_end_date" name="event_departure" value="">
-									<input type="hidden" id="booking_park_access_days" name="park_access" value="0">
+                                    <input type="hidden" id="booking_start_date" name="arrival_date" value="">
+                                    <input type="hidden" id="booking_end_date" name="departure_date" value="">
 
                                     <div class="row">
         
@@ -1945,7 +1997,7 @@
                                 <form name="hotel_form" id="hotel_form" method="POST">
  
                                     <input type="hidden" id="hotel_id" name="hotel_id" value="0">
-									<input type="hidden" id="total_room_count" name="total_room_count" value="0">
+                                    <input type="hidden" id="total_room_count" name="total_room_count" value="0">
                                     <input type="hidden" id="total_room_price" value="0.00">                                     
                                     
                                     <div class="row radio-btn-grp-row" id="hotels_container">
@@ -2049,9 +2101,8 @@
                                 <div class="error-message text-danger"></div>
 
                                 <form name="flights_form" id="flights_form">
-									
-                                    <input type="hidden" id="flight_plan_id" name="flight_plan_id" value="0">
-									<input type="hidden" id="total_flight_departure_price" value="0.00">
+                                    <input type="hidden" id="transport" name="flight_plan_id" value="0">
+                                    <input type="hidden" id="total_flight_departure_price" value="0.00">
                                     <input type="hidden" id="total_flight_arrival_price" value="0.00">                                        
                                     
                                     <div class="row">
@@ -2059,9 +2110,8 @@
                                         <div id="flights_container"></div>
     
                                         <div class="col vervoer-radio-btn-group">
-    
                                             <label class="vervoer-radio-btn-label">
-                                                <input type="radio" name="flight_plan_id_old" class="card-input-element" />
+                                                <input type="radio" name="flightplan_id_OLD" value="-1" class="card-input-element" />
     
                                                 <div class="card card-default card-input">
                                                     <div class="card-header">
@@ -2250,7 +2300,7 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
                                 <span class="steps body-18 regular-400 numb">09</span>
-                                Samenvatting &amp; betaling
+                                Samenvatting & betaling
                             </button>
                             </h2>
                         </div>
@@ -2609,10 +2659,11 @@
                                 <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                 <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                             </g>
-                        </svg>Rond de boeking af &amp; betaal
+                        </svg>Rond de boeking af en betaal
                     </button>
                 </div>            
             </div>
         </div>
     </div>
 </div>
+                       
