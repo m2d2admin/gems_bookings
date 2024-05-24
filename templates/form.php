@@ -1,6 +1,4 @@
 <?php
-    define("GEMS_PLUGIN_DIR", plugin_dir_path(__FILE__));
-
     $eventkey = get_query_var( 'event', 'abc123XYZ456' );
     //$eventkey = '64cbb86c14fb2';
 ?>
@@ -23,7 +21,6 @@
  //console.log('-----------------');
  
         var this_ins_price = 0,
-            nights = 1; // bcoz for insurance need day count
             travellers = 0;
 
         if(ins_price_type == 1) {
@@ -109,7 +106,6 @@
             $('#summary_children_count').html( $('#children_count').val());
             $('#summary_children_under_3_count').html( $('#children_under_3_count').val() );
             $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );	
-
         }
 
         function updateSummaryStep2() {
@@ -130,7 +126,6 @@
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
             $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
-
             updateProgressBar();
         }
 
@@ -152,7 +147,6 @@
                     </div>`);
                 }
             });
-
         }
 
         function updateSummaryStep6() {
@@ -176,7 +170,6 @@
                         </div>
                     </div>`);
                 }
-
             });
 
             $( '#form_section6 input.nonextra_count' ).each(function() {
@@ -197,7 +190,6 @@
                         </div>
                     </div>`);
                 }
-                
             });
 
         }
@@ -1240,8 +1232,8 @@
                     if(xhr.status == 200)
                         alert('booking details mailed successfully!');
                     else
-                        alert('Error sending email');
-                    console.error('Error sending email:', error);
+                        alert('Error saving email settings');
+                    console.error('Error saving email settings:', error);
                 }
             });
         }
@@ -1361,84 +1353,24 @@
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
-            
-            var options = { year: 'numeric', month: 'short', day: 'numeric' };
-            var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
-            var country_visitor = $('#gl_country').select2('data');
-            var title_visitor = $('#gl_title').select2('data');
-            var title_stayathome = $('#sah_title').select2('data');
-            var country_visitor = $('#gl_country').select2('data');
-            var country_stayathome = $('#sah_country').select2('data');
-            var bibs = [];
-            var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
-            $( '#form_section3 input.bibs_count' ).each(function(){
-                bibs.push({
-                    bibs_id: $(this).data('bib-id'),
-                    bibs_name: $(this).data('bibs_name'),
-                    bibs_count: $(this).val(),
-                    bibs_price: $(this).data('price')
-                })
-            })
-            var start_date = $('#booking_start_date').val();
-            var end_date = $('#booking_end_date').val();
-            // var eventSettings = response.data.event_settings;
-            // var booking_start_date = eventSettings.start_date;
-            // var booking_end_date = eventSettings.end_date;
-            // var booking_sgr_fee = eventSettings.sgr_fee;
-            // var booking_insurance_fee = eventSettings.insurance_fee;
-            // var booking_calamity_fund = eventSettings.calamity_fund;
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            var options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            // var start_date = new Date(booking_start_date);
-            // var end_date = new Date(booking_end_date);
-            var extra_of_hotels = [];
-            $( '#form_section6 input.extra_count' ).each(function(){
-                extra_of_hotels.push({
-                    extra_name: $(this).data('extras_name'),
-                    extra_count: $(this).val(),
-                    extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
-                })
-            })
-            var non_extra_of_hotels = [];
-            // $( '#form_section6 input.nonextra_count' ).each(function() {
-            //     non_extra_of_hotels.push({
-            //         non_extra_name: $(this).data('extras_name'),
-            //         non_extra_count: $(this).val(),
-            //         non_extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
-            //     })
-            // })
-
-            // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
-
+     
             var bookingData = {
-                adults_count: $('#adults_count').val(),
-                children_count: $('#children_count').val(),
-                children_under_3_count: $('#children_under_3_count').val(),
-                visitor_title: title_visitor[0].text,
-                visitor_name: $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val(),
-                visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
-                gl_title: $('#gl_title').select2('data')[0].text,
-                gl_email: $('#gl_email').val(),
-                gl_first_name: $('#gl_first_name').val(),
-                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
-                country_stayathome: title_stayathome[0].text,
-                booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
-                booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
-                booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
-                summary_bibs: bibs,
-                departure_date: $('#summary_departure_date').text(),
-                arrival_date: $('#summary_arrival_date').text(),
-                //hotel_name = $('#summary_hotel_name').text(),
-                //hotel_price = $('#summary_room_price').text(),
-                extra_of_hotels: extra_of_hotels,
-                non_extra_of_hotels: non_extra_of_hotels,
-                flight: $('#summary_flight_div').text(),
-                insurance: $('#summary_insurance_div').text(),
-                sgr_fee: $('#booking_sgr_fee_div').text(),
-                insurance_fee: $('#booking_insurance_fee_div').text(),
-                calamity_fund: $('#booking_calamity_fund_div').text(),
-                total_booking: $('#total_booking').text(),
-
+                adults_count: adultsCount,
+                children_count: childrenCount,
+                children_under_3_count: childrenUnder3Count,
+                glFormData: glFormData,
+                sahFormData: sahFormData,
+                bibsFormData: bibsFormData,
+                /*optionalFormData: optionalFormData,
+                arrival_date: arrivalDate,
+                departure_date: departureDate,
+                hotel_id: hotelId,
+                roomtypeFormData: roomtypeFormData,
+                extrasFormData: extrasFormData,
+                flight_plan_id: flightPlanId,
+                insuranceFormData: insuranceFormData,
+                special_message: specialMessage,
+                booking_price: bookingPrice */
             }
             console.log('bookingData', bookingData);
 
@@ -2300,12 +2232,7 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
                                 <span class="steps body-18 regular-400 numb">09</span>
-                                /* The above code is a comment in PHP. Comments are used to add
-                                explanations or notes to the code for better understanding. In this
-                                case, the comment is a multi-line comment enclosed between /* and */
-                                symbols. It is not executable code and is ignored by the PHP
-                                interpreter. */
-                                Samenvatting & betaling
+                                Samenvatting &amp; betaling
                             </button>
                             </h2>
                         </div>
@@ -2671,4 +2598,3 @@
         </div>
     </div>
 </div>
-                       
