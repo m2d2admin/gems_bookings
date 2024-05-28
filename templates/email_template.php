@@ -4,14 +4,16 @@ function bibs($bibs) {
     if(count($bibs) > 0){
         foreach ($bibs as $bib) {
             $temp .= '<div class="col-md-6 col-lg-8 col-xl-8">
-                        <p>'.$bib["bibs_name"].'</p>
-                        <span>'.$bib["bibs_count"].'</span>
+                        <div class="bibs-div">
+                            <p>'.$bib["bibs_name"].'</p>
+                            <span>'.$bib["bibs_count"].'</span>
+                        </div>
                     </div>';
         }
     }
     return $temp;
 }
-function extra_hotel($hotel_extras){
+function extra_hotel($hotel_extras) {
     $temp = '';
     if(count($hotel_extras) > 0){
         foreach ($hotel_extras as $extra) {
@@ -131,6 +133,7 @@ i.fa-circle-info {margin-left: 20px;}
 }
 .other-costs .row .box-padding-mob{font-weight: bold;font-size: 14px;}
 .total .row .box-padding-mob{font-weight: 700;font-size: 17px;}
+.bibs-div {display: flex;flex-direction: row;justify-content: space-between;align-items: center;}
 </style>
     </head>
     <div class="card">

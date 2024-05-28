@@ -23,7 +23,6 @@
  //console.log('-----------------');
  
         var this_ins_price = 0,
-            nights = 1; // bcoz for insurance need day count
             travellers = 0;
 
         if(ins_price_type == 1) {
@@ -1428,8 +1427,8 @@
                 summary_bibs: bibs,
                 departure_date: $('#summary_departure_date').text(),
                 arrival_date: $('#summary_arrival_date').text(),
-                //hotel_name = $('#summary_hotel_name').text(),
-                //hotel_price = $('#summary_room_price').text(),
+                hotel_name: $('#summary_hotel_name').text(),
+                hotel_price: $('#summary_room_price').text(),
                 extra_of_hotels: extra_of_hotels,
                 non_extra_of_hotels: non_extra_of_hotels,
                 flight: $('#summary_flight_div').text(),
@@ -1440,7 +1439,7 @@
                 total_booking: $('#total_booking').text(),
 
             }
-            console.log('bookingData', bookingData);
+            mailBookingData(bookingData);
 
             // Ajax call to post data
             $.ajax({
@@ -1454,7 +1453,7 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                    mailBookingData(bookingData);
+                   // mailBookingData(bookingData);
                     alert('Booking details posted successfully!');
                 },
                 error: function(xhr, status, error) {

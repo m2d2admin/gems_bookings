@@ -384,23 +384,7 @@ function save_email_settings() {
 		else{
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
-		// $email_settings = get_option('mail_setting_'.get_current_user_id());
-		// $message = email_template($_POST['bookingData'], $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
-		// // $message = $_POST['email_form'];
-
-
-		// $from = get_option('admin_email');
-		// $subject = $email_settings['email_subject'];
-		// $headers = 'From: '. $from . "\r\n" .
-		// 	'Reply-To: ' . $email . "\r\n";
-		
-		// add_filter('wp_mail_content_type', function( $content_type ) {
-        //     return 'text/html';
-		// });
-		// // $to = $_POST['bookingData'][]
-		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $message, $headers);
 		return true;
-
 	}
 	return true;
 }
@@ -423,11 +407,9 @@ function mail_booking_details() {
 			);
 		}
 
-		var_dump($booking_details);
-		var_dump('====================================');
 		// mail booking details
-		$name = 'Yanick';
-		$email = 'yanick.assignon@m2-d2.com';
+		$name = $booking_details['gl_first_name'];
+		$email = $booking_details['gl_email'];
 		$message = email_template($booking_details, $email_settings, $email, $name);
 		// $message = wp_kses_post($_POST['bookingSummary']);
 
