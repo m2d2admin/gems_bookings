@@ -389,7 +389,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             Totaal
                                         </div>
                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-                                            € <span>'.$booking_details['total_booking'].'</span>
+                                            <span>'.$booking_details['total_booking'].'</span>
                                         </div>
                                     </div>
                                 </div>
