@@ -167,7 +167,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Naam</p>
-                                            Groepsleider: <span id="booking_visitor_title_div">'.$booking_details["visitor_title"].'</span>&nbsp;<span id="booking_visitor_name_div">'.$booking_details["visitor_name"].'</span><br>   
+                                            Hoofdboeker: <span id="booking_visitor_title_div">'.$booking_details["visitor_title"].'</span>&nbsp;<span id="booking_visitor_name_div">'.$booking_details["visitor_name"].'</span><br>   
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Contactgegevens</p>

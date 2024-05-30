@@ -1494,7 +1494,7 @@
                                 <h2 class="mb-0">
                                 <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#form_section1" aria-expanded="true" aria-controls="form_section1">
                                     <span class="steps body-18 regular-400">01</span>
-                                    Aantal bezoekers
+                                    AANTAL REIZIGERS
                                 </button>
                                 </h2>
                             </div>
@@ -1595,7 +1595,7 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
                                 <span class="steps body-18 regular-400 numb">02</span>
-                                Reizigers aanmaken
+                                Gegevens van de reizigers
                             </button>
                             </h2>
                         </div>
@@ -1613,7 +1613,7 @@
                                         <div class="col-12">
                                             <div class="visitor">
                                                 <div class="align-self-center">
-                                                    <p class="caption theme-color-secondary mb-0 form-label-blue">Groepsleider</p>
+                                                    <p class="caption theme-color-secondary mb-0 form-label-blue">Hoofdboeker</p>
                                                 </div>
 
                                                 <div class="mt-2">
@@ -1623,7 +1623,7 @@
                                                             <label title="" for="gl_is_runner" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-label">
-                                                            <span class="checkbox-label ml-2">Is de groepsleider een hardloper?</span>
+                                                            <span class="checkbox-label ml-2">De hoofdboeker is een hardloper</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1674,9 +1674,9 @@
                                         </div>
                                     </div>
 
-                                    <div id="runners_div">
+                                    <!-- <div id="runners_div">
 
-                                    </div>
+                                    </div> -->
 
                                     <div class="row">
                                         <div class="col-8">
@@ -1743,6 +1743,10 @@
                                             <input type="email" placeholder="E-mailadres bevestigen" name="gl_email_confirm" id="gl_email_confirm" class="form-control confirm-email" required>
                                             <div class="email-error text-danger"></div>
                                         </div>
+                                    </div>
+
+                                    <div id="runners_div">
+
                                     </div>
 
                                 </form>
@@ -2377,7 +2381,7 @@
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Naam</p>
-                                                        Groepsleider: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                        Hoofdboeker: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Contactgegevens</p>
