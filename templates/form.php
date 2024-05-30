@@ -364,7 +364,9 @@
             $('#summary_children_count').html(children_count);
             $('#summary_children_under_3_count').html(children_under_3_count);
 
-            var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
+            // var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
+            // TODO: confirm by Arie why the -1 is there
+            var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count);
  
             if (parseInt(travelers) > 1) {
                 addTravellerToForm(travelers);
@@ -438,7 +440,7 @@
                         <div class="col-12">
                             <div class="visitor">
                                 <div class="align-self-center">
-                                    <p class="caption theme-color-secondary mb-0 form-label-blue">TRAVELLER #${i}</p>
+                                    <p class="caption theme-color-secondary mb-0 form-label-blue">REIZIGER #${i}</p>
                                 </div>
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
@@ -447,7 +449,7 @@
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
-                                            <span class="checkbox-label ml-2">Is TRAVELLER #${i} een hardloper?</span>
+                                            <span class="checkbox-label ml-2">Is REIZIGER #${i} een hardloper?</span>
                                         </label>
                                     </div>
                                 </div>
@@ -475,7 +477,7 @@
                     <div class="row form-fields-rows">
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
+                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
                                 <input type="text" placeholder="Voornaam" name="v_first_name[]" id="v_first_name_${i}" class="form-control" required>
                             </div>
                         </div>
@@ -488,7 +490,7 @@
                         </div>
                         <div class="col-md-12 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
+                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
                                 <input type="text" placeholder="Achternaam" name="v_last_name[]" id="v_last_name_${i}" class="form-control" required>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -732,7 +734,7 @@
                             hotels_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards">
                                 <label class="hotel-labels">
                                     <input type="radio" class="card-input-element" name="hotel_id" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
-                                    <div class="card card-default card-input">
+                                    <div class="card card-default card-input tickets">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>
                                             <div class="card-title-icon">
@@ -1653,7 +1655,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Voornaam" name="gl_first_name" id="gl_first_name" class="form-control" required>
 
                                             </div>
@@ -1667,7 +1669,7 @@
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Achternaam" name="gl_last_name" id="gl_last_name" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
@@ -1777,7 +1779,7 @@
                                     <div class="row">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control" required>
                                             </div>
                                         </div>
@@ -1790,7 +1792,7 @@
                                         </div>
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
