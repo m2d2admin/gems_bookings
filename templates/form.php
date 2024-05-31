@@ -306,7 +306,9 @@
                         errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
                     } else if (fieldType === 'textarea' && fieldValue == "") {
                         errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
-                    } else if (fieldType === 'select-one') {
+                    } else if (fieldType === 'tel' && fieldValue == "") {
+                        errorMessage += 'Please fill out ' + fieldTitle + '.<br/>'; 
+                    }   else if (fieldType === 'select-one') {
                         if (!fieldValue) {
                             errorMessage += 'Please select an option for ' + fieldTitle + '.<br/>';
                         }
@@ -534,6 +536,11 @@
                 parseFloat($('#total_flight_arrival_price').val()) +
                 parseFloat($('#total_insurance_price').val());
             $('#total_booking').html('&euro; ' + total_booking.toFixed(2));
+            // display selected event(s) names
+            $('#form_section3 input.bibs_count' ).each(function(){
+                $('#selected_events').html();
+                $('#selected_events').html($('#summary_bibs_div').html());
+            });
         }
 
         // AJAX request to fetch countries list
@@ -1469,8 +1476,6 @@
             });
         }
 
-
-
     });
 </script>
 
@@ -1760,8 +1765,8 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select" required>
+                                                <label class="form-label field-label">Titel <span class="required"></span></label>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select">
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1770,8 +1775,8 @@
                                         <div class="col-4"></div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
-                                                <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum" required>
+                                                <label class="form-label field-label">Geboortedatum <span class="required"></span> </label>
+                                                <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum">
                                             </div>
                                         </div>
                                     </div>
@@ -1779,8 +1784,8 @@
                                     <div class="row">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
-                                                <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control" required>
+                                                <label class="form-label field-label">Voornaam  <span class="required"></span></label>
+                                                <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-6  col-lg-4 col-xl-4">
@@ -1792,8 +1797,8 @@
                                         </div>
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
-                                                <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control" required>
+                                                <label class="form-label field-label">Achternaam  <span class="required"></span></label>
+                                                <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
@@ -1802,14 +1807,14 @@
                                     <div class="row">
                                         <div class="col-8">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Straat <span class="required">*</span></label>
-                                                <input type="text" placeholder="Straat" name="sah_street" id="sah_street" class="form-control" required>
+                                                <label class="form-label field-label">Straat <span class="required"></span></label>
+                                                <input type="text" placeholder="Straat" name="sah_street" id="sah_street" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Huisnummer <span class="required">*</span></label>
-                                                <input type="text" placeholder="Huisnummer" name="sah_house_number" id="sah_house_number" class="form-control" required>
+                                                <label class="form-label field-label">Huisnummer <span class="required"></span></label>
+                                                <input type="text" placeholder="Huisnummer" name="sah_house_number" id="sah_house_number" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1817,23 +1822,23 @@
                                     <div class="row form-fields-rows">
                                         <div class="col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Postcode <span class="required">*</span></label>
-                                                <input type="text" placeholder="Postcode" name="sah_postal_code" id="sah_postal_code" class="form-control" required>
+                                                <label class="form-label field-label">Postcode <span class="required"></span></label>
+                                                <input type="text" placeholder="Postcode" name="sah_postal_code" id="sah_postal_code" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-md-8 col-lg-8 col-xl-8">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Woonplaats <span class="required">*</span></label>
-                                                <input type="text" placeholder="Woonplaats" name="sah_residence" id="sah_residence" class="form-control" required>
+                                                <label class="form-label field-label">Woonplaats <span class="required"></span></label>
+                                                <input type="text" placeholder="Woonplaats" name="sah_residence" id="sah_residence" class="form-control">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row form-fields-rows">
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Land <span class="required">*</span></label>
-                                                <select placeholder="Land" data-placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country" required>
+                                                <label class="form-label field-label">Land <span class="required"></span></label>
+                                                <select placeholder="Land" data-placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country">
                                                     <option value="">Land</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
@@ -1854,13 +1859,13 @@
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres <span class="required">*</span></label>
-                                            <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email" required>
+                                            <label class="field-label">E-mailadres <span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email">
                                             <div class="email-error text-danger"></div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres bevestigen <span class="required">*</span></label>
-                                            <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email" required>
+                                            <label class="field-label">E-mailadres bevestigen <span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email">
                                             <div class="email-error text-danger"></div>
                                         </div>
                                     </div>
@@ -2663,14 +2668,25 @@
                     <div class="price"><span>Prijsindicatie</span>
                         <div class="price-value"><span id="total_booking">&euro; 0.00</span></div>
                     </div>
-                    <button type="submit" class="theme-btn btn btn-primary btn-form-step" data-source="" data-target="">
+                    <div id="event_names">
+                        <div class="row form-fields-rows">
+                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                <p>Startbewijzen</p>
+                            </div>
+                            <div class="col-md-6 col-lg-8 col-xl-8">
+                                <p>Aantal</p>
+                            </div>
+                        </div>
+                        <div id="selected_events"></div>
+                    </div>
+                    <!-- <button type="submit" class="theme-btn btn btn-primary btn-form-step" data-source="" data-target="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                             <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                 <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                 <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                             </g>
                         </svg>Rond de boeking af & betaal
-                    </button>
+                    </button> -->
                 </div>            
             </div>
         </div>
