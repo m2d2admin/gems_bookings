@@ -63,7 +63,7 @@
                 emailErrorDiv = $(this).closest('.email-field').find('.email-error');
 
 			if (!validateEmail(email)) {
-				emailErrorDiv.html('Invalid email format');
+				emailErrorDiv.html('Ongeldig e-mail formaat');
 			} else {
 				emailErrorDiv.html('');
 			}
@@ -76,9 +76,9 @@
                 email = $(this).closest('.row').find('.email').val();
 
 			if (!validateEmail(confirm_email)) {
-				emailErrorDiv.html('Invalid email format');
+				emailErrorDiv.html('Ongeldig e-mail formaat');
 			} else if (email !== confirm_email) {
-                emailErrorDiv.html('Emails do not match');
+                emailErrorDiv.html('E-mails komen niet overeen');
 			} else {
 				emailErrorDiv.html('');
 			}
@@ -182,7 +182,6 @@
                 var extra_name = $(this).data('extras_name'),
                     extra_count = $(this).val(),
                     extra_price = parseInt(extra_count) * parseFloat($(this).data('price'));
-
                 if (extra_count > 0) {
                     $('#summary_nonextra_div').append(`<div class="row form-fields-rows">
                         <div class="col-md-6 col-lg-4 col-xl-4">
@@ -198,6 +197,15 @@
                 }
                 
             });
+
+            if( $( '#summary_extra_div' ).html() === "" ) {
+                $('.hotel-extras').hide();
+                $('#summary_extra_div').html('<p>Geen extra\'s geselecteerd</p>');
+            }
+            if( $( '#summary_nonextra_div' ).html() === "" ) {
+                // $('.non-hotel-extras').hide();
+                $('#summary_nonextra_div').html('<p>Geen Extra\'s buiten het hotel geselecteerd</p>');
+            }
 
         }
 
@@ -451,7 +459,7 @@
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
-                                            <span class="checkbox-label ml-2">Is REIZIGER #${i} een hardloper?</span>
+                                            <span class="checkbox-label ml-2">REIZIGER #${i} is een hardloper</span>
                                         </label>
                                     </div>
                                 </div>
@@ -537,10 +545,10 @@
                 parseFloat($('#total_insurance_price').val());
             $('#total_booking').html('&euro; ' + total_booking.toFixed(2));
             // display selected event(s) names
-            $('#form_section3 input.bibs_count' ).each(function(){
-                $('#selected_events').html();
-                $('#selected_events').html($('#summary_bibs_div').html());
-            });
+            // $('#form_section3 input.bibs_count' ).each(function(){
+            //     $('#selected_events').html();
+            //     $('#selected_events').html($('#summary_bibs_div').html());
+            // });
         }
 
         // AJAX request to fetch countries list
@@ -652,7 +660,7 @@
                             // Generate the HTML content for each item
                             bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
                                 <label class="hotel-labels">
-                                    <div class="card card-default card-input">
+                                    <div class="card card-default card-input tickets" style="cursor:default;">
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.challenge_name}</div>
                                             <div class="card-title-icon">
@@ -736,14 +744,14 @@
                         // Iterate over the data array in the response
                         var hotels_html = '';
                         $.each(response.data, function(index, item) {
-
+                            var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
                             // Generate the HTML content for each item
                             hotels_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards">
                                 <label class="hotel-labels">
                                     <input type="radio" class="card-input-element" name="hotel_id" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
-                                    <div class="card card-default card-input tickets">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>
+                                    <div class="card card-default card-input">
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>
                                             <div class="card-title-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="60" height="43.548" viewBox="0 0 60 43.548">
                                                     <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
@@ -811,7 +819,7 @@
                     if (response.type === 'success') {
                         // Iterate over the data array in the response
                         $.each(response.data, function(index, item) {
-
+                            var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
                             // Generate the HTML content for each item
                             hotel_rooms_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms  booking-card">
 
@@ -819,8 +827,8 @@
                                     <input type="radio" name="hotel_room_id" value="${item.hotel_room_id}" selected checked class="_card-input-element" />
 
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>
                                             <div class="card-title-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="60" height="43.548" viewBox="0 0 60 43.548">
                                                     <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
@@ -892,6 +900,7 @@
                     $.each(response.data, function(index, item) {
 
                         var extras_description = item.extras_description ?? '-';
+                        var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
 
                         if(item.related_product_category == 1){ //1 = hotel extras
                             
@@ -899,8 +908,8 @@
                                 <label class="hotel-rooms-labels">
                                     <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>											
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>											
                                         </div>
                                         <div class="card-body">
                                             <div class="card-body-descr">${extras_description}</div>
@@ -935,8 +944,8 @@
                                 <label class="hotel-rooms-labels">
                                     <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>											
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>											
                                         </div>
                                         <div class="card-body">
                                             <div class="card-body-descr">${extras_description}</div>
@@ -970,6 +979,11 @@
                     });
                     
                     $('#hotel_extras_details_div').html(hotel_extras_html);
+                    if($('#hotel_extras_details_div').html() === ''){
+                        $("#hotel_extra_title").hide();
+                    }else{
+                        $("#hotel_extra_title").show();
+                    }
                     $('#non_hotel_extras_details_div').html(non_hotel_extras_html);
 
                 } else {
@@ -1556,7 +1570,7 @@
                                             </div>
                                             <div class="col-md-4 col-xl-4 col-12">
                                                 <div class="form-group grey-blue-bg-box">
-                                                    <label class="form-label form-label-blue">Kinderen</label>
+                                                    <label class="form-label form-label-blue">Baby's</label>
                                                     <div class="input-group plus-minus-input">
                                                         <div class="input-group-button">
                                                             <span class="button hollow circle" data-quantity="minus" data-field="quantity">
@@ -1852,8 +1866,8 @@
                                             <input type="tel" placeholder="Vast telefoonnummer" name="sah_fixed_phone" id="sah_fixed_phone" class="form-control" required>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">Mobiel telefoonnummer <span class="required">*</span></label>
-                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control" required>
+                                            <label class="field-label">Mobiel telefoonnummer <span class="required"></span></label>
+                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control">
                                         </div>
                                     </div>
 
@@ -2065,7 +2079,7 @@
 
                                     <div class="row extras-details-row">
         
-                                        <label class="card-title">Hotel extras</label>		
+                                        <label class="card-title" id="hotel_extra_title">Hotel extras</label>		
                                         <div class="radio-btn-grp-row" id="hotel_extras_details_div"></div>
 
                                         <label class="card-title">Non-Hotel extras</label>		
@@ -2310,11 +2324,6 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
                                 <span class="steps body-18 regular-400 numb">09</span>
-                                /* The above code is a comment in PHP. Comments are used to add
-                                explanations or notes to the code for better understanding. In this
-                                case, the comment is a multi-line comment enclosed between /* and */
-                                symbols. It is not executable code and is ignored by the PHP
-                                interpreter. */
                                 Samenvatting & betaling
                             </button>
                             </h2>
@@ -2489,7 +2498,7 @@
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
+                                                <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Opties</p>
                                                     </div>
@@ -2510,7 +2519,7 @@
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
+                                                <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Opties</p>
                                                     </div>
@@ -2620,22 +2629,23 @@
                                             </div>
                                             <div class="box-padding-mob col-12 col-md-12">
                                                 <div class="d-flex summary-create">
-                                                    <div class="custom-checkbox">
+                                                    <!--<div class="custom-checkbox">
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" name="create_account" id="create_account" class="custom-control-input form-input-checkbox">
                                                             <label title="" for="create_account" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-check-label">
-                                                            <span class="checkbox-label ml-1">Een account aanmaken</span><i class="fa-solid fa-circle-info"></i></label>
-                                                    </div>
+                                                            <span class="checkbox-label ml-1">Een account aanmaken</span><i class="fa-solid fa-circle-info"></i>
+                                                        </label>
+                                                    </div>-->
                                                 </div>
                                             </div>
                                             <div class="box-padding-mob col-12 col-xl-10 col-sm-10">
-                                                <div class="form-group">
+                                                <!--<div class="form-group">
                                                     <label class="form-label">E-mailadres</label>
                                                     <input type="email" placeholder="E-mail" name="email" value="" class="form-control">
                                                     <div class="invalid-feedback"></div>
-                                                </div>
+                                                </div>-->
                                             </div>
                                         </div>
 
@@ -2668,7 +2678,7 @@
                     <div class="price"><span>Prijsindicatie</span>
                         <div class="price-value"><span id="total_booking">&euro; 0.00</span></div>
                     </div>
-                    <div id="event_names">
+                    <!-- <div id="event_names">
                         <div class="row form-fields-rows">
                             <div class="col-md-6 col-lg-4 col-xl-4">
                                 <p>Startbewijzen</p>
@@ -2678,7 +2688,7 @@
                             </div>
                         </div>
                         <div id="selected_events"></div>
-                    </div>
+                    </div> -->
                     <!-- <button type="submit" class="theme-btn btn btn-primary btn-form-step" data-source="" data-target="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                             <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
