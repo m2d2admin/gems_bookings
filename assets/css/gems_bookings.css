@@ -56,6 +56,10 @@
     border-radius: 0;
 }
 
+#booking_form .tickets {
+    cursor: default;
+}
+
 #booking_form .card-header {
     background: #ECF2FA;
 }
@@ -336,6 +340,7 @@ label {
 
 .card-header.hotels-details-header {
     min-height: 80px;
+    height: 75px;
 }
 	
 .card-title {
@@ -623,3 +628,4 @@ div#flights_container {
 .verzekering-table-footer {
     background-color: #ECF2FA;
   }
+  

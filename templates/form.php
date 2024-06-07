@@ -21,6 +21,7 @@
         //console.log('-----------------');
  
         var this_ins_price = 0,
+            nights = 1,
             travellers = 0;
 
         if(ins_price_type == 1) {
@@ -115,7 +116,8 @@
                 title_visitor = $('#gl_title').select2('data'),
                 title_stayathome = $('#sah_title').select2('data'),
                 country_visitor = $('#gl_country').select2('data'),
-                country_stayathome = $('#sah_country').select2('data');
+                country_stayathome = $('#sah_country').select2('data'),
+                runners_count = $('#form_section2 input.traveller_is_runner:checked').length;
 
             $('#booking_visitor_title_div').html( title_visitor[0].text );  
             $('#booking_visitor_name_div').html( $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val() );
@@ -126,6 +128,8 @@
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
             $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
+
+            $( '#form_section3 input.bibs_count' ).data('max-qty', runners_count).prop('max', runners_count);
 
             updateProgressBar();
         }
@@ -440,7 +444,7 @@
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="traveller_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox">
+                                            <input type="checkbox" name="traveller_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox traveller_is_runner">
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
@@ -500,10 +504,14 @@
             $('.form-select').select2();
         }
 
-
         $(document).on("click",".vervoer-radio-btn-group",function(){
             var transport_id = $(this).find('input').val();
             $('#transport_id').val(transport_id);
+            if (transport_id == 0) {
+                $('#flights_container').show();
+            } else {
+                $('#flights_container').hide();
+            }
         });
 
         // Recalculate the total price when the number of travellers changes
@@ -541,6 +549,9 @@
         $.ajax({
             url: '<?php echo $data->api_endpoint; ?>/countries-list/',
             type: 'GET',
+			data: {
+                locale: 'nl'
+            },
             success: function(response) {
 
                 // Check if response is valid
@@ -576,8 +587,10 @@
                 // Check if the response type is success
                 if (response.type === 'success') {
                     // Access the event_settings object from the response data
-                    var eventSettings = response.data.event_settings;
+                    var eventSettings = response.data.event_settings,
+						eventDetails  = response.data.event_details;
 
+					var booking_event  = eventDetails.name;
                     var booking_start_date = eventSettings.start_date;
                     var booking_end_date = eventSettings.end_date;
                     var booking_sgr_fee = eventSettings.sgr_fee;
@@ -589,6 +602,7 @@
                     var start_date = $('#booking_start_date').val();
                     var end_date = $('#booking_end_date').val();
 
+                    $("#booking_event").html(booking_event);
                     $("#booking_start_date").val(booking_start_date);
                     $("#booking_end_date").val(booking_end_date);
 
@@ -636,60 +650,63 @@
                 'merchant-key': '<?php echo $data->merchant_key; ?>'
             },
             success: function(response) {
+
+
+
                 // Check if the response type is success
                 if (response.type === 'success') {
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
                         // Generate the HTML content for each item
 
- 
-                            // Generate the HTML content for each item
-                            bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
-                                <label class="hotel-labels">
-                                    <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.challenge_name}</div>
-                                            <div class="card-title-icon">
+                        bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
+                            <label class="hotel-labels">
+                                <div class="card card-default card-input">
+                                    <div class="card-header hotels-details-header">
+                                        <div class="card-title">${item.challenge_name}</div>
+                                        <div class="card-title-icon">
 
-                                                <svg id="distance" xmlns="http://www.w3.org/2000/svg" width="15.534" height="15.533" viewBox="0 0 15.534 15.533">
-                                                    <g id="Group_234" data-name="Group 234" transform="translate(10.679)">
-                                                        <g id="Group_233" data-name="Group 233">
-                                                            <path id="Path_166" data-name="Path 166" d="M356.369,0h-3.883A.486.486,0,0,0,352,.485V5.34a.485.485,0,1,0,.971,0V3.883h3.4a.486.486,0,0,0,.485-.485V.485A.486.486,0,0,0,356.369,0Z" transform="translate(-352)" fill="#0093cb" />
-                                                        </g>
+                                            <svg id="distance" xmlns="http://www.w3.org/2000/svg" width="15.534" height="15.533" viewBox="0 0 15.534 15.533">
+                                                <g id="Group_234" data-name="Group 234" transform="translate(10.679)">
+                                                    <g id="Group_233" data-name="Group 233">
+                                                        <path id="Path_166" data-name="Path 166" d="M356.369,0h-3.883A.486.486,0,0,0,352,.485V5.34a.485.485,0,1,0,.971,0V3.883h3.4a.486.486,0,0,0,.485-.485V.485A.486.486,0,0,0,356.369,0Z" transform="translate(-352)" fill="#0093cb" />
                                                     </g>
-                                                    <g id="Group_236" data-name="Group 236" transform="translate(1.942 6.796)">
-                                                        <g id="Group_235" data-name="Group 235">
-                                                            <path id="Path_167" data-name="Path 167" d="M75.65,227.883H70.8a.971.971,0,0,1,0-1.942h1.06a1.456,1.456,0,1,0,0-.971H70.8a1.942,1.942,0,1,0,0,3.883H75.65a.971.971,0,1,1,0,1.942H66.823a1.456,1.456,0,1,0,0,.971H75.65a1.942,1.942,0,0,0,0-3.883Z" transform="translate(-64 -224)" fill="#0093cb" />
-                                                        </g>
+                                                </g>
+                                                <g id="Group_236" data-name="Group 236" transform="translate(1.942 6.796)">
+                                                    <g id="Group_235" data-name="Group 235">
+                                                        <path id="Path_167" data-name="Path 167" d="M75.65,227.883H70.8a.971.971,0,0,1,0-1.942h1.06a1.456,1.456,0,1,0,0-.971H70.8a1.942,1.942,0,1,0,0,3.883H75.65a.971.971,0,1,1,0,1.942H66.823a1.456,1.456,0,1,0,0,.971H75.65a1.942,1.942,0,0,0,0-3.883Z" transform="translate(-64 -224)" fill="#0093cb" />
                                                     </g>
-                                                    <g id="Group_238" data-name="Group 238" transform="translate(0 2.913)">
-                                                        <g id="Group_237" data-name="Group 237">
-                                                            <path id="Path_168" data-name="Path 168" d="M3.4,96A3.4,3.4,0,0,0,0,99.4c0,1.744,2.726,4.832,3.037,5.178a.485.485,0,0,0,.722,0C4.07,104.23,6.8,101.142,6.8,99.4A3.4,3.4,0,0,0,3.4,96Zm0,4.854A1.456,1.456,0,1,1,4.854,99.4,1.457,1.457,0,0,1,3.4,100.854Z" transform="translate(0 -96)" fill="#0093cb" />
-                                                        </g>
+                                                </g>
+                                                <g id="Group_238" data-name="Group 238" transform="translate(0 2.913)">
+                                                    <g id="Group_237" data-name="Group 237">
+                                                        <path id="Path_168" data-name="Path 168" d="M3.4,96A3.4,3.4,0,0,0,0,99.4c0,1.744,2.726,4.832,3.037,5.178a.485.485,0,0,0,.722,0C4.07,104.23,6.8,101.142,6.8,99.4A3.4,3.4,0,0,0,3.4,96Zm0,4.854A1.456,1.456,0,1,1,4.854,99.4,1.457,1.457,0,0,1,3.4,100.854Z" transform="translate(0 -96)" fill="#0093cb" />
                                                     </g>
-                                                </svg>
-                                                <div class="col race-distance-txt">${item.running_distance}km</div>
-                                            </div>
+                                                </g>
+                                            </svg>
+                                            <div class="col race-distance-txt">${item.running_distance}km</div>
                                         </div>
                                     </div>
-                                </label>
-
-                                <div class="input-group plus-minus-input">
-                                    <div class="input-group-button">
-                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </span>
-                                    </div>
-                                    <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
-                                    <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
-                                    <div class="input-group-button">												
-                                        <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </span>											
-                                    </div>
                                 </div>
+                            </label>
+                            <div class="card-title">
+                                &euro; ${item.single_ticket_price}
+                            </div>
+                            <div class="input-group plus-minus-input">
+                                <div class="input-group-button">
+                                    <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
+                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
+                                <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
+                                <div class="input-group-button">												
+                                    <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </span>											
+                                </div>
+                            </div>
 
-                            </div>`;                        
+                        </div>`;
 
                     });
                     $('#bibs_div').html(bibs_html);
@@ -739,9 +756,25 @@
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>
                                             <div class="card-title-icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="43.548" viewBox="0 0 60 43.548">
-                                                    <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
+
+                                                <svg height="40" width="40" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
+                                                    <g>
+                                                        <g>
+                                                            <g>
+                                                                <path d="M138.667,341.333h-64C68.779,341.333,64,346.112,64,352v64c0,5.888,4.779,10.667,10.667,10.667h64 c5.888,0,10.667-4.779,10.667-10.667v-64C149.333,346.112,144.555,341.333,138.667,341.333z M128,405.333H85.333v-42.667H128 V405.333z" fill="#0093cb"/>
+                                                                <path d="M373.333,320h64c5.888,0,10.667-4.779,10.667-10.667v-64c0-5.888-4.779-10.667-10.667-10.667h-64 c-5.888,0-10.667,4.779-10.667,10.667v64C362.667,315.221,367.445,320,373.333,320z M384,256h42.667v42.667H384V256z" fill="#0093cb"/>
+                                                                <path d="M373.333,213.333h64c5.888,0,10.667-4.779,10.667-10.667v-64c0-5.888-4.779-10.667-10.667-10.667h-64 c-5.888,0-10.667,4.779-10.667,10.667v64C362.667,208.555,367.445,213.333,373.333,213.333z M384,149.333h42.667V192H384V149.333 z" fill="#0093cb" />
+                                                                <path d="M373.333,426.667h64c5.888,0,10.667-4.779,10.667-10.667v-64c0-5.888-4.779-10.667-10.667-10.667h-64 c-5.888,0-10.667,4.779-10.667,10.667v64C362.667,421.888,367.445,426.667,373.333,426.667z M384,362.667h42.667v42.667H384 V362.667z" fill="#0093cb"/>
+                                                                <path d="M501.333,106.667c5.888,0,10.667-4.779,10.667-10.667V53.333c0-5.888-4.779-10.667-10.667-10.667H448v-32 C448,4.779,443.221,0,437.333,0H74.667C68.779,0,64,4.779,64,10.667v32H10.667C4.779,42.667,0,47.445,0,53.333V96 c0,5.888,4.779,10.667,10.667,10.667h10.667V448H10.667C4.779,448,0,452.779,0,458.667v42.667C0,507.221,4.779,512,10.667,512 h490.667c5.888,0,10.667-4.779,10.667-10.667v-42.667c0-5.888-4.779-10.667-10.667-10.667h-10.667V106.667H501.333z M85.333,21.333h341.333v21.333H85.333V21.333z M490.667,490.667H21.333v-21.333h469.333V490.667z M288,341.333h-64 c-5.888,0-10.667,4.779-10.667,10.667v96H42.667V106.667h426.667V448H298.667v-96C298.667,346.112,293.888,341.333,288,341.333z M277.333,362.667V448h-42.667v-85.333H277.333z M21.333,85.333V64h469.333v21.333H21.333z" fill="#0093cb"/>
+                                                                <path d="M298.667,245.333c0-5.888-4.779-10.667-10.667-10.667h-64c-5.888,0-10.667,4.779-10.667,10.667v64 c0,5.888,4.779,10.667,10.667,10.667h64c5.888,0,10.667-4.779,10.667-10.667V245.333z M277.333,298.667h-42.667V256h42.667 V298.667z" fill="#0093cb"/>
+                                                                <path d="M224,213.333h64c5.888,0,10.667-4.779,10.667-10.667v-64c0-5.888-4.779-10.667-10.667-10.667h-64 c-5.888,0-10.667,4.779-10.667,10.667v64C213.333,208.555,218.112,213.333,224,213.333z M234.667,149.333h42.667V192h-42.667 V149.333z" fill="#0093cb" />
+                                                                <path d="M138.667,128h-64C68.779,128,64,132.779,64,138.667v64c0,5.888,4.779,10.667,10.667,10.667h64 c5.888,0,10.667-4.779,10.667-10.667v-64C149.333,132.779,144.555,128,138.667,128z M128,192H85.333v-42.667H128V192z" fill="#0093cb"/>
+                                                                <path d="M138.667,234.667h-64c-5.888,0-10.667,4.779-10.667,10.667v64C64,315.221,68.779,320,74.667,320h64 c5.888,0,10.667-4.779,10.667-10.667v-64C149.333,239.445,144.555,234.667,138.667,234.667z M128,298.667H85.333V256H128V298.667 z" fill="#0093cb" />
+                                                            </g>
+                                                        </g>
+                                                    </g>
                                                 </svg>
+
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -816,7 +849,7 @@
                                         <div class="card-header hotels-details-header">
                                             <div class="card-title">${item.name}</div>
                                             <div class="card-title-icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="43.548" viewBox="0 0 60 43.548">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="40" width="40" viewBox="0 0 60 43.548">
                                                     <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
                                                 </svg>
 
@@ -1076,7 +1109,7 @@
                                     <div class="card-header">
                                         <div class="card-title">${j.plan_name}</div>
                                         <div class="card-title-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="40" width="40" viewBox="0 0 24 24" fill="none">
                                                 <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="#0093cb"></path>
                                             </svg>
                                         </div>
@@ -1474,6 +1507,13 @@
 
 <div class="booking_section">
     <div class="container">
+
+        <div class="row">
+            <div class="col-12">
+                <h2 id="booking_event">[Event]</h2>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-12 sticky-progress">
                 <div class="mt-4">
@@ -1619,7 +1659,7 @@
                                                 <div class="mt-2">
                                                     <div class="custom-control custom-checkbox">
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" name="gl_is_runner" id="gl_is_runner" class="form-input-checkbox">
+                                                            <input type="checkbox" name="gl_is_runner" id="gl_is_runner" class="form-input-checkbox traveller_is_runner">
                                                             <label title="" for="gl_is_runner" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-label">
@@ -2106,9 +2146,7 @@
                                     <input type="hidden" id="total_flight_arrival_price" value="0.00">                                        
                                     
                                     <div class="row">
-    
-                                        <div id="flights_container"></div>
-    
+
                                         <div class="col vervoer-radio-btn-group">
                                             <label class="vervoer-radio-btn-label">
                                                 <input type="radio" name="flightplan_id_OLD" value="-1" class="card-input-element" />
@@ -2118,7 +2156,7 @@
                                                         <div class="card-title">Eigen vervoer</div>
                                                         <div class="card-title-icon">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="50" height="33.333" viewBox="0 0 50 33.333">
-                                                                <path id="car" d="M65.732,109.956c-.312-.521-3.4-1.853-3.4-1.853.536-.277.9-.334.9-1.48,0-1.25-.006-1.667-.84-1.667H59.572c-.011-.025-.024-.051-.035-.077-1.825-3.985-2.07-4.993-4.792-6.349-3.651-1.816-10.5-1.907-13.179-1.907s-9.528.092-13.176,1.907c-2.725,1.354-2.657,2.051-4.792,6.349a.4.4,0,0,1-.042.077h-2.83c-.827,0-.833.417-.833,1.667,0,1.146.367,1.2.9,1.48a29.7,29.7,0,0,0-3.4,1.853c-.417.417-.833,3.333-.833,8.333s.417,10,.417,10h1.244c0,1.458.215,1.667.84,1.667H27.4c.625,0,.833-.208.833-1.667H54.9c0,1.458.208,1.667.833,1.667h8.542c.417,0,.625-.312.625-1.667h1.25s.417-5.1.417-10-.521-7.812-.833-8.333Zm-37.785,4.681a53.836,53.836,0,0,1-5.712.319c-2.127,0-2.2.136-2.35-1.192a7.517,7.517,0,0,1,.053-1.824l.066-.318h.313a14.366,14.366,0,0,1,4.641.706A10.208,10.208,0,0,1,28.09,113.9a1.5,1.5,0,0,1,.558.642Zm25.746,7.5-.46,1.152H29.9s.041-.064-.521-1.165c-.417-.815.1-1.335.928-1.631a34.66,34.66,0,0,1,11.259-2.2,29.5,29.5,0,0,1,11.3,2.2c.573.3,1.284.5.825,1.65ZM26.922,107.916a10.03,10.03,0,0,1-1.01.007c.272-.483.423-1.022.689-1.584.833-1.771,1.786-3.775,3.483-4.62,2.452-1.221,7.534-1.771,11.482-1.771s9.03.546,11.482,1.771c1.7.845,2.646,2.85,3.483,4.62.268.568.417,1.11.7,1.6-.208.011-.448,0-1.02-.02Zm36.221,5.845c-.223,1.3-.015,1.2-2.246,1.2a53.839,53.839,0,0,1-5.713-.319.447.447,0,0,1-.144-.74,9.776,9.776,0,0,1,3.134-1.569,13.5,13.5,0,0,1,4.7-.7.335.335,0,0,1,.322.313,7.3,7.3,0,0,1-.051,1.82Z" transform="translate(-16.565 -96.623)" fill="#00adef" />
+                                                                <path id="car" d="M65.732,109.956c-.312-.521-3.4-1.853-3.4-1.853.536-.277.9-.334.9-1.48,0-1.25-.006-1.667-.84-1.667H59.572c-.011-.025-.024-.051-.035-.077-1.825-3.985-2.07-4.993-4.792-6.349-3.651-1.816-10.5-1.907-13.179-1.907s-9.528.092-13.176,1.907c-2.725,1.354-2.657,2.051-4.792,6.349a.4.4,0,0,1-.042.077h-2.83c-.827,0-.833.417-.833,1.667,0,1.146.367,1.2.9,1.48a29.7,29.7,0,0,0-3.4,1.853c-.417.417-.833,3.333-.833,8.333s.417,10,.417,10h1.244c0,1.458.215,1.667.84,1.667H27.4c.625,0,.833-.208.833-1.667H54.9c0,1.458.208,1.667.833,1.667h8.542c.417,0,.625-.312.625-1.667h1.25s.417-5.1.417-10-.521-7.812-.833-8.333Zm-37.785,4.681a53.836,53.836,0,0,1-5.712.319c-2.127,0-2.2.136-2.35-1.192a7.517,7.517,0,0,1,.053-1.824l.066-.318h.313a14.366,14.366,0,0,1,4.641.706A10.208,10.208,0,0,1,28.09,113.9a1.5,1.5,0,0,1,.558.642Zm25.746,7.5-.46,1.152H29.9s.041-.064-.521-1.165c-.417-.815.1-1.335.928-1.631a34.66,34.66,0,0,1,11.259-2.2,29.5,29.5,0,0,1,11.3,2.2c.573.3,1.284.5.825,1.65ZM26.922,107.916a10.03,10.03,0,0,1-1.01.007c.272-.483.423-1.022.689-1.584.833-1.771,1.786-3.775,3.483-4.62,2.452-1.221,7.534-1.771,11.482-1.771s9.03.546,11.482,1.771c1.7.845,2.646,2.85,3.483,4.62.268.568.417,1.11.7,1.6-.208.011-.448,0-1.02-.02Zm36.221,5.845c-.223,1.3-.015,1.2-2.246,1.2a53.839,53.839,0,0,1-5.713-.319.447.447,0,0,1-.144-.74,9.776,9.776,0,0,1,3.134-1.569,13.5,13.5,0,0,1,4.7-.7.335.335,0,0,1,.322.313,7.3,7.3,0,0,1-.051,1.82Z" transform="translate(-16.565 -96.623)" fill="#0093cb" />
                                                             </svg>
                                                         </div>
                                                     </div>
@@ -2132,7 +2170,43 @@
     
                                             </label>
     
+                                        </div>                                        
+
+                                        <div class="col vervoer-radio-btn-group">
+                                            <label class="vervoer-radio-btn-label">
+                                                <input type="radio" name="flightplan_id_OLD" value="0" class="card-input-element" />
+    
+                                                <div class="card card-default card-input">
+                                                    <div class="card-header">
+                                                        <div class="card-title">Per vlucht</div>
+                                                        <div class="card-title-icon">
+                                                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 959.192 959.192" xml:space="preserve">
+                                                                <path d="M923.777,2.34l-101.5,46.2c-6.5,3-12.5,7.1-17.6,12.2l-165.4,165.5l-569.6-68.3c-10.3-1.2-20.7,2.3-28,9.7l-31.7,31.7
+                                                                    c-16.8,16.8-11.6,45.2,10.1,54.9l408.2,183l-117.2,117.2h-204.7c-9,0-17.6,3.6-24,9.899l-17.1,17.2c-17,17-11.4,45.7,10.6,55.101
+                                                                    l172.7,74l74,172.699c9.4,22,38.2,27.601,55.101,10.601l17.199-17.2c6.4-6.4,9.9-15,9.9-24v-204.7l117.2-117.2l183,408.301
+                                                                    c9.7,21.699,38.1,26.899,54.899,10.1l31.7-31.7c7.4-7.4,10.9-17.7,9.7-28l-68.4-569.6l165.5-165.5c5.101-5.1,9.2-11,12.2-17.6
+                                                                    l46.2-101.5C966.478,14.44,944.877-7.26,923.777,2.34z" fill="#0093cb"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="card-body-descr">
+                                                            <p class="extras-sub-label">Selecteer deze optie als je een vliegtuigvlucht wilt nemen</p>
+                                                        </div>
+    
+                                                        <div id="flights_container" style="display:none;"></div>
+
+                                                    </div>
+                                                </div>
+    
+                                            </label>
+    
                                         </div>
+
+
+                                        <!--  -->
+    
+
     
                                     </div>
     
@@ -2180,8 +2254,8 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <p class="form-label-blue">Zorgeloos reizen!</p>
-                                            <p class="body-14 regular-400  text-black"></p>
-                                            <p class="body-14 regular-400  text-black" style="display:block"></p>
+                                            <p class="body-14 regular-400 text-black"></p>
+                                            <p class="body-14 regular-400 text-black" style="display:block"></p>
                                         </div>
                                         <div class="col-12 table-responsive overflow-y-clip">
                                             <table class="table insurance-table mb-0">
@@ -2603,6 +2677,7 @@
                                                     <textarea rows="3" placeholder="Vul hier uw bericht in..." name="special_message" id="special_message" type="text" class="form-control"></textarea>
                                                 </div>
                                             </div>
+                                        <!--    
                                             <div class="box-padding-mob col-12 col-md-12">
                                                 <div class="d-flex summary-create">
                                                     <div class="custom-checkbox">
@@ -2622,6 +2697,7 @@
                                                     <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
+                                        -->
                                         </div>
 
                                         <div class="row">

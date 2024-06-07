@@ -17,7 +17,6 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
-	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
@@ -37,23 +36,6 @@ if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
 }
 
-function email_template_settings(){
-    global $wpdb;
-    global $table_prefix;
-
-	$email_settings = get_option('mail_setting_'.get_current_user_id());
-	$results = array();
-
-	if (!$email_settings) {
-		$email_settings[] = array(
-			'emailSubject' 			=> '',
-			'emailHeader' 			=> '',
-			'emailFooter' 			=> '',
-		);
-	}
-	
-	return $email_settings;
-}
 
 /***********************************************************************
  Load textdomain
@@ -121,6 +103,9 @@ function gems_bookings_register_settings() {
 	register_setting('gems-settings-group', 'gems_merchant_key');
 	register_setting('gems-settings-group', 'gems_img_endpoint');
 	register_setting('gems-settings-group', 'gems_api_endpoint');
+	register_setting('gems-mailtemplate-group', 'gems_email_subject');
+	register_setting('gems-mailtemplate-group', 'gems_email_header');
+	register_setting('gems-mailtemplate-group', 'gems_email_footer');
 }
 
 /***********************************************************************
@@ -173,51 +158,6 @@ function gems_bookings_shortcode($atts) {
 add_shortcode('gems_bookings', 'gems_bookings_shortcode');
 
 
-function mail_booking_details() {
-	global $wpdb;
-	global $table_prefix;
-
-	if(isset($_POST['action']) && $_POST['action'] == 'mail_booking_details') {
-		$email_settings = get_option('mail_setting_'.get_current_user_id());
-		$booking_details = $_POST['bookingData'];
-
-		if (!$email_settings) {
-			$email_settings[] = array(
-				'emailSubject' 			=> '',
-				'emailHeader' 			=> '',
-				'emailFooter' 			=> '',
-			);
-		}
-
-		var_dump($booking_details);
-		var_dump('====================================');
-		// mail booking details
-		$name = 'Yanick';
-		$email = 'kevineasky@gmail.com';
-		$message = email_template($booking_details, $email_settings, $email, $name);
-
-		//php mailer variables
-		$from = get_option('admin_email');
-		$subject = $email_settings['email_subject'];
-		$headers = 'From: '. $from . "\r\n" .
-			'Reply-To: ' . $email . "\r\n";
-
-		// //Here put your Validation and send mail
-		add_filter('wp_mail_content_type', function( $content_type ) {
-            return 'text/html';
-		});
-		$sent = wp_mail($email, $subject, $message, $headers);
-			
-		// if($sent) {
-		// //message sent!       
-		// }
-		// else  {
-		// //message wasn't sent       
-		// }
-	}
-	add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
-		
-}
 /***********************************************************************
  Rendering options page
  */
@@ -243,12 +183,14 @@ function gems_bookings_options() {
 	</div>
 
 	<form method="post" action="options.php">
-		<?php
+	<?php
+
 		if ($active_tab == 'settings') {
+
 			settings_fields('gems-settings-group');
 			do_settings_sections('gems-settings-group');
-
-		?>
+	
+	?>
 			<table class="form-table">
 				<tr valign="top">
 					<th scope="row"><?php esc_html_e('Merchant key', 'gems_bookings'); ?></th>
@@ -256,12 +198,12 @@ function gems_bookings_options() {
 						<input type="text" name="gems_merchant_key" value="<?php echo esc_attr(get_option('gems_merchant_key')); ?>" />
 					</td>
 				</tr>
-				<tr valign="top">
+				<!-- <tr valign="top">
 					<th scope="row"><?php esc_html_e('Image endpoint', 'gems_bookings'); ?></th>
 					<td>
 						<input type="text" name="gems_img_endpoint" value="<?php echo esc_attr(get_option('gems_img_endpoint')); ?>" />
 					</td>
-				</tr>
+				</tr> -->
 				<tr valign="top">
 					<th scope="row"><?php esc_html_e('Base API endpoint', 'gems_bookings'); ?></th>
 					<td>
@@ -271,120 +213,45 @@ function gems_bookings_options() {
 
 			</table>
 
-		<?php
+	<?php
 			submit_button();
 		}
-			?>
-	</form>
-	<?php
+
 		if ($active_tab == 'mailtemplate') {
-			$template_loader = new GEMS_Template_Loader();
-			$template_loader->get_template_part('email-template');
-			?>
-		      <form action="" class='email-temp-settings'>
-				<h3>Configure your email content</h3>
-				<table class="form-table">
-					<tr valign="top">
-						<th scope="row"><?php esc_html_e('Email Subject', 'gems_bookings'); ?></th>
-						<td>
-							<textarea name="email_subject" id="email_subject" rows="3" cols="100"><?php echo esc_attr(email_template_settings()['email_subject']); ?></textarea>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php esc_html_e('Email Header', 'gems_bookings'); ?></th>
-						<td>
-							<textarea name="email_header" id="email_header" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_header']); ?></textarea>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php esc_html_e('Email Footer', 'gems_bookings'); ?></th>
-						<td>
-							<textarea name="email_footer" id="email_footer" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_footer']); ?></textarea>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"></th>
-						<td>
-							<input type="submit" value="Save" id="email-settings">
-						</td>
-					</tr>
-				</table>
-			  </form>
-			<?php
-			$email_settings = array(
-				'email_subject'    => '$subject',
-				'email_header' => '$header',
-				'email_footer' => '$footer'
-			);
+
+			settings_fields('gems-mailtemplate-group');
+			do_settings_sections('gems-mailtemplate-group');
+	
+	?>
+			<table class="form-table">
+				<tr valign="top">
+					<th scope="row"><?php esc_html_e('Email subject', 'gems_bookings'); ?></th>
+					<td>
+						<input type="text" name="gems_email_subject" value="<?php echo esc_attr(get_option('gems_email_subject')); ?>" />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row"><?php esc_html_e('Email header', 'gems_bookings'); ?></th>
+					<td>
+						<textarea name="gems_email_header" rows="6" cols="100"><?php echo esc_attr(get_option('gems_email_header')); ?></textarea>
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row"><?php esc_html_e('Email footer', 'gems_bookings'); ?></th>
+					<td>
+						<input type="text" name="gems_email_footer" value="<?php echo esc_attr(get_option('gems_email_footer')); ?>" />
+					</td>
+				</tr>
+			</table>
+
+	<?php
+			submit_button();
 		}
 	?>
-	<script>
-		var $jQ = jQuery.noConflict();
-		jQuery(document).ready(function($) {
-			function saveEmailSettings(userId, subject, header, footer) {
-				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
-				$jQ.ajax({
-					method: "POST",
-					dataType: "json",
-					url:  url,
-					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer },
-					success: function(data) {
-						// var result = JSON.parse(data);
-						alert("Email settings saved successfully");
-					},
-					error: function(xhr, status, error) {
-						if(xhr.status == 200)
-							alert('Email settings saved successfully');
-						else
-							alert('Error saving email settings');
-					}
-				});
-			}
+	</form>
 
-			var saveBtn = document.getElementById('email-settings')
-			saveBtn.addEventListener('click', function(e) {
-				e.preventDefault();
-				var userId = parseInt("<?php echo get_current_user_id(); ?>")
-				var subject = document.querySelector('#email_subject').value;
-				var header = document.querySelector('#email_header').value;
-				var footer = document.querySelector('#email_footer').value;
-				if(subject && header && footer)
-					saveEmailSettings(userId, subject, header, footer);
-				else
-					alert('Please fill all fields');
-			});
-		});
-	</script>
 <?php
 }
-
-// save email template settings
-function save_email_settings() {
-	global $wpdb;
-    global $table_prefix;
-
-	if(isset($_POST['action'])  && $_POST['action'] == 'save_email_settings'){
-		$subject = $_POST['email_subject'];
-		$header = $_POST['email_header'];
-		$footer = $_POST['email_footer'];
-		$user_id = $_POST['user_id'];
-
-		$mail_settings = array(
-			'email_subject'    => $subject,
-			'email_header' => $header,
-			'email_footer' => $footer
-		);
-
-		if(!get_option('mail_setting_'.$user_id)){
-			add_option('mail_setting_'.$user_id, $mail_settings);
-		}
-		else{
-			update_option('mail_setting_'.$user_id, $mail_settings);
-		}
-		$email_settings = get_option('mail_setting_'.get_current_user_id());
-		// $message = email_template('$booking_details', $email_settings, 'yanick.assignon@m2-d2.com', 'Yanick');
-
-
 		// $from = get_option('admin_email');
 		// $subject = $email_settings['email_subject'];
 		// $headers = 'From: '. $from . "\r\n" .
@@ -395,12 +262,6 @@ function save_email_settings() {
 		// });
 		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $message, $headers);
 
-		return true;
-
-	}
-	return true;
-}
-add_action( 'wp_ajax_save_email_settings', 'save_email_settings' );
 
 
 /***********************************************************************
