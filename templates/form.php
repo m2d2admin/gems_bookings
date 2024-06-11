@@ -1,4 +1,6 @@
 <?php
+    define("GEMS_PLUGIN_DIR", plugin_dir_path(__FILE__));
+
     $eventkey = get_query_var( 'event', 'abc123XYZ456' );
     //$eventkey = '64cbb86c14fb2';
 ?>
@@ -62,7 +64,7 @@
                 emailErrorDiv = $(this).closest('.email-field').find('.email-error');
 
 			if (!validateEmail(email)) {
-				emailErrorDiv.html('Invalid email format');
+				emailErrorDiv.html('Ongeldig e-mail formaat');
 			} else {
 				emailErrorDiv.html('');
 			}
@@ -75,9 +77,9 @@
                 email = $(this).closest('.row').find('.email').val();
 
 			if (!validateEmail(confirm_email)) {
-				emailErrorDiv.html('Invalid email format');
+				emailErrorDiv.html('Ongeldig e-mail formaat');
 			} else if (email !== confirm_email) {
-                emailErrorDiv.html('Emails do not match');
+                emailErrorDiv.html('E-mails komen niet overeen');
 			} else {
 				emailErrorDiv.html('');
 			}
@@ -89,6 +91,7 @@
             var total_fields = required_fields.length,
                 completed_fields = 0,
                 progress = 0;
+                alert(required_fields.length)
 
             required_fields.each(function() { 
                 if ($(this).val() !== '' && $(this).val() !== '0') {
@@ -99,6 +102,7 @@
             progress = (completed_fields / total_fields) * 100; 
             progress = Math.round(progress);
             $('#progress-bar').css('width', progress + '%').html(progress + '%');
+            // $('#progress-bar').css('width', 11 + '%').html(11 + '%');
         }
 
         // Update summaries stepss
@@ -106,7 +110,11 @@
             $('#summary_adults_count').html( $('#adults_count').val() );
             $('#summary_children_count').html( $('#children_count').val());
             $('#summary_children_under_3_count').html( $('#children_under_3_count').val() );
-            $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );	
+            $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );
+            // if($('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) ) > 0){	
+            //     updateProgressBar();
+            // }
+
         }
 
         function updateSummaryStep2() {
@@ -118,11 +126,13 @@
                 country_visitor = $('#gl_country').select2('data'),
                 country_stayathome = $('#sah_country').select2('data'),
                 runners_count = $('#form_section2 input.traveller_is_runner:checked').length;
+                country_visitor_nationality = $('#gl_nationality').select2('data'),
+                country_stayathome = $('#sah_country').select2('data');
 
             $('#booking_visitor_title_div').html( title_visitor[0].text );  
             $('#booking_visitor_name_div').html( $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val() );
             $('#booking_visitor_address_div').html( $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val() );
-            $('#booking_visitor_birthdate_div').html( birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text );
+            $('#booking_visitor_birthdate_div').html( birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text);
 
             $('#booking_stayathome_title_div').html( title_stayathome[0].text );  
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
@@ -183,7 +193,6 @@
                 var extra_name = $(this).data('extras_name'),
                     extra_count = $(this).val(),
                     extra_price = parseInt(extra_count) * parseFloat($(this).data('price'));
-
                 if (extra_count > 0) {
                     $('#summary_nonextra_div').append(`<div class="row form-fields-rows">
                         <div class="col-md-6 col-lg-4 col-xl-4">
@@ -199,6 +208,15 @@
                 }
                 
             });
+
+            if( $( '#summary_extra_div' ).html() === "" ) {
+                $('.hotel-extras').hide();
+                $('#summary_extra_div').html('<p>Geen extra\'s geselecteerd</p>');
+            }
+            if( $( '#summary_nonextra_div' ).html() === "" ) {
+                // $('.non-hotel-extras').hide();
+                $('#summary_nonextra_div').html('<p>Geen Extra\'s buiten het hotel geselecteerd</p>');
+            }
 
         }
 
@@ -283,6 +301,7 @@
             var stepType     = $(this).attr('type'), 
                 sourceStep   = $(this).data('source'),
                 targetStep   = $(this).data('target'),
+                percent = parseInt($(this).data('percent')),
                 errorMessage = '';
             if (stepType === 'submit') {
                 postBookingDetails();
@@ -307,7 +326,9 @@
                         errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
                     } else if (fieldType === 'textarea' && fieldValue == "") {
                         errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
-                    } else if (fieldType === 'select-one') {
+                    } else if (fieldType === 'tel' && fieldValue == "") {
+                        errorMessage += 'Please fill out ' + fieldTitle + '.<br/>'; 
+                    }   else if (fieldType === 'select-one') {
                         if (!fieldValue) {
                             errorMessage += 'Please select an option for ' + fieldTitle + '.<br/>';
                         }
@@ -319,6 +340,7 @@
                     }
 
                 });
+                $('#progress-bar').css('width', percent + '%').html(percent + '%');
 
                 $( sourceStep + ' .error-message').html(errorMessage);
 
@@ -342,14 +364,51 @@
             //  fieldName = $(this).data('field'),
                 type = $(this).data('quantity'),
                 currentValue = parseInt($input.val(), 10);
-    
+            
             if (!isNaN(currentValue)) {
                 if (type === 'minus') {
                     if (currentValue > 0) {
                         $input.val(currentValue - 1);
                     }
                 } else if (type === 'plus') {
-                    $input.val(currentValue + 1);
+                    if($(this).data('bibs-max')) {
+                        var bibsCount = [];
+                        $('input[type="number"].bibs_count').each(function() {
+                            bibsCount.push(parseInt($(this).val()) || 0);
+                        });
+                        let bibsCountSum = bibsCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (bibsCountSum < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('hotels-max')){
+                        // var hotelCount = [];
+                        // $('input[type="number"].rooms_count').each(function() {
+                        //     hotelCount.push(parseInt($(this).val()) || 0);
+                        // });
+                        // let hotelCountSum = hotelCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('hotel-extras-max')){
+                        // var extraCount = [];
+                        // $('input[type="number"].extra_count').each(function() {
+                        //     extraCount.push(parseInt($(this).val()) || 0);
+                        // });
+                        // let extraCountSum = extraCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('non-hotel-extras-max')) {
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    } else{
+                        $input.val(currentValue + 1);
+                    }
                 }
             } else {
                 $input.val(0);
@@ -365,7 +424,9 @@
             $('#summary_children_count').html(children_count);
             $('#summary_children_under_3_count').html(children_under_3_count);
 
-            var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
+            // var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count) - 1;
+            // TODO: confirm by Arie why the -1 is there
+            var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count);
  
             if (parseInt(travelers) > 1) {
                 addTravellerToForm(travelers);
@@ -439,7 +500,7 @@
                         <div class="col-12">
                             <div class="visitor">
                                 <div class="align-self-center">
-                                    <p class="caption theme-color-secondary mb-0 form-label-blue">TRAVELLER #${i}</p>
+                                    <p class="caption theme-color-secondary mb-0 form-label-blue">REIZIGER #${i}</p>
                                 </div>
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
@@ -448,7 +509,7 @@
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
-                                            <span class="checkbox-label ml-2">Is TRAVELLER #${i} een hardloper?</span>
+                                            <span class="checkbox-label ml-2">REIZIGER #${i} is een hardloper</span>
                                         </label>
                                     </div>
                                 </div>
@@ -476,7 +537,7 @@
                     <div class="row form-fields-rows">
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
+                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
                                 <input type="text" placeholder="Voornaam" name="v_first_name[]" id="v_first_name_${i}" class="form-control" required>
                             </div>
                         </div>
@@ -489,7 +550,7 @@
                         </div>
                         <div class="col-md-12 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
+                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
                                 <input type="text" placeholder="Achternaam" name="v_last_name[]" id="v_last_name_${i}" class="form-control" required>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -543,6 +604,11 @@
                 parseFloat($('#total_flight_arrival_price').val()) +
                 parseFloat($('#total_insurance_price').val());
             $('#total_booking').html('&euro; ' + total_booking.toFixed(2));
+            // display selected event(s) names
+            // $('#form_section3 input.bibs_count' ).each(function(){
+            //     $('#selected_events').html();
+            //     $('#selected_events').html($('#summary_bibs_div').html());
+            // });
         }
 
         // AJAX request to fetch countries list
@@ -563,6 +629,7 @@
                         // Append options to each select box
 
                         $('select[name="gl_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
+                        $('select[name="gl_nationality"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="gl_lives_in_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="sah_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                     });
@@ -655,16 +722,20 @@
 
                 // Check if the response type is success
                 if (response.type === 'success') {
+                    // get travellers count
+                    var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
                         // Generate the HTML content for each item
 
-                        bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
-                            <label class="hotel-labels">
-                                <div class="card card-default card-input">
-                                    <div class="card-header hotels-details-header">
-                                        <div class="card-title">${item.challenge_name}</div>
-                                        <div class="card-title-icon">
+ 
+                            // Generate the HTML content for each item
+                            bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
+                                <label class="hotel-labels">
+                                    <div class="card card-default card-input tickets" style="cursor:default;">
+                                        <div class="card-header hotels-details-header">
+                                            <div class="card-title">${item.challenge_name}</div>
+                                            <div class="card-title-icon">
 
                                             <svg id="distance" xmlns="http://www.w3.org/2000/svg" width="15.534" height="15.533" viewBox="0 0 15.534 15.533">
                                                 <g id="Group_234" data-name="Group 234" transform="translate(10.679)">
@@ -685,6 +756,25 @@
                                             </svg>
                                             <div class="col race-distance-txt">${item.running_distance}km</div>
                                         </div>
+                                    </div>
+                                </label>
+
+                                <div class="card-title">
+                                    &euro; ${item.single_ticket_price}
+                                </div>
+
+                                <div class="input-group plus-minus-input">
+                                    <div class="input-group-button">
+                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
+                                            <i class="fa fa-minus" aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+                                    <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
+                                    <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
+                                    <div class="input-group-button">												
+                                        <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                        </span>											
                                     </div>
                                 </div>
                             </label>
@@ -747,14 +837,14 @@
                         // Iterate over the data array in the response
                         var hotels_html = '';
                         $.each(response.data, function(index, item) {
-
+                            var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
                             // Generate the HTML content for each item
                             hotels_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards">
                                 <label class="hotel-labels">
                                     <input type="radio" class="card-input-element" name="hotel_id_OLD" value="${item.id}" data-hotel_name="${item.name}" data-rating="${item.rating}" data-photo="${item.photo_1}" data-max_persons_per_room="${item.max_persons_per_room}" data-price_from="${item.price_from}" />
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>
                                             <div class="card-title-icon">
 
                                                 <svg height="40" width="40" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
@@ -836,9 +926,10 @@
                     var message = response.message;
                     // Check if the response type is success
                     if (response.type === 'success') {
+                        var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                         // Iterate over the data array in the response
                         $.each(response.data, function(index, item) {
-
+                            var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
                             // Generate the HTML content for each item
                             hotel_rooms_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms  booking-card">
 
@@ -846,8 +937,8 @@
                                     <input type="radio" name="hotel_room_id" value="${item.hotel_room_id}" selected checked class="_card-input-element" />
 
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>
                                             <div class="card-title-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" height="40" width="40" viewBox="0 0 60 43.548">
                                                     <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
@@ -863,14 +954,14 @@
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_rooms[]" value="${item.id}">
                                                     <input placeholder="Hotelroom" class="input-group-field rooms_count number" type="number" name="rooms[${item.hotel_room_id}]" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
@@ -915,10 +1006,12 @@
                 // Check if the response type is success
                 if (response.type === 'success') {
                     var hotel_extras_html ="", non_hotel_extras_html = '';
+                    var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
 
                         var extras_description = item.extras_description ?? '-';
+                        var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
 
                         if(item.related_product_category == 1){ //1 = hotel extras
                             
@@ -926,8 +1019,8 @@
                                 <label class="hotel-rooms-labels">
                                     <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>											
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>											
                                         </div>
                                         <div class="card-body">
                                             <div class="card-body-descr">${extras_description}</div>
@@ -938,14 +1031,14 @@
                                             <div class="card-body-hotel-room-qty-sel hotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_extras[]" value="${item.id}">
                                                     <input placeholder="Extra hotel" class="input-group-field extra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -962,8 +1055,8 @@
                                 <label class="hotel-rooms-labels">
                                     <input type="radio" name="product" selected checked class="card-input-element" />
                                     <div class="card card-default card-input">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.name}</div>											
+                                        <div class="card-header hotels-details-header" style="height: 75px;">
+                                            <div class="card-title">${hotelName}</div>											
                                         </div>
                                         <div class="card-body">
                                             <div class="card-body-descr">${extras_description}</div>
@@ -974,14 +1067,14 @@
                                             <div class="card-body-hotel-room-qty-sel nonhotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-non-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="nonhotel_extras[]" value="${item.id}">
                                                     <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-non-hotel-extras-max="${travelers}"="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -997,6 +1090,11 @@
                     });
                     
                     $('#hotel_extras_details_div').html(hotel_extras_html);
+                    if($('#hotel_extras_details_div').html() === ''){
+                        $("#hotel_extra_title").hide();
+                    }else{
+                        $("#hotel_extra_title").show();
+                    }
                     $('#non_hotel_extras_details_div').html(non_hotel_extras_html);
 
                 } else {
@@ -1318,6 +1416,7 @@
         - gl_last_name
         - gl_dob
         - gl_country
+        - gl_nationality
         - gl_lives_in_country
         - gl_street
         - gl_house_number
@@ -1403,6 +1502,7 @@
             var title_visitor = $('#gl_title').select2('data');
             var title_stayathome = $('#sah_title').select2('data');
             var country_visitor = $('#gl_country').select2('data');
+            var country_visitor_nationality = $('#gl_nationality').select2('data');
             var country_stayathome = $('#sah_country').select2('data');
             var bibs = [];
             var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
@@ -1431,19 +1531,19 @@
                 extra_of_hotels.push({
                     extra_name: $(this).data('extras_name'),
                     extra_count: $(this).val(),
-                    extra_price: parseInt($(this).val()) * parseFloat($(this).data('price'))
+                    extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
                 })
             })
             var non_extra_of_hotels = [];
-            $( '#form_section6 input.nonextra_count' ).each(function() {
-                non_extra_of_hotels.push({
-                    non_extra_name: $(this).data('extras_name'),
-                    non_extra_count: $(this).val(),
-                    non_extra_price: parseInt($(this).val()) * parseFloat($(this).data('price'))
-                })
-            })
+            // $( '#form_section6 input.nonextra_count' ).each(function() {
+            //     non_extra_of_hotels.push({
+            //         non_extra_name: $(this).data('extras_name'),
+            //         non_extra_count: $(this).val(),
+            //         non_extra_price: parseInt(extra_count) * parseFloat($(this).data('price'))
+            //     })
+            // })
 
-            var booking_date_info = booking_start_date + ' - ' + booking_end_date;
+            // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
             var bookingData = {
                 adults_count: $('#adults_count').val(),
@@ -1454,6 +1554,9 @@
                 visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
                 gl_title: $('#gl_title').select2('data')[0].text,
                 birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
+                gl_email: $('#gl_email').val(),
+                gl_first_name: $('#gl_first_name').val(),
+                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
                 country_stayathome: title_stayathome[0].text,
                 booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
                 booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
@@ -1470,9 +1573,10 @@
                 sgr_fee: $('#booking_sgr_fee_div').text(),
                 insurance_fee: $('#booking_insurance_fee_div').text(),
                 calamity_fund: $('#booking_calamity_fund_div').text(),
+                total_booking: $('#total_booking').text(),
 
             }
-            console.log('bookingData', bookingData);
+            mailBookingData(bookingData);
 
             // Ajax call to post data
             $.ajax({
@@ -1486,7 +1590,7 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                    mailBookingData(bookingData);
+                   // mailBookingData(bookingData);
                     alert('Booking details posted successfully!');
                 },
                 error: function(xhr, status, error) {
@@ -1499,8 +1603,6 @@
                 }
             });
         }
-
-
 
     });
 </script>
@@ -1534,7 +1636,7 @@
                                 <h2 class="mb-0">
                                 <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#form_section1" aria-expanded="true" aria-controls="form_section1">
                                     <span class="steps body-18 regular-400">01</span>
-                                    Aantal bezoekers
+                                    AANTAL REIZIGERS
                                 </button>
                                 </h2>
                             </div>
@@ -1589,7 +1691,7 @@
                                             </div>
                                             <div class="col-md-4 col-xl-4 col-12">
                                                 <div class="form-group grey-blue-bg-box">
-                                                    <label class="form-label form-label-blue">Kinderen</label>
+                                                    <label class="form-label form-label-blue">Baby's</label>
                                                     <div class="input-group plus-minus-input">
                                                         <div class="input-group-button">
                                                             <span class="button hollow circle" data-quantity="minus" data-field="quantity">
@@ -1612,7 +1714,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="collapse" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1635,7 +1737,7 @@
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
                                 <span class="steps body-18 regular-400 numb">02</span>
-                                Reizigers aanmaken
+                                Gegevens van de reizigers
                             </button>
                             </h2>
                         </div>
@@ -1653,7 +1755,7 @@
                                         <div class="col-12">
                                             <div class="visitor">
                                                 <div class="align-self-center">
-                                                    <p class="caption theme-color-secondary mb-0 form-label-blue">Groepsleider</p>
+                                                    <p class="caption theme-color-secondary mb-0 form-label-blue">Hoofdboeker</p>
                                                 </div>
 
                                                 <div class="mt-2">
@@ -1663,7 +1765,7 @@
                                                             <label title="" for="gl_is_runner" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-label">
-                                                            <span class="checkbox-label ml-2">Is de groepsleider een hardloper?</span>
+                                                            <span class="checkbox-label ml-2">De hoofdboeker is een hardloper</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -1693,7 +1795,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Voornaam" name="gl_first_name" id="gl_first_name" class="form-control" required>
 
                                             </div>
@@ -1707,16 +1809,16 @@
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
+                                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Achternaam" name="gl_last_name" id="gl_last_name" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div id="runners_div">
+                                    <!-- <div id="runners_div">
 
-                                    </div>
+                                    </div> -->
 
                                     <div class="row">
                                         <div class="col-8">
@@ -1758,6 +1860,12 @@
                                                 </select>
                                                 <div class="invalid-feedback"></div>
                                             </div>
+                                            <div class="form-group">
+                                                <label class="form-label field-label">Nationationaliteit <span class="required">*</span></label>
+                                                <select placeholder="Nationality" dataplaceholder="Nationality" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
+                                                    <option value="">Land</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1785,6 +1893,10 @@
                                         </div>
                                     </div>
 
+                                    <div id="runners_div">
+
+                                    </div>
+
                                 </form>
 
                                 <form name="sah_form" id="sah_form" method="POST">
@@ -1794,8 +1906,8 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Titel <span class="required">*</span></label>
-                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select" required>
+                                                <label class="form-label field-label">Titel <span class="required"></span></label>
+                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select">
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -1804,8 +1916,8 @@
                                         <div class="col-4"></div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
-                                                <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum" required>
+                                                <label class="form-label field-label">Geboortedatum <span class="required"></span> </label>
+                                                <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum">
                                             </div>
                                         </div>
                                     </div>
@@ -1813,8 +1925,8 @@
                                     <div class="row">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam (volgens paspoort) <span class="required">*</span></label>
-                                                <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control" required>
+                                                <label class="form-label field-label">Voornaam  <span class="required"></span></label>
+                                                <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-6  col-lg-4 col-xl-4">
@@ -1826,8 +1938,8 @@
                                         </div>
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam (volgens paspoort) <span class="required">*</span></label>
-                                                <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control" required>
+                                                <label class="form-label field-label">Achternaam  <span class="required"></span></label>
+                                                <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
@@ -1836,14 +1948,14 @@
                                     <div class="row">
                                         <div class="col-8">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Straat <span class="required">*</span></label>
-                                                <input type="text" placeholder="Straat" name="sah_street" id="sah_street" class="form-control" required>
+                                                <label class="form-label field-label">Straat <span class="required"></span></label>
+                                                <input type="text" placeholder="Straat" name="sah_street" id="sah_street" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Huisnummer <span class="required">*</span></label>
-                                                <input type="text" placeholder="Huisnummer" name="sah_house_number" id="sah_house_number" class="form-control" required>
+                                                <label class="form-label field-label">Huisnummer <span class="required"></span></label>
+                                                <input type="text" placeholder="Huisnummer" name="sah_house_number" id="sah_house_number" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -1851,23 +1963,23 @@
                                     <div class="row form-fields-rows">
                                         <div class="col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Postcode <span class="required">*</span></label>
-                                                <input type="text" placeholder="Postcode" name="sah_postal_code" id="sah_postal_code" class="form-control" required>
+                                                <label class="form-label field-label">Postcode <span class="required"></span></label>
+                                                <input type="text" placeholder="Postcode" name="sah_postal_code" id="sah_postal_code" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-md-8 col-lg-8 col-xl-8">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Woonplaats <span class="required">*</span></label>
-                                                <input type="text" placeholder="Woonplaats" name="sah_residence" id="sah_residence" class="form-control" required>
+                                                <label class="form-label field-label">Woonplaats <span class="required"></span></label>
+                                                <input type="text" placeholder="Woonplaats" name="sah_residence" id="sah_residence" class="form-control">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row form-fields-rows">
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Land <span class="required">*</span></label>
-                                                <select placeholder="Land" data-placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country" required>
+                                                <label class="form-label field-label">Land <span class="required"></span></label>
+                                                <select placeholder="Land" data-placeholder="Land" class="form-control form-select" name="sah_country" id="sah_country">
                                                     <option value="">Land</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
@@ -1881,20 +1993,20 @@
                                             <input type="tel" placeholder="Vast telefoonnummer" name="sah_fixed_phone" id="sah_fixed_phone" class="form-control" required>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">Mobiel telefoonnummer <span class="required">*</span></label>
-                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control" required>
+                                            <label class="field-label">Mobiel telefoonnummer <span class="required"></span></label>
+                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control">
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres <span class="required">*</span></label>
-                                            <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email" required>
+                                            <label class="field-label">E-mailadres <span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email">
                                             <div class="email-error text-danger"></div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres bevestigen <span class="required">*</span></label>
-                                            <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email" required>
+                                            <label class="field-label">E-mailadres bevestigen <span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email">
                                             <div class="email-error text-danger"></div>
                                         </div>
                                     </div>
@@ -1904,7 +2016,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="collapse" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1950,7 +2062,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="collapse" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2001,7 +2113,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="collapse" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2054,7 +2166,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="55" data-toggle="collapse" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2095,7 +2207,7 @@
 
                                     <div class="row extras-details-row">
         
-                                        <label class="card-title">Hotel extras</label>		
+                                        <label class="card-title" id="hotel_extra_title">Hotel extras</label>		
                                         <div class="radio-btn-grp-row" id="hotel_extras_details_div"></div>
 
                                         <label class="card-title">Non-Hotel extras</label>		
@@ -2107,7 +2219,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="66"  data-toggle="collapse" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2215,7 +2327,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="collapse" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2351,7 +2463,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="100" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2447,7 +2559,7 @@
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Naam</p>
-                                                        Groepsleider: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                        Hoofdboeker: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Contactgegevens</p>
@@ -2548,7 +2660,7 @@
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
+                                                <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Opties</p>
                                                     </div>
@@ -2569,7 +2681,7 @@
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
+                                                <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p>Opties</p>
                                                     </div>
@@ -2680,22 +2792,23 @@
                                         <!--    
                                             <div class="box-padding-mob col-12 col-md-12">
                                                 <div class="d-flex summary-create">
-                                                    <div class="custom-checkbox">
+                                                    <!--<div class="custom-checkbox">
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" name="create_account" id="create_account" class="custom-control-input form-input-checkbox">
                                                             <label title="" for="create_account" class="custom-control-label"></label>
                                                         </div>
                                                         <label class="form-check-label">
-                                                            <span class="checkbox-label ml-1">Een account aanmaken</span><i class="fa-solid fa-circle-info"></i></label>
-                                                    </div>
+                                                            <span class="checkbox-label ml-1">Een account aanmaken</span><i class="fa-solid fa-circle-info"></i>
+                                                        </label>
+                                                    </div>-->
                                                 </div>
                                             </div>
                                             <div class="box-padding-mob col-12 col-xl-10 col-sm-10">
-                                                <div class="form-group">
+                                                <!--<div class="form-group">
                                                     <label class="form-label">E-mailadres</label>
                                                     <input type="email" placeholder="E-mail" name="email" value="" class="form-control">
                                                     <div class="invalid-feedback"></div>
-                                                </div>
+                                                </div>-->
                                             </div>
                                         -->
                                         </div>
@@ -2729,14 +2842,25 @@
                     <div class="price"><span>Prijsindicatie</span>
                         <div class="price-value"><span id="total_booking">&euro; 0.00</span></div>
                     </div>
-                    <button type="submit" class="theme-btn btn btn-primary btn-form-step" data-source="" data-target="">
+                    <!-- <div id="event_names">
+                        <div class="row form-fields-rows">
+                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                <p>Startbewijzen</p>
+                            </div>
+                            <div class="col-md-6 col-lg-8 col-xl-8">
+                                <p>Aantal</p>
+                            </div>
+                        </div>
+                        <div id="selected_events"></div>
+                    </div> -->
+                    <!-- <button type="submit" class="theme-btn btn btn-primary btn-form-step" data-source="" data-target="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                             <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                 <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                 <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                             </g>
-                        </svg>Rond de boeking af en betaal
-                    </button>
+                        </svg>Rond de boeking af & betaal
+                    </button> -->
                 </div>            
             </div>
         </div>

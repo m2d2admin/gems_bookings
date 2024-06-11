@@ -17,6 +17,7 @@ define("GEMS_PLUGIN_VERSION", '1.1.0');
 if (!class_exists('Gamajo_Template_Loader')) {
 	require plugin_dir_path(__FILE__) . 'includes/class-template-loader.php';
 	require plugin_dir_path(__FILE__) . 'includes/class-templates.php';
+	require plugin_dir_path(__FILE__) . 'templates/email_template.php';
 }
 
 /***********************************************************************
@@ -36,6 +37,26 @@ if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
 }
 
+<<<<<<< HEAD
+=======
+function email_template_settings(){
+    global $wpdb;
+    global $table_prefix;
+
+	$email_settings = get_option('mail_setting_'.get_current_user_id());
+	$results = array();
+
+	if (!$email_settings) {
+		$email_settings[] = array(
+			'emailSubject' 			=> '',
+			'emailHeader' 			=> '',
+			'emailFooter' 			=> '',
+		);
+	}
+	
+	return $email_settings;
+}
+>>>>>>> fixes
 
 /***********************************************************************
  Load textdomain
@@ -216,6 +237,7 @@ function gems_bookings_options() {
 	<?php
 			submit_button();
 		}
+<<<<<<< HEAD
 
 		if ($active_tab == 'mailtemplate') {
 
@@ -250,6 +272,137 @@ function gems_bookings_options() {
 	?>
 	</form>
 
+=======
+			?>
+	</form>
+	<?php
+		if ($active_tab == 'mailtemplate') {
+			$template_loader = new GEMS_Template_Loader();
+			$template_loader->get_template_part('email-template');
+			$email_subject = '';
+			?>
+		      <form action="" class='email-temp-settings' id='email-temp-settings_id'>
+				<h3>Configure your email content</h3>
+				<table class="form-table" id='capture-area'>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Subject', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_subject" id="email_subject" rows="3" cols="100"><?php echo esc_attr(email_template_settings()['email_subject']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Header', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_header" id="email_header" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_header']); ?></textarea>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><?php esc_html_e('Email Footer', 'gems_bookings'); ?></th>
+						<td>
+							<textarea name="email_footer" id="email_footer" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_footer']); ?></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input type="submit" value="Save" id="email-settings">
+						</td>
+					</tr>
+				</table>
+			  </form>
+			<?php
+			$email_settings = array(
+				'email_subject'    => '$subject',
+				'email_header' => '$header',
+				'email_footer' => '$footer'
+			);
+		}
+	?>
+	<script>
+		var $jQ = jQuery.noConflict();
+		jQuery(document).ready(function($) {
+			function saveEmailSettings(userId, subject, header, footer) {
+				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
+				var form =  $('#capture-area').html();
+				var bookingData = {
+					adults_count: "1",
+					children_count: "0",
+					children_under_3_count: "0",
+					visitor_title: "dhr.",
+					visitor_name: "undefined undefined undefined",
+					visitor_address: "undefined undefined, undefined",
+					gl_title: "dhr.",
+					birthdate_visitor: "Invalid Date | Netherlands",
+					country_stayathome: "dhr.",
+					booking_stayhome_name: "adam  aa",
+					booking_stayathome_address_div: "maarnixstraat 20, adam",
+					booking_stayathome_birthdate_div: "zaterdag 12 december 1998 | Netherlands",
+					summary_bibs: [
+						{
+						bibs_name: "De 10k run",
+						bibs_count: "1",
+						bibs_price: "12.00"
+						},
+						{
+						bibs_name: "The Big One",
+						bibs_count: "1",
+						bibs_price: "100.00"
+						},
+						{
+						bibs_name: "NEW BIB",
+						bibs_count: "1",
+						bibs_price: "36.00"
+						}
+					],
+					departure_date: "ma 16 okt 2023",
+					arrival_date: "vr 20 okt 2023",
+					hotel_name: "9Hotel Opera",
+					hotel_price: "75.00",
+					extra_of_hotels: [],
+					non_extra_of_hotels: [],
+					flight: "\n                \n                    Voorbeeld: KL01234 --> P1\n                \n                \n                    Voorbeeld: KL01234 --> P1\n                \n                \n                    € ma 16 okt 2023 | 09:00:00\n                \n            ",
+					insurance: "\n                                \n                                    Cancellation insurance\n                                \n                                \n                                    0\n                                \n                            ",
+					sgr_fee: "12.25",
+					insurance_fee: "0.00",
+					calamity_fund: "0.00",
+					total_booking: "235.25",
+				}
+				
+				$jQ.ajax({
+					method: "POST",
+					dataType: "json",
+					url:  url,
+					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer, bookingData: bookingData},
+					success: function(data) {
+						// var result = JSON.parse(data);
+						alert("Email settings saved successfully");
+					},
+					error: function(xhr, status, error) {
+						if(xhr.status == 200)
+							alert('Email settings saved successfully');
+						else
+							alert('Error saving email settings');
+
+						console.log('Error saving email settings: ', error)
+					}
+				});
+			}
+
+			var saveBtn = document.getElementById('email-settings')
+			saveBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var userId = parseInt("<?php echo get_current_user_id(); ?>")
+				var subject = document.querySelector('#email_subject').value;
+				var header = document.querySelector('#email_header').value;
+				var footer = document.querySelector('#email_footer').value;
+				if(subject && header && footer)
+					saveEmailSettings(userId, subject, header, footer);
+				else
+					alert('Please fill all fields');
+			});
+		});
+	</script>
+>>>>>>> fixes
 <?php
 }
 		// $from = get_option('admin_email');
@@ -263,6 +416,81 @@ function gems_bookings_options() {
 		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $message, $headers);
 
 
+
+// save email template settings
+function save_email_settings() {
+	global $wpdb;
+    global $table_prefix;
+
+	if(isset($_POST['action'])  && $_POST['action'] == 'save_email_settings'){
+		$subject = $_POST['email_subject'];
+		$header = $_POST['email_header'];
+		$footer = $_POST['email_footer'];
+		$user_id = $_POST['user_id'];
+
+		$mail_settings = array(
+			'email_subject'    => $subject,
+			'email_header' => $header,
+			'email_footer' => $footer
+		);
+
+		if(!get_option('mail_setting_'.$user_id)){
+			add_option('mail_setting_'.$user_id, $mail_settings);
+		}
+		else{
+			update_option('mail_setting_'.$user_id, $mail_settings);
+		}
+		return true;
+	}
+	return true;
+}
+add_action( 'wp_ajax_save_email_settings', 'save_email_settings' );
+
+
+function mail_booking_details() {
+	global $wpdb;
+	global $table_prefix;
+
+	if(isset($_POST['action']) && $_POST['action'] == 'mail_booking_details') {
+		$email_settings = get_option('mail_setting_'.get_current_user_id());
+		$booking_details = $_POST['bookingData'];
+
+		if (!$email_settings) {
+			$email_settings[] = array(
+				'emailSubject' 			=> '',
+				'emailHeader' 			=> '',
+				'emailFooter' 			=> '',
+			);
+		}
+
+		// mail booking details
+		$name = $booking_details['gl_first_name'];
+		$email = $booking_details['gl_email'];
+		$message = email_template($booking_details, $email_settings, $email, $name);
+		// $message = wp_kses_post($_POST['bookingSummary']);
+
+		//php mailer variables
+		$from = get_option('admin_email');
+		$subject = $email_settings['email_subject'];
+		$headers = 'From: '. $from . "\r\n" .
+			'Reply-To: ' . $from . "\r\n";
+
+		// //Here put your Validation and send mail
+		add_filter('wp_mail_content_type', function( $content_type ) {
+            return 'text/html';
+		});
+		$sent = wp_mail($email, $subject, $message, $headers);
+			
+		// if($sent) {
+		// //message sent!       
+		// }
+		// else  {
+		// //message wasn't sent       
+		// }
+	}	
+}
+add_action( 'wp_ajax_mail_booking_details', 'mail_booking_details' );
+add_action( 'wp_ajax_nopriv_mail_booking_details', 'mail_booking_details' );
 
 /***********************************************************************
  Template loader

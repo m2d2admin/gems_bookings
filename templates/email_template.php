@@ -1,5 +1,59 @@
 <?php
- function email_template($booking_details, $email_settings, $email, $name) {
+function bibs($bibs) {
+    $temp = '';
+    if(count($bibs) > 0){
+        foreach ($bibs as $bib) {
+            $temp .= '<div class="col-md-6 col-lg-8 col-xl-8">
+                        <div class="bibs-div">
+                            <p>'.$bib["bibs_name"].'</p>
+                            <span>'.$bib["bibs_count"].'</span>
+                        </div>
+                    </div>';
+        }
+    }
+    return $temp;
+}
+function extra_hotel($hotel_extras) {
+    $temp = '';
+    if(count($hotel_extras) > 0){
+        foreach ($hotel_extras as $extra) {
+            $temp .= '<div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>'.$extra["extra_name"].'</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>'.$extra["extra_count"].'</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>&euro; '.${$extra['extra_price'].toFixed(2)}.'</p>
+                        </div>
+                    </div>';
+        }
+    }
+    return $temp;
+}
+function non_extra_hotel($non_hotel_extras){
+    $temp = '';
+    if(count($non_hotel_extras) > 0){
+        foreach ($non_hotel_extras as $extra) {
+            $temp .= '<div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>'.$extra["extra_name"].'</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>'.$extra["extra_count"].'</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>&euro; '.${$extra['extra_price'].toFixed(2)}.'</p>
+
+                        </div>
+                    </div>';
+        }
+    }
+    return $temp;
+}
+function email_template($booking_details, $email_settings, $email, $name) {
+    var_dump($booking_details);
 $temp =
  '<html><body>
     <head>
@@ -79,6 +133,7 @@ i.fa-circle-info {margin-left: 20px;}
 }
 .other-costs .row .box-padding-mob{font-weight: bold;font-size: 14px;}
 .total .row .box-padding-mob{font-weight: 700;font-size: 17px;}
+.bibs-div {display: flex;flex-direction: row;justify-content: space-between;align-items: center;}
 </style>
     </head>
     <div class="card">
@@ -92,15 +147,15 @@ i.fa-circle-info {margin-left: 20px;}
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Volwassene(n)</p>
-                                            <span id="summary_adults_count">0</span>    
+                                            <span id="summary_adults_count">'.$booking_details["adults_count"].'</span>    
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Kinderen</p>
-                                            <span id="summary_children_count">0</span>
+                                            <span id="summary_children_count">'.$booking_details["children_count"].'</span>
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Baby\'s</p>
-                                            <span id="summary_children_under_3_count">0</span>
+                                            <span id="summary_children_under_3_count">'.$booking_details["children_under_3_count"].'</span>
                                         </div>                                                    
                                     </div>
                                 </div>
@@ -112,7 +167,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Naam</p>
-                                            Groepsleider: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                            Hoofdboeker: <span id="booking_visitor_title_div">'.$booking_details["visitor_title"].'</span>&nbsp;<span id="booking_visitor_name_div">'.$booking_details["visitor_name"].'</span><br>   
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Contactgegevens</p>
@@ -120,19 +175,19 @@ i.fa-circle-info {margin-left: 20px;}
                                                 <div class="mr-2">
                                                     <i class="fa-solid fa-location-dot"></i>
                                                 </div>
-                                                <div class="address"><span id="booking_visitor_address_div"></span><br></div>
+                                                <div class="address"><span id="booking_visitor_address_div">'.$booking_details["visitor_address"].'</span><br></div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Geboortedatum &amp; Nationaliteit</p>
-                                            <span id="booking_visitor_birthdate_div">
+                                            <span id="booking_visitor_birthdate_div">'.$booking_details["birthdate_visitor"].'</span>
                                         </div>                                                    
                                     </div>
 
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Naam</p>
-                                            Thuisblijver: <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
+                                            Thuisblijver: <span id="booking_stayathome_title_div">'.$booking_details["country_stayathome"].'</span>&nbsp;<span id="booking_stayathome_name_div">'.$booking_details["booking_stayhome_name"].'</span><br>   
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Contactgegevens</p>
@@ -140,12 +195,12 @@ i.fa-circle-info {margin-left: 20px;}
                                                 <div class="mr-2">
                                                     <i class="fa-solid fa-location-dot"></i>
                                                 </div>
-                                                <div class="address"><span id="booking_stayathome_address_div"></span><br></div>
+                                                <div class="address"><span id="booking_stayathome_address_div">'.$booking_details["booking_stayathome_address_div"].'</span><br></div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Geboortedatum &amp; Nationaliteit</p>
-                                            <span id="booking_stayathome_birthdate_div">
+                                            <span id="booking_stayathome_birthdate_div">'.$booking_details["booking_stayathome_birthdate_div"].'</span>
                                         </div>                                                    
                                     </div>
 
@@ -163,8 +218,9 @@ i.fa-circle-info {margin-left: 20px;}
                                             <p>Aantal startbewijzen</p>
                                         </div>
                                     </div>
-
+                
                                     <div id="summary_bibs_div">
+                                        '.bibs($booking_details["summary_bibs"]).'
                                     </div>
 
                                 </div>
@@ -177,11 +233,11 @@ i.fa-circle-info {margin-left: 20px;}
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-8 col-xl-8">
                                             <p>Vertrek</p>
-                                            <span id="summary_departure_date">-</span>
+                                            <span id="summary_departure_date">'.$booking_details["departure_date"].'</span>
                                         </div>
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Aankomst</p>
-                                            <span id="summary_arrival_date">-</span>
+                                            <span id="summary_arrival_date">'.$booking_details["arrival_date"].'</span>
                                         </div>
                                     </div>
 
@@ -195,11 +251,11 @@ i.fa-circle-info {margin-left: 20px;}
                                     <div class="row form-fields-rows">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <p>Hotel naam</p>
-                                            <span id="summary_hotel_name">-</span>
+                                            <span id="summary_hotel_name">'.$booking_details["hotel_name"].'</span>
                                         </div>
                                         <div class="col-md-6 col-lg-8 col-xl-8">
                                             <p>Prijs</p>
-                                            <span id="summary_room_price">-</span>
+                                            <span id="summary_room_price">'.$booking_details["hotel_price"].'</span>
                                         </div>
                                     </div>
 
@@ -226,6 +282,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     </div>
 
                                     <div id="summary_extra_div">
+                                        
                                     </div>
 
                                 </div>
@@ -247,6 +304,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     </div>
 
                                     <div id="summary_nonextra_div">
+                                        
                                     </div>
 
 
@@ -269,6 +327,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     </div>
 
                                     <div id="summary_flight_div">
+                                        '.$booking_details['flight'].'
                                     </div>
 
 
@@ -288,6 +347,7 @@ i.fa-circle-info {margin-left: 20px;}
                                     </div>
 
                                     <div id="summary_insurance_div">
+                                    '.$booking_details['insurance'].'
                                     </div>
 
                                 </div>
@@ -300,7 +360,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             SGR fee
                                         </div>
                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                            + € <span id="booking_sgr_fee_div"></span> per persoon
+                                            + € <span id="booking_sgr_fee_div">'.$booking_details['sgr_fee'].'</span> per persoon
                                         </div>
                                     </div>
                                     <div class="row mb-1">
@@ -308,7 +368,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             Administratiekosten verzekering
                                         </div>
                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                            + <span id="booking_insurance_fee_div"></span> % per verzekering
+                                            + <span id="booking_insurance_fee_div">'.$booking_details['insurance_fee'].'</span> % per verzekering
                                         </div>
                                     </div>
                                     <div class="row">
@@ -316,7 +376,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             Calamiteitenfonds
                                         </div>
                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                            + € <span id="booking_calamity_fund_div"></span>
+                                            + € <span id="booking_calamity_fund_div">'.$booking_details['calamity_fund'].'</span>
                                         </div>
                                     </div>
                                 </div>
@@ -329,7 +389,7 @@ i.fa-circle-info {margin-left: 20px;}
                                             Totaal
                                         </div>
                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-                                            € <span>0.00</span>
+                                            <span>'.$booking_details['total_booking'].'</span>
                                         </div>
                                     </div>
                                 </div>
