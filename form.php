@@ -296,6 +296,22 @@
             updateSummaryStep8();
         });
 
+        function goNextStep(step){
+            // get data-source id current step
+            var dataSource = $(step).data('source');
+            console.log('dataSource', dataSource)
+            // get data-toggle to control the current step
+            var dataSource = $(step).data('toggle');
+            console.log('dataSource', dataSource)
+            // get data-target id of next step
+            var dataTarget = $(step).data('target');
+            console.log('dataTarget', dataTarget)
+
+            // add collapse to data-toggle to show the next step
+            $(`${dataToggle} .btn-link`).data('toggle', 'collapse');
+            $(`*[data-target="${dataTarget}"]`).data('toggle', 'collapse');
+        }
+
         // Check requited fields before moving to next step
         $(document).on('click', '.btn-form-step', function(e) {
             var stepType     = $(this).attr('type'), 
@@ -340,6 +356,7 @@
                     }
 
                 });
+                goNextStep();
                 $('#progress-bar').css('width', percent + '%').html(percent + '%');
 
                 $( sourceStep + ' .error-message').html(errorMessage);
@@ -1741,7 +1758,7 @@
                         <div class="card">
                         <div class="card-header" id="heading2">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
                                 <span class="steps body-18 regular-400 numb">02</span>
                                 Gegevens van de reizigers
                             </button>
@@ -2045,7 +2062,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="collapse" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2066,7 +2083,7 @@
                         <div class="card">
                             <div class="card-header" id="heading3">
                                 <h2 class="mb-0">
-                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section3" aria-expanded="false" aria-controls="form_section3">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section3" aria-expanded="false" aria-controls="form_section3">
                                     <span class="steps body-18 regular-400 numb">03</span>
                                     Startbewijzen
                                 </button>
@@ -2091,7 +2108,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="collapse" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2111,7 +2128,7 @@
                         <div class="card">
                         <div class="card-header" id="heading4">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section4" aria-expanded="false" aria-controls="form_section4">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section4" aria-expanded="false" aria-controls="form_section4">
                                 <span class="steps body-18 regular-400 numb">04</span>
                                 Data
                             </button>
@@ -2142,7 +2159,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="collapse" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2163,7 +2180,7 @@
                         <div class="card">
                         <div class="card-header" id="heading5">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section5" aria-expanded="false" aria-controls="form_section5">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section5" aria-expanded="false" aria-controls="form_section5">
                                 <span class="steps body-18 regular-400 numb">05</span>
                                 Hotel
                             </button>
@@ -2196,7 +2213,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="55" data-toggle="collapse" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="55" data-toggle="" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2217,7 +2234,7 @@
                         <div class="card">
                         <div class="card-header" id="heading6">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section6" aria-expanded="false" aria-controls="form_section6">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section6" aria-expanded="false" aria-controls="form_section6">
                                 <span class="steps body-18 regular-400 numb">06</span>
                                 Extra's
                             </button>
@@ -2249,7 +2266,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="66"  data-toggle="collapse" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="66"  data-toggle="" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2270,7 +2287,7 @@
                         <div class="card">
                             <div class="card-header" id="heading7">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section7" aria-expanded="false" aria-controls="form_section7">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section7" aria-expanded="false" aria-controls="form_section7">
                                         <span class="steps body-18 regular-400 numb">07</span>
                                         Vervoer
                                     </button>
@@ -2357,7 +2374,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="collapse" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2378,7 +2395,7 @@
                     <div class="card">
                         <div class="card-header" id="heading8">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section8" aria-expanded="false" aria-controls="form_section8">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section8" aria-expanded="false" aria-controls="form_section8">
                                 <span class="steps body-18 regular-400 numb">08</span>
                                 Verzekeringen
                             </button>
@@ -2514,7 +2531,7 @@
                         <div class="card summary-card-bx">
                         <div class="card-header" id="heading9">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
                                 <span class="steps body-18 regular-400 numb">09</span>
                                 Samenvatting & betaling
                             </button>
