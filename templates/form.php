@@ -90,6 +90,7 @@
             var total_fields = required_fields.length,
                 completed_fields = 0,
                 progress = 0;
+                alert(required_fields.length)
 
             required_fields.each(function() { 
                 if ($(this).val() !== '' && $(this).val() !== '0') {
@@ -100,6 +101,7 @@
             progress = (completed_fields / total_fields) * 100; 
             progress = Math.round(progress);
             $('#progress-bar').css('width', progress + '%').html(progress + '%');
+            // $('#progress-bar').css('width', 11 + '%').html(11 + '%');
         }
 
         // Update summaries stepss
@@ -107,7 +109,10 @@
             $('#summary_adults_count').html( $('#adults_count').val() );
             $('#summary_children_count').html( $('#children_count').val());
             $('#summary_children_under_3_count').html( $('#children_under_3_count').val() );
-            $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );	
+            $('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) );
+            // if($('#travellers_amount').val( parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) ) > 0){	
+            //     updateProgressBar();
+            // }
 
         }
 
@@ -118,19 +123,18 @@
                 title_visitor = $('#gl_title').select2('data'),
                 title_stayathome = $('#sah_title').select2('data'),
                 country_visitor = $('#gl_country').select2('data'),
+                country_visitor_nationality = $('#gl_nationality').select2('data'),
                 country_stayathome = $('#sah_country').select2('data');
 
             $('#booking_visitor_title_div').html( title_visitor[0].text );  
             $('#booking_visitor_name_div').html( $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val() );
             $('#booking_visitor_address_div').html( $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val() );
-            $('#booking_visitor_birthdate_div').html( birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text );
+            $('#booking_visitor_birthdate_div').html( birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text);
 
             $('#booking_stayathome_title_div').html( title_stayathome[0].text );  
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
             $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
-
-            updateProgressBar();
         }
 
         function updateSummaryStep3() {
@@ -290,6 +294,7 @@
             var stepType     = $(this).attr('type'), 
                 sourceStep   = $(this).data('source'),
                 targetStep   = $(this).data('target'),
+                percent = parseInt($(this).data('percent')),
                 errorMessage = '';
             if (stepType === 'submit') {
                 postBookingDetails();
@@ -328,6 +333,7 @@
                     }
 
                 });
+                $('#progress-bar').css('width', percent + '%').html(percent + '%');
 
                 $( sourceStep + ' .error-message').html(errorMessage);
 
@@ -351,14 +357,51 @@
             //  fieldName = $(this).data('field'),
                 type = $(this).data('quantity'),
                 currentValue = parseInt($input.val(), 10);
-    
+            
             if (!isNaN(currentValue)) {
                 if (type === 'minus') {
                     if (currentValue > 0) {
                         $input.val(currentValue - 1);
                     }
                 } else if (type === 'plus') {
-                    $input.val(currentValue + 1);
+                    if($(this).data('bibs-max')) {
+                        var bibsCount = [];
+                        $('input[type="number"].bibs_count').each(function() {
+                            bibsCount.push(parseInt($(this).val()) || 0);
+                        });
+                        let bibsCountSum = bibsCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (bibsCountSum < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('hotels-max')){
+                        // var hotelCount = [];
+                        // $('input[type="number"].rooms_count').each(function() {
+                        //     hotelCount.push(parseInt($(this).val()) || 0);
+                        // });
+                        // let hotelCountSum = hotelCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('hotel-extras-max')){
+                        // var extraCount = [];
+                        // $('input[type="number"].extra_count').each(function() {
+                        //     extraCount.push(parseInt($(this).val()) || 0);
+                        // });
+                        // let extraCountSum = extraCount.reduce((total, num) => total + num, 0);
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    }else if($(this).data('non-hotel-extras-max')) {
+                        var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                        if (currentValue < parseInt(travelersCount)) {
+                            $input.val(currentValue + 1);
+                        }
+                    } else{
+                        $input.val(currentValue + 1);
+                    }
                 }
             } else {
                 $input.val(0);
@@ -566,6 +609,7 @@
                         // Append options to each select box
 
                         $('select[name="gl_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
+                        $('select[name="gl_nationality"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="gl_lives_in_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="sah_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                     });
@@ -652,6 +696,8 @@
             success: function(response) {
                 // Check if the response type is success
                 if (response.type === 'success') {
+                    // get travellers count
+                    var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
                         // Generate the HTML content for each item
@@ -688,16 +734,20 @@
                                     </div>
                                 </label>
 
+                                <div class="card-title">
+                                    &euro; ${item.single_ticket_price}
+                                </div>
+
                                 <div class="input-group plus-minus-input">
                                     <div class="input-group-button">
-                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
+                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                         </span>
                                     </div>
                                     <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
                                     <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
                                     <div class="input-group-button">												
-                                        <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
+                                        <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                         </span>											
                                     </div>
@@ -817,6 +867,7 @@
                     var message = response.message;
                     // Check if the response type is success
                     if (response.type === 'success') {
+                        var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                         // Iterate over the data array in the response
                         $.each(response.data, function(index, item) {
                             var hotelName = item.name.length > 27 ? item.name.substring(0, 27) + '...' : item.name;
@@ -844,14 +895,14 @@
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_room[]" id="hotel_room_${item.hotel_room_id}" value="${item.id}">
                                                     <input placeholder="Hotelroom" class="input-group-field rooms_count number" type="number" name="hotel_room_count[]" id="hotel_room_count_${item.id}" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
@@ -896,6 +947,7 @@
                 // Check if the response type is success
                 if (response.type === 'success') {
                     var hotel_extras_html ="", non_hotel_extras_html = '';
+                    var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
 
@@ -920,14 +972,14 @@
                                             <div class="card-body-hotel-room-qty-sel hotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_extras[]" id="hotel_extras_${item.id}" value="${item.id}">
                                                     <input placeholder="Extra hotel" class="input-group-field extra_count number" type="number" name="extras_count[]" id="extras_count_${item.id}" value="0" required data-extras_name="${item.name}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -956,14 +1008,14 @@
                                             <div class="card-body-hotel-room-qty-sel nonhotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-non-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="nonhotel_extras[]" id="hotel_extras_${item.id}" value="${item.id}">
                                                     <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras_count[]" id="extras_count_${item.id}" value="0" required data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-non-hotel-extras-max="${travelers}"="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -1305,6 +1357,7 @@
         - gl_last_name
         - gl_dob
         - gl_country
+        - gl_nationality
         - gl_lives_in_country
         - gl_street
         - gl_house_number
@@ -1390,6 +1443,7 @@
             var title_visitor = $('#gl_title').select2('data');
             var title_stayathome = $('#sah_title').select2('data');
             var country_visitor = $('#gl_country').select2('data');
+            var country_visitor_nationality = $('#gl_nationality').select2('data');
             var country_stayathome = $('#sah_country').select2('data');
             var bibs = [];
             var birthdate_stayathome = new Date( $('#sah_dateofbirth').val() );
@@ -1442,7 +1496,7 @@
                 gl_title: $('#gl_title').select2('data')[0].text,
                 gl_email: $('#gl_email').val(),
                 gl_first_name: $('#gl_first_name').val(),
-                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
+                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
                 country_stayathome: title_stayathome[0].text,
                 booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
                 booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
@@ -1593,7 +1647,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="collapse" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1738,6 +1792,12 @@
                                                     <option value="">Land</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label field-label">Nationationaliteit <span class="required">*</span></label>
+                                                <select placeholder="Nationality" dataplaceholder="Nationality" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
+                                                    <option value="">Land</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -1889,7 +1949,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="collapse" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1935,7 +1995,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="collapse" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1986,7 +2046,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="collapse" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2038,7 +2098,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="55" data-toggle="collapse" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2091,7 +2151,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="66"  data-toggle="collapse" data-target="#form_section7" data-source="#form_section6" aria-expanded="true" aria-controls="form_section7">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2165,7 +2225,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="collapse" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -2301,7 +2361,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="100" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
