@@ -476,18 +476,32 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-4">&nbsp;</div>
                         <div class="col-4">
+
                             <div class="form-group">
                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
                                 <input class="form-control" type="date" id="v_dob_${i}" name="v_dob[]" placeholder="Date of birth" required>
                             </div>
+
+                            
+                        
+                        </div>
+                        <div class="col-4">
+
+                            <div class="form-group">
+                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
+                                <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality_${i}" required>
+                                    <option value="">Nationaliteit</option>
+                                </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="row form-fields-rows">
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
+                                <label class="form-label field-label">Voornaam (volgens paspoort)  <span class="required">*</span></label>
                                 <input type="text" placeholder="Voornaam" name="v_first_name[]" id="v_first_name_${i}" class="form-control" required>
                             </div>
                         </div>
@@ -500,7 +514,7 @@
                         </div>
                         <div class="col-md-12 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
+                                <label class="form-label field-label">Achternaam (volgens paspoort)  <span class="required">*</span></label>
                                 <input type="text" placeholder="Achternaam" name="v_last_name[]" id="v_last_name_${i}" class="form-control" required>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -1101,27 +1115,18 @@
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body flight-deets-cards">
                                         <div class="heenvlucht-details">
                                             <h5>Heenvlucht</h5>
-                                        </div>` + flightInfoHtml + `
+                                            ` + flightInfoHtml + `
+                                        </div>
                                         
                                         <div class="heenvlucht-details">
                                             <h5>Retourvlucht</h5>
-                                        </div>` + returnflightInfoHtml + `
+                                            ` + flightInfoHtml + `
+                                        </div>
             
-                                        <div class="flight-baggage">
-                                            <h5>Bagage</h5>
-                                        </div>
-                                        <div class="flight-details-box-row">
-                                            <div class="col-flight-baggage-details">
-                                                <div class="flight-details-bagage-weight">Maximaal ${j.extra_luggage_weight} kg.</div>
-                                                <div class="extra-bagage-check">
-                                                    <input class="extra-bagage-check form-input-checkbox" type="checkbox" id="extra_bagage_${j.fp_id}" name="extra_bagage_${j.fp_id}" data-price="${j.extra_luggage_price}" />
-                                                    <label for="extra-bagage" class="extra-bagage-check-label">Extra bagage</label>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </label>
@@ -1491,6 +1496,7 @@
         }
 
     });
+    
 </script>
 
 <div class="booking_section">
@@ -1505,7 +1511,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-8 booking_leftcol">
                 <!-- [Left column] -->
                     
                     <div class="accordion full-form-container" id="booking_form">
@@ -1662,19 +1668,29 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 col-xl-4 col-12"></div>
                                         <div class="col-md-4 col-xl-4 col-12">
-                                            <div class="form-group">
+                                        <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
                                                 <input class="form-control" type="date" id="gl_dateofbirth" name="dateofbirth" placeholder="Geboortedatum" required>
                                             </div>
+                                        </div>
+                                        <div class="col-md-4 col-xl-4 col-12">
+                                        <div class="form-group">
+                                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
+                                                <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
+                                                    <option value="">Nationaliteit</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+
+                                            
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam  <span class="required">*</span></label>
+                                                <label class="form-label field-label">Voornaam (volgens paspoort)  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Voornaam" name="gl_first_name" id="gl_first_name" class="form-control" required>
 
                                             </div>
@@ -1688,7 +1704,7 @@
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam  <span class="required">*</span></label>
+                                                <label class="form-label field-label">Achternaam (volgens paspoort)  <span class="required">*</span></label>
                                                 <input type="text" placeholder="Achternaam" name="gl_last_name" id="gl_last_name" class="form-control" required>
                                                 <div class="invalid-feedback"></div>
                                             </div>
@@ -1722,15 +1738,12 @@
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
-                                        <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
+                                        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Woonplaats <span class="required">*</span></label>
                                                 <input type="text" placeholder="Woonplaats" name="gl_residence" id="gl_residence" class="form-control" required>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div class="row">
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Land <span class="required">*</span></label>
@@ -1744,24 +1757,32 @@
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">Vast telefoonnummer <span class="required">*</span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">Vast telefoonnummer <span class="required">*</span></label>
                                             <input type="tel" placeholder="Vast telefoonnummer" name="gl_fixed_phone" id="gl_fixed_phone" class="form-control" required>
                                         </div>
+                                        </div>
                                         <div class="col-sm-6 col-sm-6 col-lg-6 col-12">
-                                            <label class="field-label">Mobiel telefoonnummer <span class="required">*</span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">Mobiel telefoonnummer <span class="required">*</span></label>
                                             <input type="tel" placeholder="Mobiel telefoonnummer" name="gl_mobile" id="gl_mobile" class="form-control" required>
+                                        </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12 email-field">
-                                            <label class="field-label">E-mailadres <span class="required">*</span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">E-mailadres <span class="required">*</span></label>
                                             <input type="email" placeholder="E-mailadres" name="gl_email" id="gl_email" class="form-control email" required>
+                                        </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12 email-field">
-                                            <label class="field-label">E-mailadres bevestigen <span class="required">*</span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">E-mailadres bevestigen <span class="required">*</span></label>
                                             <input type="email" placeholder="E-mailadres bevestigen" name="gl_email_confirm" id="gl_email_confirm" class="form-control confirm-email" required>
+                                        </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
                                     </div>
@@ -1786,12 +1807,14 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-4"></div>
                                         <div class="col-4">
-                                            <div class="form-group">
+                                        <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required"></span> </label>
                                                 <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum">
                                             </div>
+                                        </div>
+                                        <div class="col-4">
+                                            
                                         </div>
                                     </div>
 
@@ -1841,14 +1864,12 @@
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-8 col-lg-8 col-xl-8">
+                                        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Woonplaats <span class="required"></span></label>
                                                 <input type="text" placeholder="Woonplaats" name="sah_residence" id="sah_residence" class="form-control">
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row form-fields-rows">
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Land <span class="required"></span></label>
@@ -1862,24 +1883,32 @@
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">Vast telefoonnummer <span class="required">*</span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">Vast telefoonnummer <span class="required">*</span></label>
                                             <input type="tel" placeholder="Vast telefoonnummer" name="sah_fixed_phone" id="sah_fixed_phone" class="form-control" required>
                                         </div>
+                                        </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">Mobiel telefoonnummer <span class="required"></span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">Mobiel telefoonnummer <span class="required"></span></label>
                                             <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control">
+                                        </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres <span class="required"></span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">E-mailadres <span class="required"></span></label>
                                             <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email">
+                                        </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
-                                            <label class="field-label">E-mailadres bevestigen <span class="required"></span></label>
+                                        <div class="form-group">
+                                            <label class="form-label field-label">E-mailadres bevestigen <span class="required"></span></label>
                                             <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email">
+                                        </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
                                     </div>
@@ -2028,7 +2057,8 @@
         
                                     </div>
 
-                                    <div class="selecteer-kamer-title">Selecteer kamers</div>
+                                    <div id="rooms-titles" class="selecteer-kamer-title">Selecteer kamers</div>
+
                                     <div class="row radio-btn-grp-row" id="hotel_rooms_container">
 
                                     </div>                                    
@@ -2319,7 +2349,7 @@
                         </div>
                     
                         <!-- #09 Samenvatting & betaling -->
-                        <div class="card">
+                        <div class="card summary-card-bx">
                         <div class="card-header" id="heading9">
                             <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#form_section9" aria-expanded="false" aria-controls="form_section9">
@@ -2376,15 +2406,15 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Volwassene(n)</p>
+                                                        <p class="summary-table-head-subs">Volwassene(n)</p>
                                                         <span id="summary_adults_count">0</span>    
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Kinderen</p>
+                                                        <p class="summary-table-head-subs">Kinderen</p>
                                                         <span id="summary_children_count">0</span>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Baby's</p>
+                                                        <p class="summary-table-head-subs">Baby's</p>
                                                         <span id="summary_children_under_3_count">0</span>
                                                     </div>                                                    
                                                 </div>
@@ -2396,11 +2426,11 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Naam</p>
-                                                        Hoofdboeker: <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                        <p class="summary-table-head-subs">Naam</p>
+                                                        <span class="summary-sub-headings-txt">Hoofdboeker:</span> <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Contactgegevens</p>
+                                                        <p class="summary-table-head-subs">Contactgegevens</p>
                                                         <div class="d-flex">
                                                             <div class="mr-2">
                                                                 <i class="fa-solid fa-location-dot"></i>
@@ -2409,18 +2439,18 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Geboortedatum &amp; Nationaliteit</p>
+                                                        <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
                                                         <span id="booking_visitor_birthdate_div">
                                                     </div>                                                    
                                                 </div>
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Naam</p>
-                                                        Thuisblijver: <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
+                                                        <!-- <p>Naam</p> -->
+                                                        <span class="summary-sub-headings-txt">Thuisblijver:</span> <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Contactgegevens</p>
+                                                        <!-- <p>Contactgegevens</p> -->
                                                         <div class="d-flex">
                                                             <div class="mr-2">
                                                                 <i class="fa-solid fa-location-dot"></i>
@@ -2429,7 +2459,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Geboortedatum &amp; Nationaliteit</p>
+                                                        <!-- <p>Geboortedatum &amp; Nationaliteit</p> -->
                                                         <span id="booking_stayathome_birthdate_div">
                                                     </div>                                                    
                                                 </div>
@@ -2442,10 +2472,10 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Challenge</p>
+                                                        <p class="summary-table-head-subs">Challenge</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p>Aantal startbewijzen</p>
+                                                        <p class="summary-table-head-subs">Aantal startbewijzen</p>
                                                     </div>
                                                 </div>
 
@@ -2461,12 +2491,12 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p>Vertrek</p>
-                                                        <span id="summary_departure_date">-</span>
+                                                        <p class="summary-table-head-subs">Vertrek</p>
+                                                        <span id="summary_departure_date" class="summary-body-txt">-</span>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Aankomst</p>
-                                                        <span id="summary_arrival_date">-</span>
+                                                        <p class="summary-table-head-subs">Aankomst</p>
+                                                        <span id="summary_arrival_date" class="summary-body-txt">-</span>
                                                     </div>
                                                 </div>
 
@@ -2479,12 +2509,12 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Hotel naam</p>
-                                                        <span id="summary_hotel_name">-</span>
+                                                        <p class="summary-table-head-subs">Hotel naam</p>
+                                                        <span id="summary_hotel_name" class="summary-body-txt">-</span>
                                                     </div>
                                                     <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p>Prijs</p>
-                                                        <span id="summary_room_price">-</span>
+                                                        <p class="summary-table-head-subs">Prijs</p>
+                                                        <span id="summary_room_price" class="summary-body-txt">-</span>
                                                     </div>
                                                 </div>
 
@@ -2500,13 +2530,13 @@
 
                                                 <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Opties</p>
+                                                        <p class="summary-table-head-subs">Opties</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Personen</p>
+                                                        <p class="summary-table-head-subs">Personen</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Prijs</p>
+                                                        <p class="summary-table-head-subs">Prijs</p>
                                                     </div>
                                                 </div>
 
@@ -2521,13 +2551,13 @@
 
                                                 <div class="row form-fields-rows hotel-extras">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Opties</p>
+                                                        <p class="summary-table-head-subs">Opties</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Personen</p>
+                                                        <p class="summary-table-head-subs">Personen</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Prijs</p>
+                                                        <p class="summary-table-head-subs">Prijs</p>
                                                     </div>
                                                 </div>
 
@@ -2543,13 +2573,13 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Vlucht</p>
+                                                        <p class="summary-table-head-subs">Vlucht</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Vertrek</p>
+                                                        <p class="summary-table-head-subs">Vertrek</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Aankomst</p>
+                                                        <p class="summary-table-head-subs">Aankomst</p>
                                                     </div>
                                                 </div>
 
@@ -2565,10 +2595,10 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p>Verzekering</p>
+                                                        <p class="summary-table-head-subs">Verzekering</p>
                                                     </div>
                                                     <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p>Prijs</p>
+                                                        <p class="summary-table-head-subs">Prijs</p>
                                                     </div>
                                                 </div>
 
@@ -2581,27 +2611,27 @@
                                             </div>
                                             <div class="col-12">
                                                 <div class="row mb-1">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
+                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                         SGR fee
                                                     </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                                        + € <span id="booking_sgr_fee_div"></span> per persoon
+                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                        <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon</span>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-1">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
+                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                         Administratiekosten verzekering
                                                     </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                                        + <span id="booking_insurance_fee_div"></span> % per verzekering
+                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                        + <span id="booking_insurance_fee_div"></span> <span class="summary-sub-headings-txt">% per verzekering</span>
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6">
+                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                         Calamiteitenfonds
                                                     </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6">
-                                                        + € <span id="booking_calamity_fund_div"></span>
+                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                        <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2614,22 +2644,22 @@
                                                         Totaal
                                                     </div>
                                                     <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-                                                        € <span>0.00</span>
+                                                        <span>€</span> <span>0.00</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <hr>
                                             </div>
-                                            <div class="box-padding-mob col-12 col-md-10 col-xl-10">
+                                            <div class="box-padding-mob col-12 col-md-10 col-xl-10 booking-special-notes">
                                                 <div class="form-group">
-                                                    <label class="form-label">Een speciaal bericht of notitie</label>
+                                                    <label class="form-label summary-table-head-subs">Een speciaal bericht of notitie</label>
                                                     <textarea rows="3" placeholder="Vul hier uw bericht in..." name="special_message" id="special_message" type="text" class="form-control"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="box-padding-mob col-12 col-md-12">
+                                            <!-- <div class="box-padding-mob col-12 col-md-12">
                                                 <div class="d-flex summary-create">
-                                                    <!--<div class="custom-checkbox">
+                                                    <div class="custom-checkbox">
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" name="create_account" id="create_account" class="custom-control-input form-input-checkbox">
                                                             <label title="" for="create_account" class="custom-control-label"></label>
@@ -2637,9 +2667,9 @@
                                                         <label class="form-check-label">
                                                             <span class="checkbox-label ml-1">Een account aanmaken</span><i class="fa-solid fa-circle-info"></i>
                                                         </label>
-                                                    </div>-->
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="box-padding-mob col-12 col-xl-10 col-sm-10">
                                                 <!--<div class="form-group">
                                                     <label class="form-label">E-mailadres</label>
@@ -2672,7 +2702,7 @@
                 </div>
 
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 booking_rightcol">
                 <!-- [Right column] -->
                 <div class="booking-price">
                     <div class="price"><span>Prijsindicatie</span>
