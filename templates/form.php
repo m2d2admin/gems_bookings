@@ -521,8 +521,7 @@
 
         function nationalities(){
             $.ajax({
-                // url: '<?php echo $data->api_endpoint; ?>/countries-list/',
-                url: 'https://backend.gems.m2-d2.io/api/nationalities-list/',
+                url: '<?php echo $data->api_endpoint; ?>/nationalities-list/',
                 type: 'GET',
                 data: {
                 },
