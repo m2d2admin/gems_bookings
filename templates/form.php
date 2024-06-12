@@ -91,7 +91,7 @@
             var total_fields = required_fields.length,
                 completed_fields = 0,
                 progress = 0;
-                alert(required_fields.length)
+                // alert(required_fields.length)
 
             required_fields.each(function() { 
                 if ($(this).val() !== '' && $(this).val() !== '0') {
@@ -296,20 +296,22 @@
             updateSummaryStep8();
         });
 
-        function goNextStep(step){
+        function goNextStep(step, toggleVal){
             // get data-source id current step
-            var dataSource = $(step).data('source');
-            console.log('dataSource', dataSource)
+            var dataSource = step.data('source');
             // get data-toggle to control the current step
-            var dataSource = $(step).data('toggle');
-            console.log('dataSource', dataSource)
+            var dataToggle = step.data('toggle');
             // get data-target id of next step
-            var dataTarget = $(step).data('target');
-            console.log('dataTarget', dataTarget)
+            var dataTarget = step.data('target');
+            var headeId = $(dataTarget).attr('aria-labelledby');
 
             // add collapse to data-toggle to show the next step
-            $(`${dataToggle} .btn-link`).data('toggle', 'collapse');
-            $(`*[data-target="${dataTarget}"]`).data('toggle', 'collapse');
+            $(`#${headeId} .btn-link`).attr('data-toggle', toggleVal);
+            if(dataTarget == '#form_section2'){
+                $('#form_section1 .btn-link').attr('data-toggle', toggleVal);
+            }else{
+                $(`${dataTarget} .btn-link`).attr('data-toggle', toggleVal);
+            }
         }
 
         // Check requited fields before moving to next step
@@ -319,6 +321,7 @@
                 targetStep   = $(this).data('target'),
                 percent = parseInt($(this).data('percent')),
                 errorMessage = '';
+                var currentStep = $(this);
             if (stepType === 'submit') {
                 postBookingDetails();
             } else {
@@ -354,20 +357,21 @@
                             errorMessage += 'Please choose an option for ' + fieldTitle + '.<br/>';
                         }
                     }
-
                 });
-                goNextStep();
-                $('#progress-bar').css('width', percent + '%').html(percent + '%');
 
                 $( sourceStep + ' .error-message').html(errorMessage);
 
                 if (errorMessage !== "") {
                     //alert('Please fill out all required fields.');
-
                     //e.stopPropagation();
                     $(sourceStep).addClass('show');
                     $(targetStep).removeClass('show');
+                    goNextStep(currentStep, 'null');
                 } else {
+                    $(sourceStep).removeClass('show');
+                    $(targetStep).addClass('show');
+                    goNextStep(currentStep, 'collapse');
+                    $('#progress-bar').css('width', percent + '%').html(percent + '%');
                     updateSummaryStep1();
                 }
 
@@ -1737,7 +1741,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="collapse" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
+                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -1758,7 +1762,7 @@
                         <div class="card">
                         <div class="card-header" id="heading2">
                             <h2 class="mb-0">
-                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
+                            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="null" data-target="#form_section2" aria-expanded="false" aria-controls="form_section2">
                                 <span class="steps body-18 regular-400 numb">02</span>
                                 Gegevens van de reizigers
                             </button>
@@ -2062,7 +2066,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
+                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="null" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
