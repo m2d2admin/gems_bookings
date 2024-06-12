@@ -399,7 +399,13 @@
                         });
                         let bibsCountSum = bibsCount.reduce((total, num) => total + num, 0);
                         var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
-                        if (bibsCountSum < parseInt(travelersCount)) {
+                        var runnersCount = $('#form_section2 input.traveller_is_runner:checked').length;
+                        console.log('runnersCount', runnersCount);
+                        // if (bibsCountSum < parseInt(travelersCount)) {
+                        if(parseInt(runnersCount) == 0){
+                            alert('Eeen of meer reizigers moeten hardlopers zijn');
+                        }
+                        if (bibsCountSum < parseInt(runnersCount)) {
                             $input.val(currentValue + 1);
                         }
                     }else if($(this).data('hotels-max')){
@@ -513,6 +519,33 @@
             $('#runners_div .runner_info').last().remove();
         }
 
+        function nationalities(){
+            $.ajax({
+                // url: '<?php echo $data->api_endpoint; ?>/countries-list/',
+                url: 'https://backend.gems.m2-d2.io/api/nationalities-list/',
+                type: 'GET',
+                data: {
+                },
+                success: function(response) {
+
+                    // Check if response is valid
+                    if (response && response.type === 'success') {
+                        var nationalities = response.data;
+
+                        $.each(nationalities, function(index, nationality) {
+                            $('select[name="gl_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
+                        });
+                    } else {
+                        console.error('Failed to fetch nationalities:', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching nationalities:', error);
+                }
+            });
+        }
+        nationalities();
+
         function addTravellerToForm(i = 1) {
     
             var htmlToAdd = `
@@ -620,6 +653,18 @@
             getTotals();
         });
 
+        // set number of runners in local storage
+        // var runnersCount = $('#form_section2 input.traveller_is_runner:checked').length;
+        // console.log('runnersCount', runnersCount);
+        // localStorage.setItem('runners_count', 0);
+        // $(document).on('click', '.traveller_is_runner', function() {
+        //     var runners_count = $('#form_section2 input.traveller_is_runner:checked').length;
+        //     console.log(runners_count);
+        //     localStorage.setItem('runners_count', runners_count);
+
+        //     // $( '#form_section3 input.bibs_count' ).data('max-qty', runners_count).prop('max', runners_count);
+        // });
+
         // Recalculate the total price when the number of travellers changes
         $(document).on("change",".flight-arrival",function(){
             //alert(this.value);
@@ -664,7 +709,6 @@
                         // Append options to each select box
 
                         $('select[name="gl_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
-                        $('select[name="gl_nationality"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="gl_lives_in_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="sah_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                     });
@@ -1817,7 +1861,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                                 <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
                                                 <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
                                                     <option value="">Nationaliteit</option>
@@ -1826,7 +1870,7 @@
                                             </div>
 
                                             
-                                        </div>
+                                        </div> -->
                                     </div>
 
                                     <div class="row">
@@ -1895,9 +1939,9 @@
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="form-label field-label">Nationationaliteit <span class="required">*</span></label>
+                                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
                                                 <select placeholder="Nationality" dataplaceholder="Nationality" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
-                                                    <option value="">Land</option>
+                                                    <option value="">Nationaliteit</option>
                                                 </select>
                                             </div>
                                         </div>
