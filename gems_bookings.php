@@ -37,8 +37,6 @@ if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'gems_bookings_admin_assets' );
 }
 
-<<<<<<< HEAD
-=======
 function email_template_settings(){
     global $wpdb;
     global $table_prefix;
@@ -56,7 +54,6 @@ function email_template_settings(){
 	
 	return $email_settings;
 }
->>>>>>> fixes
 
 /***********************************************************************
  Load textdomain
@@ -237,42 +234,6 @@ function gems_bookings_options() {
 	<?php
 			submit_button();
 		}
-<<<<<<< HEAD
-
-		if ($active_tab == 'mailtemplate') {
-
-			settings_fields('gems-mailtemplate-group');
-			do_settings_sections('gems-mailtemplate-group');
-	
-	?>
-			<table class="form-table">
-				<tr valign="top">
-					<th scope="row"><?php esc_html_e('Email subject', 'gems_bookings'); ?></th>
-					<td>
-						<input type="text" name="gems_email_subject" value="<?php echo esc_attr(get_option('gems_email_subject')); ?>" />
-					</td>
-				</tr>
-				<tr valign="top">
-					<th scope="row"><?php esc_html_e('Email header', 'gems_bookings'); ?></th>
-					<td>
-						<textarea name="gems_email_header" rows="6" cols="100"><?php echo esc_attr(get_option('gems_email_header')); ?></textarea>
-					</td>
-				</tr>
-				<tr valign="top">
-					<th scope="row"><?php esc_html_e('Email footer', 'gems_bookings'); ?></th>
-					<td>
-						<input type="text" name="gems_email_footer" value="<?php echo esc_attr(get_option('gems_email_footer')); ?>" />
-					</td>
-				</tr>
-			</table>
-
-	<?php
-			submit_button();
-		}
-	?>
-	</form>
-
-=======
 			?>
 	</form>
 	<?php
@@ -297,7 +258,7 @@ function gems_bookings_options() {
 						</td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><?php esc_html_e('Email Footer', 'gems_bookings'); ?></th>
+						<th scope="row"><?php esc_html_e("Email Footer (separe the new line with <;>)", 'gems_bookings'); ?></th>
 						<td>
 							<textarea name="email_footer" id="email_footer" rows="6" cols="100"><?php echo esc_attr(email_template_settings()['email_footer']); ?></textarea>
 						</td>
@@ -402,7 +363,6 @@ function gems_bookings_options() {
 			});
 		});
 	</script>
->>>>>>> fixes
 <?php
 }
 		// $from = get_option('admin_email');

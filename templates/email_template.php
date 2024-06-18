@@ -54,6 +54,11 @@ function non_extra_hotel($non_hotel_extras){
 }
 function email_template($booking_details, $email_settings, $email, $name) {
     var_dump($booking_details);
+    $footer = "";
+    $footer_segments = explode(";", $email_settings["email_footer"]);
+    foreach ($footer_segments as $segment) {
+        $footer .= $segment."<br>";
+    }
 $temp =
  '<html><body>
     <head>
@@ -403,7 +408,7 @@ i.fa-circle-info {margin-left: 20px;}
         </div>
         
     </div>
-    <p>'.$email_settings["email_footer"].'</p>
+    <p>'.$footer.'</p>
 </div></body></html>';
     return  $temp;
 }

@@ -310,9 +310,19 @@
             if(dataTarget == '#form_section2'){
                 $('#form_section1 .btn-link').attr('data-toggle', toggleVal);
             }else{
-                $(`${dataTarget} .btn-link`).attr('data-toggle', toggleVal);
+                $(`${dataSource} .btn-link`).attr('data-toggle', toggleVal);
             }
         }
+
+        // reset hotel rooms count to 0 when hotel is changed
+        $(document).on('click', '.hotel-room-radio', function(e) {
+            var checkedValue = $('input[type="radio"][name="hotel_room_id"]:checked').val();
+            $('input[type="radio"][name="hotel_room_id"]').each(function() {
+                if ($(this).val() != checkedValue) {
+                    $(this).closest('.booking-card').find('input[type="number"]').val(0);
+                }
+            });
+        });
 
         // Check requited fields before moving to next step
         $(document).on('click', '.btn-form-step', function(e) {
@@ -322,6 +332,20 @@
                 percent = parseInt($(this).data('percent')),
                 errorMessage = '';
                 var currentStep = $(this);
+
+                var bibsCount = [];
+                var hotelRoomCount = [];
+                $('input[type="number"].bibs_count').each(function() {
+                    bibsCount.push(parseInt($(this).val()) || 0);
+                });
+                var bibsCountSum = bibsCount.reduce((total, num) => total + num, 0);
+                var runnersCount = $('#form_section2 input.traveller_is_runner:checked').length;
+
+                $('input[type="number"].rooms_count').each(function() {
+                    hotelRoomCount.push(parseInt($(this).val()) || 0);
+                });
+                var hotelRoomCountSum = hotelRoomCount.reduce((total, num) => total + num, 0);
+
             if (stepType === 'submit') {
                 postBookingDetails();
             } else {
@@ -339,23 +363,65 @@
                         fieldType = 'select-one'; // For select elements, set type to select-one
                     }
                     
-                    if ( fieldName != "bibs_count[]" &&  fieldName != "hotel_room_count[]" && fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
-                        errorMessage += 'Please enter at least 1 number for ' + fieldTitle + '.<br/>';
-                    } else if (fieldType === 'text' && fieldValue == "") {
-                        errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
+                    // if (fieldName != "hotel_room_count[]" && fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
+                    if (fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
+                        if(fieldTitle == "Bib" && runnersCount == bibsCountSum && runnersCount > 0){
+                            errorMessage = '';
+                            $(sourceStep).removeClass('show');
+                            $(targetStep).addClass('show');
+                            goNextStep(currentStep, 'collapse');
+                            $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                        }else{
+                            errorMessage = 'Het aantal startbewijzen moet gelijk zijn aan het aantal hardlopers <br/>';
+                        }
+
+                        if (hotelRoomCountSum > 0){
+                            errorMessage = '';
+                            $(sourceStep).removeClass('show');
+                            $(targetStep).addClass('show');
+                            goNextStep(currentStep, 'collapse');
+                            $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                        }else if(hotelRoomCountSum <= 0 && fieldTitle == "Hotelroom"){
+                            $(sourceStep).addClass('show');
+                            $(targetStep).removeClass('show');
+                            goNextStep(currentStep, 'null');
+                            errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
+                        }
+
+                        if(fieldTitle != "Bib" && fieldTitle != "Hotelroom"){
+                            errorMessage = 'Vul het volgende in: ' + fieldTitle + '.<br/>';
+                        }
+                    }else if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
+                        $(sourceStep).addClass('show');
+                        $(targetStep).removeClass('show');
+                        goNextStep(currentStep, 'null');
+                        errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
+                    }else if($('input[name="flightplan_id_OLD"]:checked').length <= 0 && fieldTitle == "owntransport"){
+                        errorMessage = 'Selecteer een vervoer.<br/>';
+                    }else if(fieldTitle == "flighttransport" && $('input[id="flight-transport"]').is(':checked') && $('input[name="flightplan_list"]:checked').length <= 0){
+                        errorMessage = 'Selecteer een vliegtuigvlucht.<br/>';
+                    }
+                    else if(fieldTitle == "Bib" && bibsCountSum == 0){
+                        errorMessage = 'Selecteer ten minste 1 bib.<br/>';
+                    }else if (fieldType === 'text' && fieldValue == "") {
+                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
                     } else if (fieldType === 'textarea' && fieldValue == "") {
-                        errorMessage += 'Please fill out ' + fieldTitle + '.<br/>';
+                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
                     } else if (fieldType === 'tel' && fieldValue == "") {
-                        errorMessage += 'Please fill out ' + fieldTitle + '.<br/>'; 
+                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
                     }   else if (fieldType === 'select-one') {
                         if (!fieldValue) {
-                            errorMessage += 'Please select an option for ' + fieldTitle + '.<br/>';
+                            errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
                         }
-                    } else if (fieldType === 'checkbox' || fieldType === 'radio') {
+                    }else if (fieldType === 'checkbox' || fieldType === 'radio') {
                         var fieldGroup = $(this).attr('name');
                         if ($('input[name="' + fieldGroup + '"]:checked').length === 0) {
-                            errorMessage += 'Please choose an option for ' + fieldTitle + '.<br/>';
+                            errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
                         }
+                        if ($('input[name="flightplan_id_OLD"]:checked').length === 0){
+                            errorMessage = 'Selecteer een vervoer.<br/>';
+                        }
+                    
                     }
                 });
 
@@ -379,6 +445,14 @@
 
         });
 
+        $(document).on('click', '.traveler-plus-min', function(e) {
+            var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+            $('#runners_div').html('');
+            for (var i = 1; i <= travelers-1; i++) {
+                addTravellerToForm(i+1); // +1 because the first traveller is already added
+            }
+        });
+
         // Increasing and decreasing the quantity (travellers, bibs, hotel rooms)
         $(document).on('click', '.plus-minus-input .button', function() {
             var $input = $(this).closest('.plus-minus-input').find('.input-group-field'),
@@ -400,7 +474,6 @@
                         let bibsCountSum = bibsCount.reduce((total, num) => total + num, 0);
                         var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                         var runnersCount = $('#form_section2 input.traveller_is_runner:checked').length;
-                        console.log('runnersCount', runnersCount);
                         // if (bibsCountSum < parseInt(travelersCount)) {
                         if(parseInt(runnersCount) == 0){
                             alert('Eeen of meer reizigers moeten hardlopers zijn');
@@ -455,9 +528,12 @@
             // TODO: confirm by Arie why the -1 is there
             var travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count);
  
-            if (parseInt(travelers) > 1) {
-                addTravellerToForm(travelers);
-            } else if (parseInt(travelers) < 2) {
+            // if (parseInt(travelers) > 1) {
+            //     addTravellerToForm(travelers);
+            // } else if (parseInt(travelers) < 2) {
+            //     removeTravellerToForm();
+            // }
+            if (parseInt(travelers) < 2) {
                 removeTravellerToForm();
             }
             $('#travellers_amount').val(travelers);
@@ -521,7 +597,7 @@
 
         function nationalities(){
             $.ajax({
-                url: '<?php echo $data->api_endpoint; ?>/nationalities-list/',
+                url: '<?php echo $data->api_endpoint; ?>/nationalities-list/?locale=nl',
                 type: 'GET',
                 data: {
                 },
@@ -543,7 +619,6 @@
                 }
             });
         }
-        nationalities();
 
         function addTravellerToForm(i = 1) {
     
@@ -596,7 +671,6 @@
                                 <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality_${i}" required>
                                     <option value="">Nationaliteit</option>
                                 </select>
-                                <div class="invalid-feedback"></div>
                             </div>
                             
                         </div>
@@ -630,7 +704,10 @@
             $('#runners_div').append(htmlToAdd);
 
             $('.form-select').select2();
+            nationalities();
         }
+
+        nationalities();
 
         $(document).on("click",".vervoer-radio-btn-group",function(){
             var transport_id = $(this).find('input').val();
@@ -805,77 +882,52 @@
                     // Iterate over the data array in the response
                     $.each(response.data, function(index, item) {
                         // Generate the HTML content for each item
-
- 
-                            // Generate the HTML content for each item
-                            bibs_html += `<div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
+                        bibs_html += `
+                            <div class="col-md-4 col-lg-4 col-sm-4 bibs-item">
                                 <label class="hotel-labels">
                                     <div class="card card-default card-input tickets" style="cursor:default;">
-                                        <div class="card-header hotels-details-header">
-                                            <div class="card-title">${item.challenge_name}</div>
-                                            <div class="card-title-icon">
-
-                                            <svg id="distance" xmlns="http://www.w3.org/2000/svg" width="15.534" height="15.533" viewBox="0 0 15.534 15.533">
-                                                <g id="Group_234" data-name="Group 234" transform="translate(10.679)">
-                                                    <g id="Group_233" data-name="Group 233">
-                                                        <path id="Path_166" data-name="Path 166" d="M356.369,0h-3.883A.486.486,0,0,0,352,.485V5.34a.485.485,0,1,0,.971,0V3.883h3.4a.486.486,0,0,0,.485-.485V.485A.486.486,0,0,0,356.369,0Z" transform="translate(-352)" fill="#0093cb" />
-                                                    </g>
-                                                </g>
-                                                <g id="Group_236" data-name="Group 236" transform="translate(1.942 6.796)">
-                                                    <g id="Group_235" data-name="Group 235">
-                                                        <path id="Path_167" data-name="Path 167" d="M75.65,227.883H70.8a.971.971,0,0,1,0-1.942h1.06a1.456,1.456,0,1,0,0-.971H70.8a1.942,1.942,0,1,0,0,3.883H75.65a.971.971,0,1,1,0,1.942H66.823a1.456,1.456,0,1,0,0,.971H75.65a1.942,1.942,0,0,0,0-3.883Z" transform="translate(-64 -224)" fill="#0093cb" />
-                                                    </g>
-                                                </g>
-                                                <g id="Group_238" data-name="Group 238" transform="translate(0 2.913)">
-                                                    <g id="Group_237" data-name="Group 237">
-                                                        <path id="Path_168" data-name="Path 168" d="M3.4,96A3.4,3.4,0,0,0,0,99.4c0,1.744,2.726,4.832,3.037,5.178a.485.485,0,0,0,.722,0C4.07,104.23,6.8,101.142,6.8,99.4A3.4,3.4,0,0,0,3.4,96Zm0,4.854A1.456,1.456,0,1,1,4.854,99.4,1.457,1.457,0,0,1,3.4,100.854Z" transform="translate(0 -96)" fill="#0093cb" />
-                                                    </g>
-                                                </g>
-                                            </svg>
-                                            <div class="col race-distance-txt">${item.running_distance}km</div>
+                                    <div class="card-header hotels-details-header">
+                                        <div class="card-title">${item.challenge_name}</div>
+                                        <div class="card-title-icon">
+                                        <svg id="distance" xmlns="http://www.w3.org/2000/svg" width="15.534" height="15.533" viewBox="0 0 15.534 15.533">
+                                            <g id="Group_234" data-name="Group 234" transform="translate(10.679)">
+                                            <g id="Group_233" data-name="Group 233">
+                                                <path id="Path_166" data-name="Path 166" d="M356.369,0h-3.883A.486.486,0,0,0,352,.485V5.34a.485.485,0,1,0,.971,0V3.883h3.4a.486.486,0,0,0,.485-.485V.485A.486.486,0,0,0,356.369,0Z" transform="translate(-352)" fill="#0093cb" />
+                                            </g>
+                                            </g>
+                                            <g id="Group_236" data-name="Group 236" transform="translate(1.942 6.796)">
+                                            <g id="Group_235" data-name="Group 235">
+                                                <path id="Path_167" data-name="Path 167" d="M75.65,227.883H70.8a.971.971,0,0,1,0-1.942h1.06a1.456,1.456,0,1,0,0-.971H70.8a1.942,1.942,0,1,0,0,3.883H75.65a.971.971,0,1,1,0,1.942H66.823a1.456,1.456,0,1,0,0,.971H75.65a1.942,1.942,0,0,0,0-3.883Z" transform="translate(-64 -224)" fill="#0093cb" />
+                                            </g>
+                                            </g>
+                                            <g id="Group_238" data-name="Group 238" transform="translate(0 2.913)">
+                                            <g id="Group_237" data-name="Group 237">
+                                                <path id="Path_168" data-name="Path 168" d="M3.4,96A3.4,3.4,0,0,0,0,99.4c0,1.744,2.726,4.832,3.037,5.178a.485.485,0,0,0,.722,0C4.07,104.23,6.8,101.142,6.8,99.4A3.4,3.4,0,0,0,3.4,96Zm0,4.854A1.456,1.456,0,1,1,4.854,99.4,1.457,1.457,0,0,1,3.4,100.854Z" transform="translate(0 -96)" fill="#0093cb" />
+                                            </g>
+                                            </g>
+                                        </svg>
+                                        <div class="col race-distance-txt">${item.running_distance}km</div>
                                         </div>
                                     </div>
+                                    </div>
                                 </label>
-
-                                <div class="card-title">
-                                    &euro; ${item.single_ticket_price}
-                                </div>
-
+                                <div class="card-title"> &euro; ${item.single_ticket_price} </div>
                                 <div class="input-group plus-minus-input">
                                     <div class="input-group-button">
-                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
-                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                        </span>
+                                    <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
+                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                    </span>
                                     </div>
                                     <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
                                     <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
-                                    <div class="input-group-button">												
-                                        <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </span>											
+                                    <div class="input-group-button">
+                                    <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </span>
                                     </div>
                                 </div>
-                            </label>
-                            <div class="card-title">
-                                &euro; ${item.single_ticket_price}
-                            </div>
-                            <div class="input-group plus-minus-input">
-                                <div class="input-group-button">
-                                    <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-field="quantity">
-                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                    </span>
-                                </div>
-                                <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
-                                <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
-                                <div class="input-group-button">												
-                                    <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-field="quantity">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </span>											
-                                </div>
-                            </div>
-
-                        </div>`;
-
+                            </div>                            
+                        `;
                     });
                     $('#bibs_div').html(bibs_html);
 
@@ -1012,7 +1064,7 @@
                             hotel_rooms_html += `<div class="col-md-4 col-lg-4 col-sm-4 col-radio-btn-cards-rooms  booking-card">
 
                                 <label class="hotel-rooms-labels">
-                                    <input type="radio" name="hotel_room_id" value="${item.hotel_room_id}" selected checked class="_card-input-element" />
+                                    <input type="radio" name="hotel_room_id" value="${item.hotel_room_id}" selected checked class="_card-input-element hotel-room-radio" />
 
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header" style="height: 75px;">
@@ -1037,7 +1089,7 @@
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_rooms[]" value="${item.id}">
-                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number" type="number" name="rooms[${item.hotel_room_id}]" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
+                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number hotel-room-count" type="number" name="rooms[${item.hotel_room_id}]" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
                                                         <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -1150,7 +1202,7 @@
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="nonhotel_extras[]" value="${item.id}">
-                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
+                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras[${item.id}]" value="0" data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
                                                         <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-non-hotel-extras-max="${travelers}"="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -1280,7 +1332,7 @@
                         var flightPlanHtml = `
                         <div class="col vervoer-radio-btn-group">
                             <label class="vervoer-radio-btn-label">
-                                <input type="radio" name="flightplan_id_OLD" value="${j.fp_id}" data-planname="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
+                                <input type="radio" placeholder="flightlist" name="flightplan_list" value="${j.fp_id}" data-planname="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
                                 <div class="card card-default card-input">
                                     <div class="card-header">
                                         <div class="card-title">${j.plan_name}</div>
@@ -1436,14 +1488,14 @@
                 data: { action: 'mail_booking_details', bookingData: bookingData },
                 success: function(data) {
                     var result = JSON.parse(data);
-                    console.log('booking details mailed successfully!');
+                    console.log('boekingsgegevens succesvol gemaild!');
                 },
                 error: function(xhr, status, error) {
                     if(xhr.status == 200)
-                        alert('booking details mailed successfully!');
+                        alert('boekingsgegevens succesvol gemaild!');
                     else
-                        alert('Error sending email');
-                    console.error('Error sending email:', error);
+                        alert('Fout bij het verzenden van e-mail');
+                    console.error('Fout bij het verzenden van e-mail:', error);
                 }
             });
         }
@@ -1660,15 +1712,15 @@
                     // Handle success response
                     console.log(response);
                    // mailBookingData(bookingData);
-                    alert('Booking details posted successfully!');
+                    alert('Boekingsgegevens succesvol geplaatst!');
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
                     console.log('data', data);
-                    console.error('Error posting booking details:', error);
+                    console.error('Fout bij het plaatsen van boekingsgegevens:', error);
                     if(xhr.status == 200)
                         mailBookingData(bookingData);
-                    alert('Error posting booking details. Please try again.');
+                    alert('Fout bij het plaatsen van boekingsgegevens. Probeer het opnieuw.');
                 }
             });
         }
@@ -1722,7 +1774,7 @@
                                             <div class="col-md-4 col-xl-4 col-12">
                                                 <div class="form-group grey-blue-bg-box">
                                                     <label class="form-label form-label-blue">Volwassenen <span class="required">*</span></label>
-                                                    <div class="input-group plus-minus-input">
+                                                    <div class="input-group plus-minus-input traveler-plus-min">
                                                         <div class="input-group-button">
                                                             <span class="button hollow circle" data-quantity="minus" data-field="quantity">
                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -1742,7 +1794,7 @@
                                             <div class="col-md-4 col-xl-4 col-12">
                                                 <div class="form-group grey-blue-bg-box">
                                                     <label class="form-label form-label-blue">Kinderen</label>
-                                                    <div class="input-group plus-minus-input">
+                                                    <div class="input-group plus-minus-input traveler-plus-min">
                                                         <div class="input-group-button">
                                                             <span class="button hollow circle" data-quantity="minus" data-field="quantity">
                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -1762,7 +1814,7 @@
                                             <div class="col-md-4 col-xl-4 col-12">
                                                 <div class="form-group grey-blue-bg-box">
                                                     <label class="form-label form-label-blue">Baby's</label>
-                                                    <div class="input-group plus-minus-input">
+                                                    <div class="input-group plus-minus-input traveler-plus-min">
                                                         <div class="input-group-button">
                                                             <span class="button hollow circle" data-quantity="minus" data-field="quantity">
                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -1860,16 +1912,21 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
-                                        <!-- <div class="form-group">
-                                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
+                                        <div class="form-group">
+                                                <!-- <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
                                                 <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
                                                     <option value="">Nationaliteit</option>
                                                 </select>
                                                 <div class="invalid-feedback"></div>
+                                            </div> -->
+                                             <div class="form-group">
+                                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
+                                                <select placeholder="Nationality" dataplaceholder="Nationality" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
+                                                    <option value="">Nationaliteit</option>
+                                                </select>
                                             </div>
-
                                             
-                                        </div> -->
+                                        </div>
                                     </div>
 
                                     <div class="row">
@@ -1937,12 +1994,7 @@
                                                 </select>
                                                 <div class="invalid-feedback"></div>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
-                                                <select placeholder="Nationality" dataplaceholder="Nationality" class="form-control form-select" name="gl_nationality" id="gl_nationality" required>
-                                                    <option value="">Nationaliteit</option>
-                                                </select>
-                                            </div>
+                                           
                                         </div>
                                     </div>
 
@@ -2012,8 +2064,8 @@
                                     <div class="row">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Voornaam  <span class="required"></span></label>
-                                                <input type="text" placeholder="Voornaam" name="sah_first_name" id="sah_first_name" class="form-control">
+                                                <label class="form-label field-label">Voornaam* <span class="required"></span></label>
+                                                <input type="text" placeholder="Voornaam" required name="sah_first_name" id="sah_first_name" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-6  col-lg-4 col-xl-4">
@@ -2025,8 +2077,8 @@
                                         </div>
                                         <div class="col-md-12 col-lg-4 col-xl-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Achternaam  <span class="required"></span></label>
-                                                <input type="text" placeholder="Achternaam" name="sah_last_name" id="sah_last_name" class="form-control">
+                                                <label class="form-label field-label">Achternaam*<span class="required"></span></label>
+                                                <input type="text" placeholder="Achternaam" required name="sah_last_name" id="sah_last_name" class="form-control">
                                                 <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
@@ -2090,15 +2142,15 @@
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label field-label">E-mailadres <span class="required"></span></label>
-                                            <input type="email" placeholder="E-mailadres" name="sah_email" id="sah_email" class="form-control email">
+                                            <label class="form-label field-label">E-mailadres*<span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres" required name="sah_email" id="sah_email" class="form-control email">
                                         </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label field-label">E-mailadres bevestigen <span class="required"></span></label>
-                                            <input type="email" placeholder="E-mailadres bevestigen" name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email">
+                                            <label class="form-label field-label">E-mailadres bevestigen*<span class="required"></span></label>
+                                            <input type="email" placeholder="E-mailadres bevestigen" required name="sah_email_confirm" id="sah_email_confirm" class="form-control confirm-email">
                                         </div>
                                             <div class="email-error text-danger"></div>
                                         </div>
@@ -2250,9 +2302,10 @@
                                     </div>
 
                                     <div id="rooms-titles" class="selecteer-kamer-title">Selecteer kamers</div>
-
+                                    
+                                    <input type="hidden" placeholder="GetHotels" required="required" value="null">
                                     <div class="row radio-btn-grp-row" id="hotel_rooms_container">
-
+                        
                                     </div>                                    
         
                                 </form>
@@ -2355,7 +2408,7 @@
 
                                         <div class="col vervoer-radio-btn-group">
                                             <label class="vervoer-radio-btn-label">
-                                                <input type="radio" name="flightplan_id_OLD" value="-1" class="card-input-element" />
+                                                <input type="radio" name="flightplan_id_OLD" value="-1" class="card-input-element" required placeholder="owntransport" id="own-transport"/>
     
                                                 <div class="card card-default card-input">
                                                     <div class="card-header">
@@ -2380,7 +2433,7 @@
 
                                         <div class="col vervoer-radio-btn-group">
                                             <label class="vervoer-radio-btn-label">
-                                                <input type="radio" name="flightplan_id_OLD" value="0" class="card-input-element" />
+                                                <input type="radio" name="flightplan_id_OLD" value="0" class="card-input-element" required placeholder="flighttransport" id="flight-transport"/>
     
                                                 <div class="card card-default card-input">
                                                     <div class="card-header">
@@ -2624,7 +2677,8 @@
                                             </div>
                                         </div>
                                     -->
-                                        <div class="row">
+                                   
+                                    <div class="row">
                                             <div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
                                                 <h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
                                             </div>
@@ -2646,7 +2700,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading"><!-- -->Bezoekersinformatie</span></h3>
+                                                <h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading">Bezoekersinformatie</span></h3>
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -2672,11 +2726,9 @@
 
                                                 <div class="row form-fields-rows">
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <!-- <p>Naam</p> -->
                                                         <span class="summary-sub-headings-txt">Thuisblijver:</span> <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <!-- <p>Contactgegevens</p> -->
                                                         <div class="d-flex">
                                                             <div class="mr-2">
                                                                 <i class="fa-solid fa-location-dot"></i>
@@ -2685,14 +2737,13 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <!-- <p>Geboortedatum &amp; Nationaliteit</p> -->
                                                         <span id="booking_stayathome_birthdate_div">
                                                     </div>                                                    
                                                 </div>
 
                                             </div>
                                             <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading"><!-- -->Startbewijzen</span></h3>
+                                                <h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading">Startbewijzen</span></h3>
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -2711,7 +2762,7 @@
                                             </div>
 
                                             <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading"><!-- -->Datums</span></h3>
+                                                <h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading">Datums</span></h3>
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -2793,7 +2844,7 @@
 
                                             </div>
                                             <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading"><!-- -->Transport</span></h3>
+                                                <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Transport</span></h3>
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -2815,7 +2866,7 @@
 
                                             </div>
                                             <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading"><!-- -->Verzekering</span></h3>
+                                                <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekering</span></h3>
                                             </div>
                                             <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -2882,7 +2933,7 @@
                                                     <label class="form-label summary-table-head-subs">Een speciaal bericht of notitie</label>
                                                     <textarea rows="3" placeholder="Vul hier uw bericht in..." name="special_message" id="special_message" type="text" class="form-control"></textarea>
                                                 </div>
-                                            </div>
+                                            </div> 
                                             <!-- <div class="box-padding-mob col-12 col-md-12">
                                                 <div class="d-flex summary-create">
                                                     <div class="custom-checkbox">
@@ -2903,7 +2954,6 @@
                                                     <div class="invalid-feedback"></div>
                                                 </div>-->
                                             </div>
-                                        -->
                                         </div>
 
                                         <div class="row">
