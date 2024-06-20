@@ -159,6 +159,9 @@
                         <div class="col-md-6 col-lg-8 col-xl-8">
                             <p>${bibs_count}</p>
                         </div>
+                        <div class="col-md-6 col-lg-8 col-xl-8">
+                            <p>${bibs_price}</p>
+                        </div>
                     </div>`);
                 }
             });
@@ -324,6 +327,32 @@
             });
         });
 
+        // reset flight select flight-arrival & flight-departure option to null when flightplan_list is changed
+        $(document).on('click', 'input[name="flightplan_list"]', function(e) {
+            var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
+            $('input[type="radio"][name="flightplan_list"]').each(function() {
+                if ($(this).val() != checkedValue) {
+                    // set select option to null
+                    $('.flight-arrival').val(null).trigger('change');
+                    $('.flight-departure').val(null).trigger('change');
+                }
+            });
+        });
+
+        // rm flight price when own transport is selected
+        $(document).on('click', 'input[name="flightplan_id_OLD"]', function(e) {
+            if($('input[id="own-transport"]').is(':checked')){
+                var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
+                $('input[type="radio"][name="flightplan_list"]').each(function() {
+                    if ($(this).val() != checkedValue) {
+                        // set select option to null
+                        $('.flight-arrival').val(null).trigger('change');
+                        $('.flight-departure').val(null).trigger('change');
+                    }
+                });
+            }
+        });
+
         // Check requited fields before moving to next step
         $(document).on('click', '.btn-form-step', function(e) {
             var stepType     = $(this).attr('type'), 
@@ -409,7 +438,9 @@
                         errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
                     } else if (fieldType === 'tel' && fieldValue == "") {
                         errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
-                    }   else if (fieldType === 'select-one') {
+                    } else if (fieldType === 'email' && fieldValue == "") {
+                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
+                    }  else if (fieldType === 'select-one') {
                         if (!fieldValue) {
                             errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
                         }
@@ -461,9 +492,23 @@
                 currentValue = parseInt($input.val(), 10);
             
             if (!isNaN(currentValue)) {
+                // update flight price calculation
+                var arrivalPrice = $('#total_flight_arrival_price').val();
+                var arrivalUnitPrice = parseFloat($('.flight-arrival option:selected').data('price'));
+
+                var departurePrice = $('#total_flight_departure_price').val();
+                var departureUnitPrice = parseFloat($('.flight-departure option:selected').data('price'));
+                var totalFlightPrice = parseFloat(arrivalPrice) + parseFloat(departurePrice);
+
                 if (type === 'minus') {
                     if (currentValue > 0) {
                         $input.val(currentValue - 1);
+                    }
+                    var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                    console.log('travelersCount', travelersCount);
+                    if(!isNaN(arrivalUnitPrice) && !isNaN(departureUnitPrice) || arrivalUnitPrice != 0 && departureUnitPrice != 0){    
+                        $('#total_flight_arrival_price').val(arrivalUnitPrice*travelersCount);
+                        $('#total_flight_departure_price').val(departureUnitPrice*travelersCount);
                     }
                 } else if (type === 'plus') {
                     if($(this).data('bibs-max')) {
@@ -508,6 +553,13 @@
                         }
                     } else{
                         $input.val(currentValue + 1);
+                    }
+                    // update flight price calculation
+                    var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                    console.log('travelersCount-plus', travelersCount);
+                    if(!isNaN(arrivalUnitPrice) && !isNaN(departureUnitPrice) || arrivalUnitPrice != 0 && departureUnitPrice != 0){ 
+                        $('#total_flight_arrival_price').val(arrivalUnitPrice*travelersCount);
+                        $('#total_flight_departure_price').val(departureUnitPrice*travelersCount);
                     }
                 }
             } else {
@@ -721,11 +773,10 @@
 
         // Recalculate the total price when the number of travellers changes
         $(document).on("change",".flight-departure",function(){
-            //alert(this.value);
             var travelers_amount = $('#travellers_amount').val(),
-                departure_price = $(this).data('price');
+                departure_price = $(this).children('option:selected').data('price');
+                console.log('departure', departure_price * travelers_amount);
             $('#total_flight_departure_price').val(departure_price * travelers_amount);
-
             getTotals();
         });
 
@@ -743,11 +794,10 @@
 
         // Recalculate the total price when the number of travellers changes
         $(document).on("change",".flight-arrival",function(){
-            //alert(this.value);
             var travelers_amount = $('#travellers_amount').val(),
-                arrival_price = $(this).data('price');
+                arrival_price = $(this).children('option:selected').data('price');
+                console.log('arrival', arrival_price * travelers_amount);
             $('#total_flight_arrival_price').val(arrival_price * travelers_amount);
-
             getTotals();
         });
 
@@ -1350,7 +1400,7 @@
                                         
                                         <div class="heenvlucht-details">
                                             <h5>Retourvlucht</h5>
-                                            ` + flightInfoHtml + `
+                                            ` + returnflightInfoHtml + `
                                         </div>
             
                                         
@@ -1898,7 +1948,7 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Titel <span class="required">*</span></label>
+                                                <label class="form-label field-label">Geslacht <span class="required">*</span></label>
                                                 <select placeholder="Titel" data-placeholder="Titel" name="gl_title" id="gl_title" class="pl-2 form-control form-select" required>
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
@@ -2043,8 +2093,8 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <div class="form-group">
-                                                <label class="form-label field-label">Titel <span class="required"></span></label>
-                                                <select placeholder="Titel" data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select">
+                                                <label class="form-label field-label">Geslacht* <span class="required"></span></label>
+                                                <select placeholder="Titel" required data-placeholder="Titel" name="sah_title" id="sah_title" class="pl-2 form-control form-select">
                                                     <option value="dhr.">dhr.</option>
                                                     <option value="mevr.">mevr.</option>
                                                 </select>
@@ -2127,14 +2177,14 @@
                                     <div class="row">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label field-label">Vast telefoonnummer <span class="required">*</span></label>
-                                            <input type="tel" placeholder="Vast telefoonnummer" name="sah_fixed_phone" id="sah_fixed_phone" class="form-control" required>
+                                            <label class="form-label field-label">Vast telefoonnummer <span class="required"></span></label>
+                                            <input type="tel" placeholder="Vast telefoonnummer" name="sah_fixed_phone" id="sah_fixed_phone" class="form-control">
                                         </div>
                                         </div>
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label field-label">Mobiel telefoonnummer <span class="required"></span></label>
-                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control">
+                                            <label class="form-label field-label">Mobiel telefoonnummer <span class="required">*</span></label>
+                                            <input type="tel" placeholder="Mobiel telefoonnummer" name="sah_mobile" id="sah_mobile" class="form-control" required>
                                         </div>
                                         </div>
                                     </div>
