@@ -156,11 +156,11 @@
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <p>${bibs_name}</p>
                         </div>
-                        <div class="col-md-6 col-lg-8 col-xl-8">
+                        <div class="col-md-4 col-lg-4 col-xl-4">
                             <p>${bibs_count}</p>
                         </div>
-                        <div class="col-md-6 col-lg-8 col-xl-8">
-                            <p>${bibs_price}</p>
+                        <div class="col-md-4 col-lg-4 col-xl-4">
+                            <p>&euro; ${bibs_price}</p>
                         </div>
                     </div>`);
                 }
@@ -2801,8 +2801,11 @@
                                                     <div class="col-md-6 col-lg-4 col-xl-4">
                                                         <p class="summary-table-head-subs">Challenge</p>
                                                     </div>
-                                                    <div class="col-md-6 col-lg-8 col-xl-8">
+                                                    <div class="col-md-4 col-lg-4 col-xl-4">
                                                         <p class="summary-table-head-subs">Aantal startbewijzen</p>
+                                                    </div>
+                                                    <div class="col-md-4 col-lg-4 col-xl-4">
+                                                        <p class="summary-table-head-subs">Prijs</p>
                                                     </div>
                                                 </div>
 
