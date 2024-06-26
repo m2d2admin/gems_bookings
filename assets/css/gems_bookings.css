@@ -3,34 +3,36 @@
 
 /* Gems Booking Section */
 
-.booking_section p.body-text-regular{font-size: 14px;}
-
-.progress-bar{
-    color: black;
-    background-color: rgba(197,231,28,1);
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px ;
-      -webkit-box-shadow: none ;
-  	  -moz-box-shadow: none;
-	  box-shadow: none;
+.booking_section p.body-text-regular {
+    font-size: 14px;
 }
 
-.progress{
+.progress-bar {
+    color: black;
+    background-color: rgba(197, 231, 28, 1);
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.progress {
     border-radius: 0px;
     font-size: 14px;
     font-weight: 500;
     background-color: white;
-      -webkit-box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
-	  -moz-box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
-	  box-shadow: inset 0 0 0 1px rgba(197,231,28,1);
+    -webkit-box-shadow: inset 0 0 0 1px rgba(197, 231, 28, 1);
+    -moz-box-shadow: inset 0 0 0 1px rgba(197, 231, 28, 1);
+    box-shadow: inset 0 0 0 1px rgba(197, 231, 28, 1);
     border: none;
     height: 24px;
     margin: 20px 0;
 }
 
 .btn-form-step {
-    background: rgb(150,180,0);
-    background: linear-gradient(0deg, rgba(150,180,0,1) 0%, rgba(197,231,28,1) 100%);
+    background: rgb(150, 180, 0);
+    background: linear-gradient(0deg, rgba(150, 180, 0, 1) 0%, rgba(197, 231, 28, 1) 100%);
     border: none;
     width: 100%;
     border-radius: 0;
@@ -49,12 +51,17 @@
 .btn-form-step:hover,
 .btn-form-step:focus {
     color: #fff;
-    background: rgb(197,231,28);
-    background: linear-gradient(0deg, rgba(197,231,28,1) 0%, rgba(150,180,0,1) 100%);
+    background: rgb(197, 231, 28);
+    background: linear-gradient(0deg, rgba(197, 231, 28, 1) 0%, rgba(150, 180, 0, 1) 100%);
 }
 
-.booking_leftcol{width:75%;}
-.booking_rightcol{width:25%;}
+.booking_leftcol {
+    width: 75%;
+}
+
+.booking_rightcol {
+    width: 25%;
+}
 
 #booking_form .card {
     border: 0px;
@@ -81,7 +88,7 @@
     font-family: 'Rubik', 'Poppins', sans-serif;
     font-size: 50px;
     font-weight: 900;
-    color: rgba(197,231,28,0.34);
+    color: rgba(197, 231, 28, 0.34);
     /* color: rgba(197,231,28,1); */
     /* color: linear-gradient(0deg, rgba(150,180,0,1) 0%, rgba(197,231,28,1) 100%); */
     margin-left: -27px;
@@ -194,7 +201,7 @@ span.required {
 }
 */
 
-  
+
 #booking_form input.form-control {
     border: solid 1px #D5DEE2;
     padding: 0 10px;
@@ -255,27 +262,28 @@ span.required {
 .booking-special-notes .form-group {
     margin-bottom: 0;
     margin-top: 20px;
-  }
+}
 
-  .booking-special-notes .form-group .form-label.summary-table-head-subs {
+.booking-special-notes .form-group .form-label.summary-table-head-subs {
     margin-bottom: 20px;
-  }
+}
 
 /* Remove arrows input */
 /* Chrome, Safari, Edge, Opera */
 #booking_form form input::-webkit-outer-spin-button,
 #booking_form form input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
+
 /* Firefox */
 #booking_form form input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 .full-form-container {
     background-color: #ffffff;
-    box-shadow: 0 3px 16px rgba(0,0,0,0.6);
+    box-shadow: 0 3px 16px rgba(0, 0, 0, 0.6);
     padding: 20px;
 }
 
@@ -300,7 +308,7 @@ span.required {
     border-radius: 0px;
     /* font-family: 'Rubik', sans-serif; */
     color: #0A0A0A;
- }
+}
 
 #booking_form input.form-control {
     border: solid 1px #D5DEE2;
@@ -328,14 +336,14 @@ span.required {
 /* HOTELS AND ROOMS */
 
 .radio-btn-grp-row {
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     margin-bottom: 30px;
 }
 
-.row.radio-btn-grp-row:before{
+.row.radio-btn-grp-row:before {
     display: none;
 }
 
@@ -353,7 +361,7 @@ span.required {
     width: 100%;
 }
 */
-	
+
 label {
     display: block;
 }
@@ -364,18 +372,18 @@ label {
 }
 
 .card-header {
-	display: flex;
-	align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .card-header.hotels-details-header {
     min-height: 80px;
     height: 75px;
 }
-	
+
 .card-title {
-	width: 70%;
-	padding: 10px;
+    width: 70%;
+    padding: 10px;
     font-family: 'RuckSack', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -383,22 +391,22 @@ label {
 }
 
 .card-title-icon {
-	width: 30%;
-	text-align: right;
-	padding: 10px;
+    width: 30%;
+    text-align: right;
+    padding: 10px;
 }
 
 .card-title-icon svg {
-	width: 25px;
-	height: auto;
+    width: 25px;
+    height: auto;
 }
-	
+
 .card-body {
-	padding: 10px;
+    padding: 10px;
 }
-	
+
 .card-body-descr {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
     font-family: 'RuckSack', sans-serif;
     font-size: 12px;
     font-weight: 400;
@@ -429,21 +437,21 @@ label {
 .card-input {
     margin: 10px;
     padding: 0px;
-	border: solid 1px #D5DEE2;
+    border: solid 1px #D5DEE2;
 }
 
 .card-input:hover {
     cursor: pointer;
 }
 
-.card-input-element:checked + .card-input {
-     box-shadow: 0 0 10px 2px rgba(0,173,239,0.5);
+.card-input-element:checked+.card-input {
+    box-shadow: 0 0 10px 2px rgba(0, 173, 239, 0.5);
 }
 
-.col-radio-btn-cards-rooms{
+.col-radio-btn-cards-rooms {
     width: 48%;
-	margin-left: 5px;
-	margin-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
     padding: 0px;
     flex: 0 0 48%;
     max-width: 48%;
@@ -459,13 +467,13 @@ label {
 
 /* .selecteer-kamer-title{display: none;} */
 
-.card-body-hotel-room-qty-sel{
+.card-body-hotel-room-qty-sel {
     margin-top: 30px;
 }
 
 
 /* EXTRAS */
-.row.extras-details-row:before{
+.row.extras-details-row:before {
     display: none;
 }
 
@@ -511,9 +519,10 @@ div#flights_container {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
-  }
+}
 
-  .col-flight-depart-details, .col-flight-arrival-details {
+.col-flight-depart-details,
+.col-flight-arrival-details {
     max-width: 49%;
     width: 49%;
     flex: 1 0 auto;
@@ -523,24 +532,26 @@ div#flights_container {
     padding: 3px;
 }
 
-  .flight-seat-select-box {
+.flight-seat-select-box {
     max-width: 100%;
     width: 100%;
     flex: 1 0 auto;
     margin-left: 5px;
     padding-right: 22px !important;
-  }
+}
 
-  .col-flight-baggage-details {
+.col-flight-baggage-details {
     width: 100%;
     max-width: 100%;
     flex: 0 0 100%;
-  }
-  .extra-bagage-check {
+}
+
+.extra-bagage-check {
     display: flex;
     align-items: center;
-  }
-  input#extra-bagage {
+}
+
+input#extra-bagage {
     padding: 0 !important;
     line-height: 0 !important;
     max-height: 20px !important;
@@ -557,10 +568,12 @@ div#flights_container {
 .heenvlucht-details {
     width: 49%;
     border: solid 1px #D5DEE2;
-    padding:10px 5px;
+    padding: 10px 5px;
 }
 
-.heenvlucht-details h5, .flight-baggage h5, h5.heenvlucht-details {
+.heenvlucht-details h5,
+.flight-baggage h5,
+h5.heenvlucht-details {
     font-family: 'Rubik', sans-serif;
     font-size: 18px;
     font-weight: 500;
@@ -568,40 +581,42 @@ div#flights_container {
     margin-bottom: 10px;
     color: #00ADEF;
     text-transform: none;
-    border:none;
+    border: none;
     padding: 0;
-  }
+}
 
-  .flight-seat-select-box {
+.flight-seat-select-box {
     margin-top: 20px;
-  }
+}
 
-  .departure-flight-airport, .arrival-flight-airport {
+.departure-flight-airport,
+.arrival-flight-airport {
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: #0093CB;
     margin-bottom: 0;
-  }
+}
 
-  .col-flight-depart-details, .col-flight-arrival-details {
+.col-flight-depart-details,
+.col-flight-arrival-details {
     font-family: 'Rubik', sans-serif;
     font-size: 13px;
     font-weight: 400;
     color: #0A0A0A;
     line-height: 30px;
-  }
+}
 
-  .extra-bagage-check-label {
+.extra-bagage-check-label {
     font-family: 'Rubik', sans-serif;
     font-size: 13px;
     font-weight: 400;
     color: #0A0A0A;
-  }
+}
 
-  #flight-seat-flight-one {
+#flight-seat-flight-one {
     padding: 5px 10px !important;
-  }
+}
 
 
 /* VERZEKERINGEN */
@@ -613,59 +628,60 @@ div#flights_container {
     text-align: left;
 }
 
-.insurance-table thead{
+.insurance-table thead {
     box-shadow: none !important;
     -webkit-box-shadow: none !important;
-  }
+}
 
-  input.insurance-options {
+input.insurance-options {
     -webkit-appearance: checkbox;
     display: inline;
     width: 14px;
     height: 14px;
     margin-right: 15px;
-  }
+}
 
-  .insurance-options-check {
+.insurance-options-check {
     display: flex;
     align-items: center;
-  }
+}
 
-  .insurance-table-headings {
+.insurance-table-headings {
     font-family: 'Rubik', sans-serif !important;
-    font-size: 18px  !important;
-    font-weight: 500  !important;
-    margin-top: 20px  !important;
-    margin-bottom: 10px  !important;
-    color: #00ADEF  !important;
-    text-transform: none  !important;
-  }
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    margin-top: 20px !important;
+    margin-bottom: 10px !important;
+    color: #00ADEF !important;
+    text-transform: none !important;
+}
 
-  .type-verzekering-col {
+.type-verzekering-col {
     font-family: 'Rubik', sans-serif;
     font-size: 13px;
     font-weight: 500;
     color: #0A0A0A;
     width: 70%;
     padding: 8px !important;
-  }
+}
 
 .verzekering-description-box {
     padding: 12px 30px;
 }
 
-.verzekering-optie-col{
+.verzekering-optie-col {
     padding-top: 18px !important;
 }
 
-.insurancetype-check-label, .verzekering-optie-col {
+.insurancetype-check-label,
+.verzekering-optie-col {
     font-family: 'Rubik', sans-serif;
     font-size: 16px;
     font-weight: 700;
     color: #0093CB;
 }
 
-  .verzekering-description-box p {
+.verzekering-description-box p {
     font-family: 'Rubik', sans-serif;
     font-size: 12px;
     line-height: 24px;
@@ -675,19 +691,10 @@ div#flights_container {
 
 .verzekering-table-footer {
     background-color: #ECF2FA;
-  }
-.bib-price{
-    display: flex;
-    width: 90%;
-    height: auto;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 10px;
 }
-  
-  
-  /* SAMEVATTING EN BETALING */
-  .summary-table-head-subs {
+
+/* SAMEVATTING EN BETALING */
+.summary-table-head-subs {
     font-size: 15px !important;
     font-weight: 600;
     color: #00ADEF;
@@ -724,6 +731,10 @@ span.summ-heading {
     font-weight: bold;
 }
 
-.form-label-blue .badge{font-size: 16px;}
+.form-label-blue .badge {
+    font-size: 16px;
+}
 
-.select2-results__options li{font-size: 13px !important;}
+.select2-results__options li {
+    font-size: 13px !important;
+}

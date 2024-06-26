@@ -285,55 +285,12 @@ function gems_bookings_options() {
 			function saveEmailSettings(userId, subject, header, footer) {
 				var url = "<?php echo admin_url('admin-ajax.php'); ?>";
 				var form =  $('#capture-area').html();
-				var bookingData = {
-					adults_count: "1",
-					children_count: "0",
-					children_under_3_count: "0",
-					visitor_title: "dhr.",
-					visitor_name: "undefined undefined undefined",
-					visitor_address: "undefined undefined, undefined",
-					gl_title: "dhr.",
-					birthdate_visitor: "Invalid Date | Netherlands",
-					country_stayathome: "dhr.",
-					booking_stayhome_name: "adam  aa",
-					booking_stayathome_address_div: "maarnixstraat 20, adam",
-					booking_stayathome_birthdate_div: "zaterdag 12 december 1998 | Netherlands",
-					summary_bibs: [
-						{
-						bibs_name: "De 10k run",
-						bibs_count: "1",
-						bibs_price: "12.00"
-						},
-						{
-						bibs_name: "The Big One",
-						bibs_count: "1",
-						bibs_price: "100.00"
-						},
-						{
-						bibs_name: "NEW BIB",
-						bibs_count: "1",
-						bibs_price: "36.00"
-						}
-					],
-					departure_date: "ma 16 okt 2023",
-					arrival_date: "vr 20 okt 2023",
-					hotel_name: "9Hotel Opera",
-					hotel_price: "75.00",
-					extra_of_hotels: [],
-					non_extra_of_hotels: [],
-					flight: "\n                \n                    Voorbeeld: KL01234 --> P1\n                \n                \n                    Voorbeeld: KL01234 --> P1\n                \n                \n                    € ma 16 okt 2023 | 09:00:00\n                \n            ",
-					insurance: "\n                                \n                                    Cancellation insurance\n                                \n                                \n                                    0\n                                \n                            ",
-					sgr_fee: "12.25",
-					insurance_fee: "0.00",
-					calamity_fund: "0.00",
-					total_booking: "235.25",
-				}
 				
 				$jQ.ajax({
 					method: "POST",
 					dataType: "json",
 					url:  url,
-					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer, bookingData: bookingData},
+					data: { action: 'save_email_settings', user_id: userId, email_subject: subject, email_header: header, email_footer: footer},
 					success: function(data) {
 						// var result = JSON.parse(data);
 						alert("Email settings saved successfully");
@@ -400,6 +357,15 @@ function save_email_settings() {
 		else{
 			update_option('mail_setting_'.$user_id, $mail_settings);
 		}
+		// add_filter('wp_mail_content_type', function( $content_type ) {
+		// 	return 'text/html';
+		// });
+		// $headers = 'From: '. $from . "\r\n" .
+		// 	'Reply-To: ' . $from . "\r\n";
+		// 	$msg = 'testing the footer content <br> ' + str_replace(';', '<br>', $footer);
+		// 	var_dump($msg);
+		// $sent = wp_mail('yanick.assignon@m2-d2.com', $subject, $msg, $headers);
+
 		return true;
 	}
 	return true;
