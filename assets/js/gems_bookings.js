@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 
 	// Initialize date selection
-	$("#gl_dob, #sah_dob").datepicker({
+	$("#gl_dateofbirth, #sah_dateofbirth").datepicker({
 		autoclose: true,
 		todayHighlight: true,
 		format: 'dd/mm/yyyy'
