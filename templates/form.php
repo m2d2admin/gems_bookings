@@ -12,7 +12,7 @@
         return emailReg.test( email );
     }
 
-    function calculateInsurancePrice(adults_count, children_count, children_under_3_count, ins_price, ins_price_type, ins_price_per_participant, total_booking_price) {
+    function calculateInsurancePrice(adults_count, children_count, children_under_3_count, nights, ins_price, ins_price_type, ins_price_per_participant, total_booking_price) {
         //console.log(adults_count);
         //console.log(children_count);
         //console.log(children_under_3_count);
@@ -23,7 +23,6 @@
         //console.log('-----------------');
  
         var this_ins_price = 0,
-            nights = 1,
             travellers = 0;
 
         if(ins_price_type == 1) {
@@ -240,8 +239,19 @@
                     this_ins_price = 0,
                     adults_count = $("#adults_count").val(),
                     children_count = $("#children_count").val(),
-                    children_under_3_count = $("#children_under_3_count").val();
                 var insPrice = parseFloat($(this).closest('.type-verzekering-body').find('.insurance_option').html());
+                    children_under_3_count = $("#children_under_3_count").val(),
+                    booking_start_date = $("#booking_start_date").val(),
+                    booking_end_date = $("#booking_end_date").val();
+
+                let start_date = new Date(booking_start_date),
+                    end_date = new Date(booking_end_date);
+
+                // Calculating the time difference of two dates
+                let date_diff_time = end_date.getTime() - start_date.getTime();
+                
+                // Calculating the no. of days between two dates
+                var nights = Math.round(date_diff_time / (1000 * 3600 * 24));
 
                 var total_booking_price = 
                     parseFloat($("#total_bibs_price").val()) +
@@ -251,7 +261,8 @@
                     parseFloat($("#total_flight_departure_price").val()) +
                     parseFloat($("#total_flight_arrival_price").val());
 
-                this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3_count, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
+                this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3_count, nights, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
+
                 if ($(this).is(":checked")) {
                     // $price_label.html('&euro; ' + parseFloat(this_ins_price).toFixed(2));
                     $price_label.css('display', 'inline-block');
@@ -707,6 +718,11 @@
             $('#runners_div .runner_info').last().remove();
         }
 
+        $(document).on('click', '.vervoer-radio-btn-group .vervoer-radio-btn-label input', function() {
+            var transport_id = $(this).val();
+            $('#flight_plan_id').val(transport_id);
+        });
+
         function nationalities(){
             $.ajax({
                 url: '<?php echo $data->api_endpoint; ?>/nationalities-list/?locale=nl',
@@ -772,8 +788,6 @@
                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
                                 <input class="form-control" type="date" id="v_dob_${i}" name="v_dob[]" placeholder="Date of birth" required>
                             </div>
-
-                            
                         
                         </div>
                         <div class="col-4">
@@ -969,6 +983,7 @@
         $.ajax({
             url: '<?php echo $data->api_endpoint; ?>/booking/event-settings',
             type: 'GET',
+            dataType: 'json',
             headers: {
                 'e-key': '<?php echo $eventkey;?>',
                 'merchant-key': '<?php echo $data->merchant_key; ?>'
@@ -1041,8 +1056,6 @@
             },
             success: function(response) {
 
-
-
                 // Check if the response type is success
                 if (response.type === 'success') {
                     // get travellers count
@@ -1089,7 +1102,7 @@
                                     <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
                                     <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
                                     <div class="input-group-button">
-                                    <span class="button hollow circle value-button-room  plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
+                                    <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </span>
                                     </div>
@@ -1436,7 +1449,7 @@
                             var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
                             var flight_departure_date = new Date(item.departure_date),
                                 flight_arrival_date = new Date(item.arrival_date);
-                            
+              
                             if(item.route == 'D') {  //departure
             
                                 // Construct HTML for flight info
@@ -1455,11 +1468,11 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-departure">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][2]" class="form-select flight-departure">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option>                                            
-                                            <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
-                                            <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
-                                            <option value="Business" data-price="${item.business_ticket_price}">Business class - &#8364; ${item.business_ticket_price}</option>
+                                            <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
+                                            <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
+                                            <option value="bus" data-price="${item.business_ticket_price}">Business class - &#8364; ${item.business_ticket_price}</option>
                                         </select>
     
                                     </div>
@@ -1483,11 +1496,11 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-arrival">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][1]" class="form-select flight-arrival">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option> 
-                                            <option value="Economy" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
-                                            <option value="Comfort" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
-                                            <option value="Business" data-price="${item.business_ticket_price}">Business class - &#8364; ${item.business_ticket_price}</option>
+                                            <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
+                                            <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
+                                            <option value="bus" data-price="${item.business_ticket_price}">Business class - &#8364; ${item.business_ticket_price}</option>
                                         </select>
                                     </div>
                                 </div>`
@@ -1584,6 +1597,17 @@
                             adults_count = $("#adults_count").val(),
                             children_count = $("#children_count").val(),
                             children_under_3 = $("#children_under_3_count").val();
+                            booking_start_date = $("#booking_start_date").val(),
+                            booking_end_date = $("#booking_end_date").val();
+        
+                        let start_date = new Date(booking_start_date),
+                            end_date = new Date(booking_end_date);
+        
+                        // Calculating the time difference of two dates
+                        let date_diff_time = end_date.getTime() - start_date.getTime();
+                        
+                        // Calculating the no. of days between two dates
+                        var nights = Math.round(date_diff_time / (1000 * 3600 * 24));
 
                         total_booking_price = 
                             parseFloat($("#total_bibs_price").val()) +
@@ -1593,8 +1617,9 @@
                             parseFloat($("#total_flight_departure_price").val()) +
                             parseFloat($("#total_flight_arrival_price").val());
 
-                        this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
                         var  isPriceHidden = '';
+                        this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3, nights, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
+
                         var isOptionChecked	= '';
                         // if(parseInt(item.default_ticked) == 1){
                         //     isOptionChecked	= ' checked="checked"';
@@ -2569,7 +2594,7 @@
                                 <div class="error-message text-danger"></div>
 
                                 <form name="flights_form" id="flights_form">
-                                    <input type="hidden" id="transport" name="flight_plan_id" value="0">
+                                    <input type="hidden" id="flight_plan_id" name="flight_plan_id" value="0">
                                     <input type="hidden" id="total_flight_departure_price" value="0.00">
                                     <input type="hidden" id="total_flight_arrival_price" value="0.00">                                        
                                     
