@@ -1791,7 +1791,6 @@
         - booking_price
         */
 
-        
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;
             data += '&children_count=' + childrenCount;
@@ -1802,10 +1801,10 @@
             data += '&' + bibsFormData;
             data += '&arrival_date=' + arrivalDate;
             data += '&departure_date=' + departureDate;
-            data += '&hotel_id=' + hotelId;
+            data += '&' + hotelFormData;
             data += '&' + roomtypeFormData;
             data += '&' + extrasFormData;
-            data += '&flight_plan_id=' + flightPlanId;
+            data += '&' + flightsFormData;
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
