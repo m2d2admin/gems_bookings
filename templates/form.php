@@ -1,6 +1,6 @@
 <?php
     $eventkey = get_query_var( 'event', 'abc123XYZ456' );
-    //$eventkey = '64cbb86c14fb2';
+    //$eventkey = '64xcbb86c14fb2';
 ?>
 
 <script>
@@ -128,12 +128,13 @@
 
             $('#booking_visitor_title_div').html( title_visitor[0].text );  
             $('#booking_visitor_name_div').html( $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val() );
-            $('#booking_visitor_address_div').html( $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val() );
+            $('#booking_visitor_address_div').html( $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $("#gl_postal_code").val()  + ', ' + $('#gl_residence').val() + ' | ' + $('#gl_mobile').val() + ' | ' + $('#gl_email').val());
             $('#booking_visitor_birthdate_div').html( birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text);
 
             $('#booking_stayathome_title_div').html( title_stayathome[0].text );  
             $('#booking_stayathome_name_div').html( $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val() );
-            $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
+            // $('#booking_stayathome_address_div').html( $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val() );
+            $('#booking_stayathome_address_div').html( $('#sah_mobile').val() + ' | ' + $('#sah_email').val() );
             $('#booking_stayathome_birthdate_div').html( birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text );
 
             $( '#form_section3 input.bibs_count' ).data('max-qty', runners_count).prop('max', runners_count);
@@ -153,10 +154,10 @@
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <p>${bibs_name}</p>
                         </div>
-                        <div class="col-md-6 col-lg-8 col-xl-8">
+                        <div class="col-md-4 col-lg-4 col-xl-4">
                             <p>${bibs_count}</p>
                         </div>
-                        <div class="col-md-6 col-lg-8 col-xl-8">
+                        <div class="col-md-4 col-lg-4 col-xl-4">
                             <p>&euro; ${bibs_price}</p>
                         </div>
                     </div>`);
@@ -239,6 +240,7 @@
                     children_under_3_count = $("#children_under_3_count").val(),
                     booking_start_date = $("#booking_start_date").val(),
                     booking_end_date = $("#booking_end_date").val();
+                var insPrice = parseFloat($(this).closest('.type-verzekering-body').find('.insurance_option').html());
 
                 let start_date = new Date(booking_start_date),
                     end_date = new Date(booking_end_date);
@@ -249,7 +251,7 @@
                 // Calculating the no. of days between two dates
                 var nights = Math.round(date_diff_time / (1000 * 3600 * 24));
 
-                total_booking_price = 
+                var total_booking_price = 
                     parseFloat($("#total_bibs_price").val()) +
                     parseFloat($("#total_extra_price").val()) +
                     parseFloat($("#total_nonextra_price").val()) +
@@ -260,9 +262,10 @@
                 this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3_count, nights, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
 
                 if ($(this).is(":checked")) {
-
-                    $price_label.html('&euro; ' + this_ins_price.toFixed(2));
+                    // $price_label.html('&euro; ' + parseFloat(this_ins_price).toFixed(2));
                     $price_label.css('display', 'inline-block');
+                    console.log('insPrice', insPrice);
+                    console.log('ins_price', ins_price);
 
                     // Update summary
                     $('#summary_insurance_div').append(`<div class="row form-fields-rows">
@@ -270,7 +273,7 @@
                             <p>${ins_name}</p>
                         </div>
                         <div class="col-md-6 col-lg-8 col-xl-8">
-                            <p>&euro; ${this_ins_price}</p>
+                            <p>&euro; ${ins_price}</p>
                         </div>
                     </div>`);
 
@@ -281,8 +284,8 @@
                 }
 
             });
-            $('#total_insurance_price').val(total_insurance_price.toFixed(2));
-            $('#total_insurance').html('&euro; ' + total_insurance_price.toFixed(2));
+            $('#total_insurance_price').val(parseFloat(total_insurance_price).toFixed(2));
+            $('#total_insurance').html('&euro; ' + parseFloat(total_insurance_price).toFixed(2));
             getTotals();
             updateProgressBar();
         }
@@ -331,6 +334,15 @@
             $('input[type="radio"][name="hotel_room_id"]').each(function() {
                 if ($(this).val() != checkedValue) {
                     $(this).closest('.booking-card').find('input[type="number"]').val(0);
+                }else{
+                    //get name, prce and input number value
+                    var hotelRoomName = $(this).closest('.booking-card').find('.room-type-name').html();
+                    var hotelRoomPrice = $(this).closest('.booking-card').find('.room-type-price').html() + ' per hotelkamer'; // price/room
+                    var hotelRoomCount = $(this).closest('.booking-card').find('input[type="number"]').val();
+                    // set name, price and input number value to summary
+                    $('#summary_room_type_name').html(hotelRoomName);
+                    $('#summary_room_price').html(hotelRoomPrice);
+                    $('#summary_room_count').html(hotelRoomCount);
                 }
             });
         });
@@ -350,6 +362,9 @@
         // rm flight price when own transport is selected
         $(document).on('click', 'input[name="flightplan_id_OLD"]', function(e) {
             if($('input[id="own-transport"]').is(':checked')){
+                // append content to summary_flight_div div
+                $('#flight-holder').css('display', 'none');
+                $('#summary_flight_div').html('<p>Eigen vervoer</p>');
                 var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
                 $('input[type="radio"][name="flightplan_list"]').each(function() {
                     if ($(this).val() != checkedValue) {
@@ -357,6 +372,53 @@
                         $('.flight-arrival').val(null).trigger('change');
                         $('.flight-departure').val(null).trigger('change');
                     }
+                });
+            }else{
+                $('#flight-holder').css('display', 'block');
+                $('#summary_flight_div').html('');
+                $(document).on('click', 'input[name="flightplan_list"]', function(e) {
+                    var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
+                    var flightName = $(this).closest(".vervoer-radio-btn-label").find('#go_flight_details .col-flight-depart-details .departure-flight-airport').html();
+                    var returnflightName = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-depart-details .departure-flight-airport').html();
+                    console.log('flightName', flightName);
+                    console.log('returnflightName', returnflightName);
+
+                    // get departure fligth details from #departure_flight_details
+                    var goDepartureFlight = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-depart-details .departure-flight-airport').html();
+                    var goDate = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-depart-details .departure-flight-date').html();
+                    var goTime = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-depart-details .departure-flight-time').html();
+                    var goArrivalAirport = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-arrival-details .departure-flight-airport').html();
+                    var goArrivaldate = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-arrival-details .arrival-flight-date').html();
+                    var goArrivaltime = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-arrival-details .arrival-flight-time').html();
+                    // get select value from select .flight-departure
+                    $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .flight-departure').on('change', function() {
+                        var departureFlightClasse = $(this).children('option:selected').text() + ' per persoon';
+                        $("#summary_go_travel_classe").html(departureFlightClasse);
+                    });
+                    
+                    // return flight details
+                    var returnDepartureFlight = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-depart-details .departure-flight-airport').html();
+                    var returnDate = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-depart-details .departure-flight-date').html();
+                    var returnTime = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-depart-details .departure-flight-time').html();
+                    var returnAirport = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-arrival-details .departure-flight-airport').html();
+                    var returnArrivaldate = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-arrival-details .arrival-flight-date').html();
+                    var returnArrivaltime = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-arrival-details .arrival-flight-time').html();
+                    // get select value from select .flight-departure
+                    // (this).children('option:selected').data('price')
+                    $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .flight-arrival').on('change', function() {
+                        var returnFlightClasse = $(this).children('option:selected').text() + ' per persoon';
+                        $("#summary_return_travel_classe").html(returnFlightClasse);
+                    });
+                    
+                    // append go flight details
+                    $("#summary_go_flight_name").html(goDepartureFlight);
+                    $("#summary_go_departure").html(`${goDate} - ${goTime}`);
+                    $("#summary_go_arrival").html(`${goArrivaldate} - ${goArrivaltime}`);
+
+                    // append return flight details
+                    $("#summary_return_flight_name").html(returnDepartureFlight);
+                    $("#summary_return_departure").html(`${returnDate} - ${returnTime}`);
+                    $("#summary_return_arrival").html(`${returnArrivaldate} - ${returnArrivaltime}`);
                 });
             }
         });
@@ -564,7 +626,6 @@
                     }
                     // update flight price calculation
                     var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
-                    console.log('travelersCount-plus', travelersCount);
                     if(!isNaN(arrivalUnitPrice) && !isNaN(departureUnitPrice) || arrivalUnitPrice != 0 && departureUnitPrice != 0){ 
                         $('#total_flight_arrival_price').val(arrivalUnitPrice*travelersCount);
                         $('#total_flight_departure_price').val(departureUnitPrice*travelersCount);
@@ -688,7 +749,7 @@
         function addTravellerToForm(i = 1) {
     
             var htmlToAdd = `
-                <div class="runner_info">
+                <div class="runner_info extra_runners_info">
                     <div class="row">
                         <div class="col-12">
                             <div class="visitor">
@@ -772,6 +833,48 @@
 
         nationalities();
 
+        // add the extra traveler info to summary
+        $(document).on('click', '.btn-form-step', function(e) {
+           if($(this).data('source') == "#form_section2"){
+            console.log('nation selected', $(this).find('select[name="gl_nationality"] option:selected').text());
+            console.log('nation text()', $(this).find('select[name="gl_nationality"]').text());
+                $('#extra_runners').html('');
+                $(".extra_runners_info").each(function(){
+                    var options = { year: 'numeric', month: 'short', day: 'numeric' };
+                    var dof =  new Date( $(this).find('input[name="v_dob[]"]').val() );
+                    var booking_visitor_title = $(this).find('select[name="v_title[]"]').val();
+                    var booking_visitor_name = $(this).find('input[name="v_first_name[]"]').val() + ' ' + $(this).find('input[name="v_middle_name[]"]').val() + ' ' + $(this).find('input[name="v_last_name[]"]').val();
+                    // var booking_visitor_address = $(this).find('input[name="v_address[]"]').val() + ' ' + $(this).find('input[name="v_postal_code[]"]').val() + ' ' + $(this).find('input[name="v_city[]"]').val() + ' ' + $(this).find('select[name="gl_country"]').val();
+                    var booking_visitor_birthdate = dof.toLocaleDateString("nl-NL", options) + ' | ' + $(this).find('select[name="gl_nationality"] option:selected').text();
+
+                    var extraRunners = `
+                        <div class="row form-fields-rows">
+                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                <p class="summary-table-head-subs">Naam</p>
+                                <span>${booking_visitor_title}</span>&nbsp;<span>${booking_visitor_name}</span><br>   
+                            </div>
+                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                <p class="summary-table-head-subs">Contactgegevens</p>
+                                <div class="d-flex">
+                                    <div class="mr-2">
+                                       
+                                    </div>
+                                    <div class="address"><span></span><br></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
+                                <span>${booking_visitor_birthdate}</span>
+                            </div>                                                    
+                        </div>
+                    `;
+                    $('#extra_runners').append(extraRunners);
+                });
+            }
+        });
+
+
+
         $(document).on("click",".vervoer-radio-btn-group",function(){
             var transport_id = $(this).find('input').val();
             $('#transport_id').val(transport_id);
@@ -807,20 +910,36 @@
         $(document).on("change",".flight-arrival",function(){
             var travelers_amount = $('#travellers_amount').val(),
                 arrival_price = $(this).children('option:selected').data('price');
-                console.log('arrival', arrival_price * travelers_amount);
             $('#total_flight_arrival_price').val(arrival_price * travelers_amount);
             getTotals();
         });
 
         function getTotals() {
+            var booking_calamity_fund = parseFloat($('#booking_calamity_fund_div').text());
+            var booking_insurance_fee_div = parseFloat($('#booking_insurance_fee_div').text());
+            var sgr_fee = parseFloat($('#booking_sgr_fee_div').text());
+            var adults_count = $("#adults_count").val();
+            var children_count = $("#children_count").val();
+            var children_under_3_count = $("#children_under_3_count").val();
+            var total_travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count);
+            var total_sgr_fee = sgr_fee * total_travelers;
+            console.log(sgr_fee);
+            console.log('total_travelers', total_travelers);
+            console.log('total_sgr_fee', total_sgr_fee);
+
             var total_booking = parseFloat($('#total_bibs_price').val()) + 
                 parseFloat($('#total_room_price').val()) + 
                 parseFloat($('#total_extra_price').val()) + 
                 parseFloat($('#total_nonextra_price').val()) + 
                 parseFloat($('#total_flight_departure_price').val()) + 
                 parseFloat($('#total_flight_arrival_price').val()) +
-                parseFloat($('#total_insurance_price').val());
+                parseFloat($('#total_insurance_price').val()) +
+                parseFloat(total_sgr_fee) +
+                booking_calamity_fund +
+                booking_insurance_fee_div;
+
             $('#total_booking').html('&euro; ' + total_booking.toFixed(2));
+            $('#summary_total_booking').html('&euro; ' + total_booking.toFixed(2));
             // display selected event(s) names
             // $('#form_section3 input.bibs_count' ).each(function(){
             //     $('#selected_events').html();
@@ -1128,7 +1247,7 @@
 
                                     <div class="card card-default card-input">
                                         <div class="card-header hotels-details-header" style="height: 75px;">
-                                            <div class="card-title">${hotelName}</div>
+                                            <div class="card-title room-type-name">${hotelName}</div>
                                             <div class="card-title-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" height="40" width="40" viewBox="0 0 60 43.548">
                                                     <path id="hotel" d="M56.614,43.009l-1.935-1.631V30.231h1.935Zm5.308-16.064-3.15-7.36a.975.975,0,0,0-.89-.585H53.411a.963.963,0,0,0-.885.585l-3.15,7.36a.969.969,0,0,0,.89,1.35H61.032a.969.969,0,0,0,.89-1.35ZM16.661,38.161V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035H32.14V37.126a2.6,2.6,0,0,1,2.594-2.594h6.14a2.6,2.6,0,0,1,2.594,2.594v1.035h4.984V33.1a5.344,5.344,0,0,0-5.337-5.337h-26.1A5.344,5.344,0,0,0,11.677,33.1v5.061ZM54.5,46.29h3.01l-.9-.755-1.935-1.626L50.14,40.1H9.989L2.615,46.29ZM6.355,59.3H4.419V61.58a.971.971,0,0,0,.968.968H10.1a.971.971,0,0,0,.968-.968V59.3ZM51,59.3H49.061V61.58a.971.971,0,0,0,.968.968h4.713a.971.971,0,0,0,.968-.968V59.3ZM3.935,48.226H2V56.4a.971.971,0,0,0,.968.968H57.161a.971.971,0,0,0,.968-.968V48.226Z" transform="translate(-2 -19)" fill="#0093cb" />
@@ -1139,7 +1258,7 @@
                                         <div class="card-body">
                                             <div class="card-body-price-heading">
                                             <div class="card-body-price-vanaf-sub">Prijs vanaf</div>
-                                            <div class="card-body-price">&#8364; ${item.price}</div>
+                                            <div class="card-body-price room-type-price">&#8364; ${item.price}</div>
                                             </div>
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
@@ -1332,7 +1451,7 @@
                             if(item.route == 'D') {  //departure
             
                                 // Construct HTML for flight info
-                                flightInfoHtml += `<div class="flight-details-box-row">
+                                flightInfoHtml += `<div class="flight-details-box-row" id="go_flight_details">
                                     <div class="col-flight-depart-details">
                                         <div class="departure-flight-airport">${item.flight_number} --> ${item.departure_port}</div>
                                         <div class="departure-flight-depart">Vertrek</div>
@@ -1360,7 +1479,7 @@
                             }else if(item.route == 'H') {   //arrival
             
                                 // Construct HTML for flight info
-                                returnflightInfoHtml += `<div class="flight-details-box-row">
+                                returnflightInfoHtml += `<div class="flight-details-box-row" id="return_flight_details">
                                     <div class="col-flight-depart-details">
                                         <div class="departure-flight-airport">${item.flight_number} --> ${item.departure_port}</div>
                                         <div class="departure-flight-depart">Vertrek</div>
@@ -1496,26 +1615,28 @@
                             parseFloat($("#total_flight_departure_price").val()) +
                             parseFloat($("#total_flight_arrival_price").val());
 
+                        var  isPriceHidden = '';
                         this_ins_price = calculateInsurancePrice(adults_count, children_count, children_under_3, nights, ins_price, ins_price_type, ins_price_per_participant, total_booking_price);
 
                         var isOptionChecked	= '';
-                        if(parseInt(item.default_ticked) == 1){
-                            isOptionChecked	= ' checked="checked"';
-                            isPriceHidden =  '';
-                            total_insurance += parseFloat(item.price);
+                        // if(parseInt(item.default_ticked) == 1){
+                        //     isOptionChecked	= ' checked="checked"';
+                        //     isPriceHidden =  '';
+                        //     total_insurance += parseFloat(item.price);
 
-                            $('#summary_insurance_div').append(`<div class="row form-fields-rows">
-                                <div class="col-md-6 col-lg-4 col-xl-4">
-                                    <p>${item.insurance_name}</p>
-                                </div>
-                                <div class="col-md-6 col-lg-8 col-xl-8">
-                                    <p>${this_ins_price}</p>
-                                </div>
-                            </div>`);
+                        //     $('#summary_insurance_div').append(`<div class="row form-fields-rows">
+                        //         <div class="col-md-6 col-lg-4 col-xl-4">
+                        //             <p>${item.insurance_name}</p>
+                        //         </div>
+                        //         <div class="col-md-6 col-lg-8 col-xl-8">
+                        //             <p>${this_ins_price}</p>
+                        //         </div>
+                        //     </div>`);
 
-                        } else {
-                            isPriceHidden =  'style="display:none;"';
-                        }
+
+                        // } else {
+                        //     isPriceHidden =  'style="display:none;"';
+                        // }
                         // Construct HTML for flight plan
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
@@ -1668,7 +1789,6 @@
         - booking_price
         */
 
-        
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;
             data += '&children_count=' + childrenCount;
@@ -1679,10 +1799,10 @@
             data += '&' + bibsFormData;
             data += '&arrival_date=' + arrivalDate;
             data += '&departure_date=' + departureDate;
-            data += '&hotel_id=' + hotelId;
+            data += '&' + hotelFormData;
             data += '&' + roomtypeFormData;
             data += '&' + extrasFormData;
-            data += '&flight_plan_id=' + flightPlanId;
+            data += '&' + flightsFormData;
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
@@ -1737,34 +1857,35 @@
             // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
             var bookingData = {
-                adults_count: $('#adults_count').val(),
-                children_count: $('#children_count').val(),
-                children_under_3_count: $('#children_under_3_count').val(),
-                visitor_title: title_visitor[0].text,
-                visitor_name: $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val(),
-                visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
-                gl_title: $('#gl_title').select2('data')[0].text,
-                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
-                gl_email: $('#gl_email').val(),
-                gl_first_name: $('#gl_first_name').val(),
-                birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
-                country_stayathome: title_stayathome[0].text,
-                booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
-                booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
-                booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
-                summary_bibs: bibs,
-                departure_date: $('#summary_departure_date').text(),
-                arrival_date: $('#summary_arrival_date').text(),
-                hotel_name: $('#summary_hotel_name').text(),
-                hotel_price: $('#summary_room_price').text(),
-                extra_of_hotels: extra_of_hotels,
-                non_extra_of_hotels: non_extra_of_hotels,
-                flight: $('#summary_flight_div').text(),
-                insurance: $('#summary_insurance_div').text(),
-                sgr_fee: $('#booking_sgr_fee_div').text(),
-                insurance_fee: $('#booking_insurance_fee_div').text(),
-                calamity_fund: $('#booking_calamity_fund_div').text(),
-                total_booking: $('#total_booking').text(),
+                // adults_count: $('#adults_count').val(),
+                // children_count: $('#children_count').val(),
+                // children_under_3_count: $('#children_under_3_count').val(),
+                // visitor_title: title_visitor[0].text,
+                // visitor_name: $('#gl_first_name').val() + ' ' + $('#gl_middle_name').val() + ' ' + $('#gl_last_name').val(),
+                // visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
+                // gl_title: $('#gl_title').select2('data')[0].text,
+                // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
+                // gl_email: $('#gl_email').val(),
+                // gl_first_name: $('#gl_first_name').val(),
+                // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
+                // country_stayathome: title_stayathome[0].text,
+                // booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
+                // booking_stayathome_address_div: $('#sah_street').val() + ' ' + $('#sah_house_number').val() + ', ' + $('#sah_residence').val(),
+                // booking_stayathome_birthdate_div: birthdate_stayathome.toLocaleDateString("nl-NL", options) + ' | ' + country_stayathome[0].text,
+                // summary_bibs: bibs,
+                // departure_date: $('#summary_departure_date').text(),
+                // arrival_date: $('#summary_arrival_date').text(),
+                // hotel_name: $('#summary_hotel_name').text(),
+                // hotel_price: $('#summary_room_price').text(),
+                // extra_of_hotels: extra_of_hotels,
+                // non_extra_of_hotels: non_extra_of_hotels,
+                // flight: $('#summary_flight_div').text(),
+                // insurance: $('#summary_insurance_div').text(),
+                // sgr_fee: $('#booking_sgr_fee_div').text(),
+                // insurance_fee: $('#booking_insurance_fee_div').text(),
+                // calamity_fund: $('#booking_calamity_fund_div').text(),
+                // total_booking: $('#total_booking').text(),
+                summary: encodeURIComponent($('#summary_data').html()),
 
             }
             mailBookingData(bookingData);
@@ -2749,257 +2870,303 @@
                                     -->
                                    
                                     <div class="row">
-                                            <div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Volwassene(n)</p>
-                                                        <span id="summary_adults_count">0</span>    
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Kinderen</p>
-                                                        <span id="summary_children_count">0</span>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Baby's</p>
-                                                        <span id="summary_children_under_3_count">0</span>
-                                                    </div>                                                    
+                                            <div class="col-12 my-3" id="summary_data">
+                                                <div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
                                                 </div>
-                                            </div>
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading">Bezoekersinformatie</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Naam</p>
-                                                        <span class="summary-sub-headings-txt">Hoofdboeker:</span> <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Volwassene(n)</p>
+                                                            <span id="summary_adults_count">0</span>    
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Kinderen</p>
+                                                            <span id="summary_children_count">0</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Baby's</p>
+                                                            <span id="summary_children_under_3_count">0</span>
+                                                        </div>                                                    
                                                     </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Contactgegevens</p>
-                                                        <div class="d-flex">
-                                                            <div class="mr-2">
-                                                                <i class="fa-solid fa-location-dot"></i>
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading">Bezoekersinformatie</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Naam</p>
+                                                            <span class="summary-sub-headings-txt">Hoofdboeker:</span> <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Contactgegevens</p>
+                                                            <div class="d-flex">
+                                                                <div class="mr-2">
+                                                                    <!-- <i class="fa-solid fa-location-dot"></i> -->
+                                                                </div>
+                                                                <div class="address"><span id="booking_visitor_address_div"></span><br></div>
                                                             </div>
-                                                            <div class="address"><span id="booking_visitor_address_div"></span><br></div>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
+                                                            <span id="booking_visitor_birthdate_div"></span>
+                                                        </div>                                                    
+                                                    </div>
+
+                                                    <div id="extra_runners">
+
+                                                    </div>
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <span class="summary-sub-headings-txt">Thuisblijver:</span> <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="d-flex">
+                                                                <!-- <div class="mr-2">
+                                                                    <i class="fa-solid fa-location-dot"></i>
+                                                                </div> -->
+                                                                <div class="address"><span id="booking_stayathome_address_div"></span><br></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <span id="booking_stayathome_birthdate_div">
+                                                        </div>                                                     -->
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading">Startbewijzen</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Challenge</p>
+                                                        </div>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Aantal startbewijzen</p>
+                                                        </div>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
-                                                        <span id="booking_visitor_birthdate_div">
-                                                    </div>                                                    
+
+                                                    <div id="summary_bibs_div">
+                                                    </div>
+
                                                 </div>
 
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <span class="summary-sub-headings-txt">Thuisblijver:</span> <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <div class="d-flex">
-                                                            <div class="mr-2">
-                                                                <i class="fa-solid fa-location-dot"></i>
-                                                            </div>
-                                                            <div class="address"><span id="booking_stayathome_address_div"></span><br></div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading">Datums</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-8 col-xl-8">
+                                                            <p class="summary-table-head-subs">Vertrek</p>
+                                                            <span id="summary_departure_date" class="summary-body-txt">-</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Aankomst</p>
+                                                            <span id="summary_arrival_date" class="summary-body-txt">-</span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <span id="booking_stayathome_birthdate_div">
-                                                    </div>                                                    
+
                                                 </div>
 
-                                            </div>
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading">Startbewijzen</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">05</span><span class="summ-heading">Hotel</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Challenge</p>
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">-</span></p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">type hotelkamer</p>
+                                                            <span id="summary_room_type_name" class="summary-body-txt">-</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Aantal hotelkamer</p>
+                                                            <span id="summary_room_count" class="summary-body-txt">-</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                            <span id="summary_room_price" class="summary-body-txt">-</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-4 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Aantal startbewijzen</p>
-                                                    </div>
-                                                    <div class="col-md-4 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Prijs</p>
-                                                    </div>
+
                                                 </div>
 
-                                                <div id="summary_bibs_div">
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra's</span></h3>
                                                 </div>
-
-                                            </div>
-
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading">Datums</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p class="summary-table-head-subs">Vertrek</p>
-                                                        <span id="summary_departure_date" class="summary-body-txt">-</span>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Aankomst</p>
-                                                        <span id="summary_arrival_date" class="summary-body-txt">-</span>
-                                                    </div>
+                                                <div class="col-12 mob-hide">
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's van hotel</h4>
                                                 </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                            </div>
-
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">05</span><span class="summ-heading">Hotel</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Hotel naam</p>
-                                                        <span id="summary_hotel_name" class="summary-body-txt">-</span>
+                                                    <div class="row form-fields-rows hotel-extras">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Opties</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Personen</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p class="summary-table-head-subs">Prijs</p>
-                                                        <span id="summary_room_price" class="summary-body-txt">-</span>
+
+                                                    <div id="summary_extra_div">
                                                     </div>
+
                                                 </div>
-
-                                            </div>
-
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra's</span></h3>
-                                            </div>
-                                            <div class="col-12 mob-hide">
-                                                <h4 class="body-14  regular-400 gray-1 mb-1">Extra's van hotel</h4>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows hotel-extras">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Opties</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Personen</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Prijs</p>
-                                                    </div>
+                                                <div class="col-12 mt-3 mob-hide">
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's buiten het hotel</h4>
                                                 </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div id="summary_extra_div">
+                                                    <div class="row form-fields-rows hotel-extras">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Opties</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Personen</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_nonextra_div">
+                                                    </div>
+
+
                                                 </div>
-
-                                            </div>
-                                            <div class="col-12 mt-3 mob-hide">
-                                                <h4 class="body-14  regular-400 gray-1 mb-1">Extra's buiten het hotel</h4>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows hotel-extras">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Opties</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Personen</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Prijs</p>
-                                                    </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Transport</span></h3>
                                                 </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+                                                    <div id="flight-holder">
+                                                        <div class="row form-fields-rows">
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1">Heenvlucht</h4>
+                                                        </div>
+                                                        <div class="row form-fields-rows">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Vlucht</p>
+                                                                <span id="summary_go_flight_name" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Vertrek</p>
+                                                                <span id="summary_go_departure" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Aankomst</p>
+                                                                <span id="summary_go_arrival" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Reisklasse</p>
+                                                                <span id="summary_go_travel_classe" class="summary-body-txt">-</span>
+                                                            </div>
+                                                        </div>
 
-                                                <div id="summary_nonextra_div">
+                                                        <div class="row form-fields-rows">
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1">Retourvlucht</h4>
+                                                        </div>
+                                                        <div class="row form-fields-rows">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Vlucht</p>
+                                                                <span id="summary_return_flight_name" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Vertrek</p>
+                                                                <span id="summary_return_departure" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Aankomst</p>
+                                                                <span id="summary_return_arrival" class="summary-body-txt">-</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                                <p class="summary-table-head-subs">Reisklasse</p>
+                                                                <span id="summary_return_travel_classe" class="summary-body-txt">-</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_flight_div">
+                                                    </div>
+
+
                                                 </div>
-
-
-                                            </div>
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Transport</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Vlucht</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Vertrek</p>
-                                                    </div>
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Aankomst</p>
-                                                    </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekering</span></h3>
                                                 </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
-                                                <div id="summary_flight_div">
-                                                </div>
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Verzekering</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-8 col-xl-8">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
 
-
-                                            </div>
-                                            <div class="col-12 my-3 mob-hide summ-head-box">
-                                                <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekering</span></h3>
-                                            </div>
-                                            <div class="col-12 table-responsive overflow-y-clip mob-hide">
-
-                                                <div class="row form-fields-rows">
-                                                    <div class="col-md-6 col-lg-4 col-xl-4">
-                                                        <p class="summary-table-head-subs">Verzekering</p>
+                                                    <div id="summary_insurance_div">
                                                     </div>
-                                                    <div class="col-md-6 col-lg-8 col-xl-8">
-                                                        <p class="summary-table-head-subs">Prijs</p>
-                                                    </div>
+    
                                                 </div>
-
-                                                <div id="summary_insurance_div">
+                                                <div class="col-12 my-3 box-padding-mob">
+                                                    <h3 class="form-label-blue">Overige kosten</h3>
                                                 </div>
- 
-                                            </div>
-                                            <div class="col-12 my-3 box-padding-mob">
-                                                <h3 class="form-label-blue">Overige kosten</h3>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="row mb-1">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
-                                                        SGR fee
+                                                <div class="col-12">
+                                                    <div class="row mb-1">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            SGR fee
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                        <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon</span>
+                                                    <div class="row mb-1">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            Administratiekosten verzekering
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            + <span id="booking_insurance_fee_div"></span> <span class="summary-sub-headings-txt">% per verzekering</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="row mb-1">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
-                                                        Administratiekosten verzekering
-                                                    </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                        + <span id="booking_insurance_fee_div"></span> <span class="summary-sub-headings-txt">% per verzekering</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
-                                                        Calamiteitenfonds
-                                                    </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                        <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span>
+                                                    <div class="row">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            Calamiteitenfonds
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <hr>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="row mb-2">
-                                                    <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
-                                                        Totaal
-                                                    </div>
-                                                    <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-                                                        <span>€</span> <span>0.00</span>
+                                                <div class="col-12">
+                                                    <hr>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row mb-2">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
+                                                            Totaal
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
+                                                            <span id="summary_total_booking">0.00</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <hr>
+                                                <div class="col-12">
+                                                    <hr>
+                                                </div>
                                             </div>
                                             <div class="box-padding-mob col-12 col-md-10 col-xl-10 booking-special-notes">
                                                 <div class="form-group">
@@ -3042,7 +3209,6 @@
                                                 </button>   
                                             </div>
                                         </div>
-
                                 </div>   
 
                             </div>
