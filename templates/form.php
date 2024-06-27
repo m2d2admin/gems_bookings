@@ -239,10 +239,10 @@
                     this_ins_price = 0,
                     adults_count = $("#adults_count").val(),
                     children_count = $("#children_count").val(),
-                var insPrice = parseFloat($(this).closest('.type-verzekering-body').find('.insurance_option').html());
                     children_under_3_count = $("#children_under_3_count").val(),
                     booking_start_date = $("#booking_start_date").val(),
                     booking_end_date = $("#booking_end_date").val();
+                var insPrice = parseFloat($(this).closest('.type-verzekering-body').find('.insurance_option').html());
 
                 let start_date = new Date(booking_start_date),
                     end_date = new Date(booking_end_date);
