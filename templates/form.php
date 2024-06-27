@@ -1868,8 +1868,6 @@
                 // visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
                 // gl_title: $('#gl_title').select2('data')[0].text,
                 // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
-                // gl_email: $('#gl_email').val(),
-                // gl_first_name: $('#gl_first_name').val(),
                 // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
                 // country_stayathome: title_stayathome[0].text,
                 // booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
@@ -1888,6 +1886,8 @@
                 // insurance_fee: $('#booking_insurance_fee_div').text(),
                 // calamity_fund: $('#booking_calamity_fund_div').text(),
                 // total_booking: $('#total_booking').text(),
+                gl_first_name: $('#gl_first_name').val(),
+                gl_email: $('#gl_email').val(),
                 summary: encodeURIComponent($('#summary_data').html()),
 
             }
@@ -1905,8 +1905,8 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                   // mailBookingData(bookingData);
                     alert('Boekingsgegevens succesvol geplaatst!');
+                    // mailBookingData(bookingData);
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
