@@ -1887,6 +1887,8 @@
                 // total_booking: $('#total_booking').text(),
                 gl_first_name: $('#gl_first_name').val(),
                 gl_email: $('#gl_email').val(),
+                event_name: $('#booking_event').text(),
+                correspondent_number: "coming_soon",
                 summary: encodeURIComponent($('#summary_data').html()),
 
             }

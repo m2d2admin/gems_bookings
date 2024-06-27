@@ -139,11 +139,34 @@ i.fa-circle-info {margin-left: 20px;}
 .other-costs .row .box-padding-mob{font-weight: bold;font-size: 14px;}
 .total .row .box-padding-mob{font-weight: 700;font-size: 17px;}
 .bibs-div {display: flex;flex-direction: row;justify-content: space-between;align-items: center;}
+.correspondent_number {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-align: center;
+  width: 98%;
+  padding: 20px 0px 70px 20px;
+  border-left: 5px solid #4fb9f3;
+  background-color: #2c3034;
+}
+.correspondent_number p{
+  margin: 0px;
+  color: #4fb9f3;
+}
+.correspondent_number h2{
+  margin: 0px;
+  color: white;
+}
 </style>
     </head>
     <div class="card">
         <div class="row">
-            <p>'.$email_settings["email_header"].'</p>
+            <p>'.$email_settings["email_header"].'</p><br>
+            <p>De reis die u gaat maken is '.$booking_details["event_name"].'</p><br><br>
+            <div class="correspondent_number">
+                <p>Uw correspondentienummer is</p>
+                <h2>'.$booking_details["correspondent_number"].'</h2>
+            </div><br>
             <div id="form_section9_content">
                 '.urldecode($booking_details["summary"]).'
             </div>
