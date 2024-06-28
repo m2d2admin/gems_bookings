@@ -759,7 +759,7 @@
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="traveller_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox traveller_is_runner">
+                                            <input type="checkbox" name="v_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox traveller_is_runner">
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
@@ -792,7 +792,7 @@
 
                             <div class="form-group">
                                 <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
-                                <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality_${i}" required>
+                                <select placeholder="Nationaliteit" class="form-control form-select" name="v_nationality" id="v_nationality_${i}" required>
                                     <option value="">Nationaliteit</option>
                                 </select>
                             </div>
@@ -1865,8 +1865,6 @@
                 // visitor_address: $('#gl_street').val() + ' ' + $('#gl_house_number').val() + ', ' + $('#gl_residence').val(),
                 // gl_title: $('#gl_title').select2('data')[0].text,
                 // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text,
-                // gl_email: $('#gl_email').val(),
-                // gl_first_name: $('#gl_first_name').val(),
                 // birthdate_visitor: birthdate_visitor.toLocaleDateString("nl-NL", options)  + ' | ' + country_visitor[0].text + ' | ' + country_visitor_nationality[0].text,
                 // country_stayathome: title_stayathome[0].text,
                 // booking_stayhome_name: $('#sah_first_name').val() + ' ' + $('#sah_middle_name').val() + ' ' + $('#sah_last_name').val(),
@@ -1885,6 +1883,10 @@
                 // insurance_fee: $('#booking_insurance_fee_div').text(),
                 // calamity_fund: $('#booking_calamity_fund_div').text(),
                 // total_booking: $('#total_booking').text(),
+                gl_first_name: $('#gl_first_name').val(),
+                gl_email: $('#gl_email').val(),
+                event_name: $('#booking_event').text(),
+                correspondent_number: "coming_soon",
                 summary: encodeURIComponent($('#summary_data').html()),
 
             }
@@ -1902,8 +1904,8 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                   // mailBookingData(bookingData);
                     alert('Boekingsgegevens succesvol geplaatst!');
+                    // mailBookingData(bookingData);
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
@@ -2097,9 +2099,9 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
-                                        <div class="form-group">
+                                            <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
-                                                <input class="form-control" type="date" id="gl_dateofbirth" name="dateofbirth" placeholder="Geboortedatum" required>
+                                                <input class="form-control" type="date" id="gl_dateofbirth" name="gl_dateofbirth" placeholder="Geboortedatum" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
