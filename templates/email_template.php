@@ -165,7 +165,7 @@ i.fa-circle-info {margin-left: 20px;}
             <p>De reis die u gaat maken is '.$booking_details["event_name"].'</p><br><br>
             <div class="correspondent_number">
                 <p>Uw correspondentienummer is</p>
-                <h2>'.$booking_details["correspondent_number"].'</h2>
+                <h2>'.$booking_details["booking_code"].'</h2>
             </div><br>
             <div id="form_section9_content">
                 '.urldecode($booking_details["summary"]).'

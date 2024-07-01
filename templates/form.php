@@ -1858,7 +1858,7 @@
 
             // var booking_date_info = booking_start_date + ' - ' + booking_end_date;
 
-            var bookingData = {
+            // var bookingData = {
                 // adults_count: $('#adults_count').val(),
                 // children_count: $('#children_count').val(),
                 // children_under_3_count: $('#children_under_3_count').val(),
@@ -1885,14 +1885,8 @@
                 // insurance_fee: $('#booking_insurance_fee_div').text(),
                 // calamity_fund: $('#booking_calamity_fund_div').text(),
                 // total_booking: $('#total_booking').text(),
-                gl_first_name: $('#gl_first_name').val(),
-                gl_email: $('#gl_email').val(),
-                event_name: $('#booking_event').text(),
-                correspondent_number: "coming_soon",
-                summary: encodeURIComponent($('#summary_data').html()),
-
-            }
-            mailBookingData(bookingData);
+            // }
+            // mailBookingData(bookingData);
 
             // Ajax call to post data
             $.ajax({
@@ -1907,14 +1901,21 @@
                     // Handle success response
                     console.log(response);
                     alert('Boekingsgegevens succesvol geplaatst!');
-                    // mailBookingData(bookingData);
+                    var bookingData = {
+                        gl_first_name: $('#gl_first_name').val(),
+                        gl_email: $('#gl_email').val(),
+                        event_name: $('#booking_event').text(),
+                        booking_code: "coming_soon",
+                        summary: encodeURIComponent($('#summary_data').html()),
+                    };
+                    mailBookingData(bookingData);
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
                     console.log('data', data);
                     console.error('Fout bij het plaatsen van boekingsgegevens:', error);
-                    if(xhr.status == 200)
-                        mailBookingData(bookingData);
+                    // if(xhr.status == 200)
+                    //     mailBookingData(bookingData);
                     alert('Fout bij het plaatsen van boekingsgegevens. Probeer het opnieuw.');
                 }
             });
