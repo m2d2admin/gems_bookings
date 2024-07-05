@@ -761,7 +761,7 @@
                                 <div class="mt-2">
                                     <div class="custom-control custom-checkbox">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="traveller_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox traveller_is_runner">
+                                            <input type="checkbox" name="v_is_runner[]" id="traveller_is_runner_${i}" class="custom-control-input form-input-checkbox traveller_is_runner">
                                             <label title="" for="traveller_is_runner_${i}" class="custom-control-label"></label>
                                         </div>
                                         <label class="form-label">
@@ -794,7 +794,7 @@
 
                             <div class="form-group">
                                 <label class="form-label field-label">Nationaliteit <span class="required">*</span></label>
-                                <select placeholder="Nationaliteit" dataplaceholder="Nationaliteit" class="form-control form-select" name="gl_nationality" id="gl_nationality_${i}" required>
+                                <select placeholder="Nationaliteit" class="form-control form-select" name="v_nationality" id="v_nationality_${i}" required>
                                     <option value="">Nationaliteit</option>
                                 </select>
                             </div>
@@ -2102,9 +2102,9 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
-                                        <div class="form-group">
+                                            <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
-                                                <input class="form-control" type="date" id="gl_dateofbirth" name="dateofbirth" placeholder="Geboortedatum" required>
+                                                <input class="form-control" type="date" id="gl_dateofbirth" name="gl_dateofbirth" placeholder="Geboortedatum" required>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
