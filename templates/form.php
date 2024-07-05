@@ -1943,7 +1943,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row booking-form-section">
             <div class="col-sm-8 booking_leftcol">
                 <!-- [Left column] -->
                     
@@ -3223,7 +3223,8 @@
                 </div>
 
             </div>
-            <div class="col-sm-4 booking_rightcol">
+        </div>
+		<div class="col-sm-4 booking_rightcol">
                 <!-- [Right column] -->
                 <div class="booking-price">
                     <div class="price"><span>Prijsindicatie</span>
@@ -3250,7 +3251,7 @@
                     </button> -->
                 </div>            
             </div>
-        </div>
+		
     </div>
 </div>
                        
