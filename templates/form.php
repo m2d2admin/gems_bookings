@@ -98,10 +98,10 @@
                 }
             });
 
-            progress = (completed_fields / total_fields) * 100; 
-            progress = Math.round(progress);
-            $('#progress-bar').css('width', progress + '%').html(progress + '%');
-            // $('#progress-bar').css('width', 11 + '%').html(11 + '%');
+            // progress = (completed_fields / total_fields) * 100; 
+            // progress = Math.round(progress);
+            // $('#progress-bar').css('width', progress + '%').html(progress + '%');
+            // // $('#progress-bar').css('width', 11 + '%').html(11 + '%');
         }
 
         // Update summaries stepss
@@ -141,6 +141,11 @@
 
             $( '#form_section3 input.bibs_count' ).data('max-qty', runners_count).prop('max', runners_count);
 
+            /* The above code appears to be a comment block in PHP. It starts with `/*` and ends with
+             which is used to add multi-line comments in PHP. Inside the comment block, there
+            is a commented out line `// updateProgressBar();` which is a single-line comment in PHP.
+            This line is likely a call to a function `updateProgressBar()` which is currently
+            commented out and not being executed. The  */
             updateProgressBar();
         }
 
@@ -266,8 +271,6 @@
                 if ($(this).is(":checked")) {
                     // $price_label.html('&euro; ' + parseFloat(this_ins_price).toFixed(2));
                     $price_label.css('display', 'inline-block');
-                    console.log('insPrice', insPrice);
-                    console.log('ins_price', ins_price);
 
                     // Update summary
                     $('#summary_insurance_div').append(`<div class="row form-fields-rows">
@@ -737,6 +740,7 @@
 
                         $.each(nationalities, function(index, nationality) {
                             $('select[name="gl_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
+                            $('select[name="v_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
                         });
                     } else {
                         console.error('Failed to fetch nationalities:', response.message);
@@ -834,8 +838,9 @@
         }
 
         nationalities();
-
+        
         // add the extra traveler info to summary
+        extraRunnersData = [];
         $(document).on('click', '.btn-form-step', function(e) {
            if($(this).data('source') == "#form_section2"){
             console.log('nation selected', $(this).find('select[name="gl_nationality"] option:selected').text());
@@ -847,7 +852,7 @@
                     var booking_visitor_title = $(this).find('select[name="v_title[]"]').val();
                     var booking_visitor_name = $(this).find('input[name="v_first_name[]"]').val() + ' ' + $(this).find('input[name="v_middle_name[]"]').val() + ' ' + $(this).find('input[name="v_last_name[]"]').val();
                     // var booking_visitor_address = $(this).find('input[name="v_address[]"]').val() + ' ' + $(this).find('input[name="v_postal_code[]"]').val() + ' ' + $(this).find('input[name="v_city[]"]').val() + ' ' + $(this).find('select[name="gl_country"]').val();
-                    var booking_visitor_birthdate = dof.toLocaleDateString("nl-NL", options) + ' | ' + $(this).find('select[name="gl_nationality"] option:selected').text();
+                    var booking_visitor_birthdate = dof.toLocaleDateString("nl-NL", options) + ' | ' + $(this).find('select[name="v_nationality"] option:selected').text();
 
                     var extraRunners = `
                         <div class="row form-fields-rows">
@@ -871,6 +876,23 @@
                         </div>
                     `;
                     $('#extra_runners').append(extraRunners);
+                });
+
+                // add the extra runner data to extrarunnersData array
+                extraRunnersData = [];
+                $(".extra_runners_info").each(function(){
+                    extraRunnersData.push(
+                        {
+                            v_is_runner: $(this).find('input[name="v_is_runner[]"]').is(':checked'),
+                            title: $(this).find('select[name="v_title[]"]').val(),
+                            first_name: $(this).find('input[name="v_first_name[]"]').val(),
+                            middle_name: $(this).find('input[name="v_middle_name[]"]').val(),
+                            last_name: $(this).find('input[name="v_last_name[]"]').val(),
+                            dob: $(this).find('input[name="v_dob[]"]').val(),
+                            nationality: $(this).find('select[name="v_nationality"] option:selected').text()
+
+                        }
+                    )
                 });
             }
         });
@@ -925,9 +947,6 @@
             var children_under_3_count = $("#children_under_3_count").val();
             var total_travelers = parseInt(adults_count) + parseInt(children_count) + parseInt(children_under_3_count);
             var total_sgr_fee = sgr_fee * total_travelers;
-            console.log(sgr_fee);
-            console.log('total_travelers', total_travelers);
-            console.log('total_sgr_fee', total_sgr_fee);
 
             var total_booking = parseFloat($('#total_bibs_price').val()) + 
                 parseFloat($('#total_room_price').val()) + 
@@ -967,6 +986,7 @@
                         // Append options to each select box
 
                         $('select[name="gl_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
+                        // $('select[name="v_nationality"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="gl_lives_in_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                         $('select[name="sah_country"]').append('<option value="' + country.id + '">' + country.name + '</option>');
                     });
@@ -1095,14 +1115,14 @@
                                 <div class="card-title"> &euro; ${item.single_ticket_price} </div>
                                 <div class="input-group plus-minus-input">
                                     <div class="input-group-button">
-                                    <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
+                                    <span class="button hollow circle value-button-room minus_room bib-count-minus" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                     </span>
                                     </div>
                                     <input type="hidden" name="bibs_id[${item.id}]" id="bibs_id_${item.id}" value="${item.id}">
-                                    <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
+                                    <input placeholder="Bib" class="input-group-field bibs_count number" type="number" name="bibs_count[${item.id}]" id="bibs_count_${item.id}" data-bib-id="${item.id}" value="0" required data-event-date="${item.event_date}" data-max-qty="${item.quantity}" data-bibs_name="${item.challenge_name}" data-price="${item.single_ticket_price}" data-bibs_count="0">
                                     <div class="input-group-button">
-                                    <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
+                                    <span class="button hollow circle value-button-room plus_room bib-count-plus" data-bib-id="${item.id}" data-quantity="plus" data-bibs-max="${travelers}" data-field="quantity">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </span>
                                     </div>
@@ -1265,14 +1285,14 @@
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-hotels-max="${travelers}" data-field="quantity">
+                                                        <span class="button hollow room-count-minus circle value-button-room minus_room" data-bib-id="${item.id}" data-quantity="minus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_rooms[]" value="${item.id}">
-                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number hotel-room-count" type="number" name="rooms[${item.hotel_room_id}]" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
+                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number hotel-room-count" type="number" name="${item.hotel_room_id}" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
+                                                        <span class="button hollow room-count-plus circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
@@ -1342,14 +1362,14 @@
                                             <div class="card-body-hotel-room-qty-sel hotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-hotel-extras-max="${travelers}" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room extra-count-minus" data-hotel_extras_id="${item.id}" data-quantity="minus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_extras[]" value="${item.id}">
                                                     <input placeholder="Extra hotel" class="input-group-field extra_count number" type="number" name="extras[${item.id}]" value="0" required data-extras_name="${item.name}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-hotel-extras-max="${travelers}" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room plus_room extra-count-plus" data-hotel_extras_id="${item.id}" data-quantity="plus" data-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -1378,14 +1398,14 @@
                                             <div class="card-body-hotel-room-qty-sel nonhotelextra-item">
                                                 <div class="input-group plus-minus-input">
                                                     <div class="input-group-button">
-                                                        <span class="button hollow circle value-button-room minus_room" data-hotel_extras_id="${item.id}" data-quantity="minus" data-non-hotel-extras-max="${travelers}" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room minus_room nonextra-count-minus" data-hotel_extras_id="${item.id}" data-quantity="minus" data-non-hotel-extras-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="nonhotel_extras[]" value="${item.id}">
-                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" name="extras[${item.id}]" value="0" data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
+                                                    <input placeholder="Extra non hotel" class="input-group-field nonextra_count number" type="number" data-nonextra-id="${item.id}" name="extras[${item.id}]" value="0" data-extras_name="${item.name}" data-total_quantity="${item.total_quantity}" data-total_quantity="${item.total_quantity}" data-price="${item.price}" data-related_product_category="${item.related_product_category}">
                                                     <div class="input-group-button">												
-                                                        <span class="button hollow circle value-button-room  plus_room" data-hotel_extras_id="${item.id}" data-quantity="plus" data-non-hotel-extras-max="${travelers}"="${travelers}" data-field="quantity">
+                                                        <span class="button hollow circle value-button-room  plus_room nonextra-count-plus" data-hotel_extras_id="${item.id}" data-quantity="plus" data-non-hotel-extras-max="${travelers}"="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                                         </span>											
                                                     </div>
@@ -1468,7 +1488,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][2]" class="form-select flight-departure">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" data-flight-plan-id="${item.flight_plan_id}" data-flight-id="${item.flight_id}" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][2]" class="form-select flight-departure departure-select">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option>                                            
                                             <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1496,7 +1516,7 @@
                                     </div>
                                     <div class="flight-seat-select-box">
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
-                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][1]" class="form-select flight-arrival">
+                                        <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight_seats[${item.flight_plan_id}][${item.flight_id}][1]" data-flight-plan-id="${item.flight_plan_id}" data-flight-id="${item.flight_id}" class="form-select flight-arrival arrival-select">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option> 
                                             <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
                                             <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
@@ -1513,7 +1533,7 @@
                         var flightPlanHtml = `
                         <div class="col vervoer-radio-btn-group">
                             <label class="vervoer-radio-btn-label">
-                                <input type="radio" placeholder="flightlist" name="flightplan_list" value="${j.fp_id}" data-planname="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
+                                <input type="radio" placeholder="flightlist" name="flightplan_list" value="${j.fp_id}" data-flight-id="${j.fp_id}" data-planname="${j.plan_name}" data-price="${j.price}" data-standard_luggage_weight="${j.standard_luggage_weight}" data-customer_pays_for_hand_luggage="${j.customer_pays_for_hand_luggage}" data-hand_luggage_price="${j.hand_luggage_price}" data-customer_book_extra_luggage="${j.customer_book_extra_luggage}" data-extra_luggage_weight="${j.extra_luggage_weight}" data-extra_luggage_price="${j.extra_luggage_price}" class="card-input-element" />
                                 <div class="card card-default card-input">
                                     <div class="card-header">
                                         <div class="card-title">${j.plan_name}</div>
@@ -1643,7 +1663,7 @@
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
                                 <div class="insurance-options-check">
-                                    <input class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
+                                    <input class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-insurance-id="${index + 1}" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
                                     <label for="extra-bagage" class="insurancetype-check-label">${item.insurance_name}</label>
                                 </div>
                                 <div class="verzekering-description-box">
@@ -1693,15 +1713,199 @@
             });
         }
 
+        var hotelRooms = [];
+        function appendSelectedRoom(el) {
+            hotelRooms = [];
+            var parentDiv = el.closest('.input-group-button');
+            var roomInput = parentDiv.siblings('input.rooms_count');
+            var roomCountValue = roomInput.val();
+            var roomId = roomInput.attr('name');
+            hotelRooms.push({
+                room_id: roomId,
+                room_count: roomCountValue
+            });
+            console.log('hotelRooms', hotelRooms);
+        }
+
+        $(document).on('click', '.room-count-minus', function(e){
+            appendSelectedRoom($(this));
+        })
+
+        $(document).on('click', '.room-count-plus', function(e){
+            appendSelectedRoom($(this));
+        })
+
+        console.log('hotelRooms', hotelRooms);
+
+        var nonextrasData = [];
+        function appendSelectedNonExtra(el) {
+            nonextrasData = [];
+            var parentDiv = el.closest('.input-group-button');
+            var nonExtraInput = parentDiv.siblings('input.nonextra_count');
+            var nonExtraCountValue = nonExtraInput.val();
+            var nonExtraId = nonExtraInput.data('nonextra-id');
+            nonextrasData.push({
+                nonextra_id: nonExtraId,
+                nonextra_count: nonExtraCountValue
+            });
+            console.log('nonextrasData', nonextrasData);
+        }
+
+        $(document).on('click', '.nonextra-count-minus', function(e){
+            appendSelectedNonExtra($(this));
+        })
+
+        $(document).on('click', '.nonextra-count-plus', function(e){
+            appendSelectedNonExtra($(this));
+        })
+
+        // get hotel extra data
+        var hotelExtrasData = [];
+        function appendSelectedHotelExtra(el) {
+            hotelExtrasData = [];
+            var parentDiv = el.closest('.input-group-button');
+            var hotelExtraInput = parentDiv.siblings('input.extra_count');
+            var hotelExtraCountValue = hotelExtraInput.val();
+            var hotelExtraId = hotelExtraInput.data('hotel_extras_id');
+            hotelExtrasData.push({
+                extra_id: hotelExtraId,
+                extra_count: hotelExtraCountValue
+            });
+            console.log('hotelExtrasData', hotelExtrasData);
+        }
+
+        $(document).on('click', '.extra-count-minus', function(e){
+            appendSelectedHotelExtra($(this));
+        })
+
+        $(document).on('click', '.extra-count-plus', function(e){
+            appendSelectedHotelExtra($(this));
+        })
+
+        // get bibs data
+        var bibsData = [];
+        var bibsCount = [];
+        function getBibsData(el) {
+            bibsData = [];
+            bibsCount = []
+            var parentDiv = el.closest('.input-group-button');
+            var bibInput = parentDiv.siblings('input.bibs_count');
+            var bibCountValue = bibInput.val();
+            var bibId = bibInput.data('bib-id');
+            bibsData.push({
+                bib_id: bibId,
+                bib_count: bibCountValue
+            });
+            bibsCount.push({
+                prod_id: bibId,
+                prod_count: bibCountValue
+            
+            });
+            console.log('bibsData', bibsData);
+        }
+
+        $(document).on('click', '.bib-count-minus', function(e){
+            getBibsData($(this));
+        })
+
+        $(document).on('click', '.bib-count-plus', function(e){
+            getBibsData($(this));
+        })
+
+        // get flightsFormData
+        var flightData = [];
+        $(document).on('click', 'input[name="flightplan_id_OLD"]', function(e){
+            if($('input[id="own-transport"]').is(':checked')){
+                flightData = [];
+            }else{
+                $(document).on('click', 'input[name="flightplan_list"]', function(e){
+                    var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
+                    $('input[type="radio"][name="flightplan_list"]').each(function() {
+                        if ($(this).val() == checkedValue) {
+                            // var flight_id = $(this).data("flight-id");
+                            var parentDiv = $(this).closest('.vervoer-radio-btn-label');     
+                            var goFlightDetails = parentDiv.find('#go_flight_details');  
+                            var go_select = goFlightDetails.find('.departure-select');
+                            // get flight id from goFlightDetails select
+                            var go_flight_id = go_select.data('flight-id');
+                            // get select value from goFlightDetails
+                            // var goFlightSelect = goFlightDetails.find('.flight-departure');
+                            var goFlightSelect = goFlightDetails.find('.select2-selection__rendered');
+                            // var departureClass = goFlightSelect.text();
+
+                            $(document).on('change', go_select, function(e){
+                                localStorage.setItem('departureClass', goFlightDetails.find('.departure-select').find('option:selected').val());
+                            })
+                            
+                            //return flight details
+                            var returnFlightDetails = parentDiv.find('#return_flight_details');   
+                            var return_select = returnFlightDetails.find('.arrival-select');
+                            // get flight id from returnFlightDetails select
+                            var return_flight_id = return_select.data('flight-id');     
+                            // get select value from returnFlightDetails
+                            // var returnFlightSelect = returnFlightDetails.find('.flight-arrival');
+                            var returnFlightSelect = returnFlightDetails.find('.select2-selection__rendered');
+                            // var arrivalClass = returnFlightSelect.text();
+
+                            $(document).on('change', return_select, function(e){
+                                localStorage.setItem('arrivalClass', returnFlightDetails.find('.arrival-select').find('option:selected').val());
+                            })
+                            console.log('departureClass', localStorage.getItem('departureClass'));
+                            console.log('arrivalClass', localStorage.getItem('arrivalClass'));
+                            flightData.push(
+                                {
+                                    flight_id: go_flight_id,
+                                    flight_type: [
+                                        {
+                                            route: 2,
+                                            info: localStorage.getItem('departureClass')
+                                        }
+                                    ]
+                                }
+                            );
+                            flightData.push(
+                                {
+                                    flight_id: return_flight_id,
+                                    flight_type: [
+                                        {
+                                            route: 1,
+                                            info: localStorage.getItem('arrivalClass')
+                                        }
+                                    ]
+                                }
+                            );
+                        }
+                    });
+
+                    if(flightData.length > 2){
+                        flightData = [flightData[0], flightData[1]];
+                    }
+                })
+            }
+        })
+        
+
         // Function to post booking details
         function postBookingDetails() {
             // Capture values of fields in variables
+            // console.log(('flightData', flightData));
+            console.log('extraRunnersData', extraRunnersData);
+             var insuranceData = [];
+            $('#insurances_container input[type="checkbox"]:checked').each(function() {
+                insuranceData.push({
+                    insurance_id: $(this).data('insurance-id'),
+                    insurance_count: 1,
+                    // insurance_price: $(this).data('price'),
+                    // insurance_name: $(this).data('name')
+                });
+            });
+
             var adultsCount 				= $('#adults_count').val();
             var childrenCount 				= $('#children_count').val();
             var childrenUnder3Count 		= $('#children_under_3_count').val();
         
-            var arrivalDate 				= $('#arrival_date').val();
-            var departureDate 				= $('#departure_date').val();
+            var arrivalDate 				= $('#booking_end_date').val();
+            var departureDate 				= $('#booking_start_date').val();
             var hotelId 					= $('#hotel_id').val();
         
             var glFormData 					= $('#gl_form').serialize();
@@ -1720,8 +1924,20 @@
         
             var flightPlanId 				= $('#flight_plan_id').val();
             var specialMessage 				= $('#special_message').val();
-            var bookingPrice 				= $('#booking_price').val();
-        
+
+            var priceString 			    = $('#total_booking').text();
+            var priceNumericValue           = parseFloat(priceString.replace(/[^0-9.-]+/g, ""));
+            var bookingPrice 				= priceNumericValue.toFixed(2);
+
+            // var selectedRadio = $('input[name="hotel_room_id"]:checked');
+            // console.log('selectedRadio', selectedRadio);
+            // var parentDiv = selectedRadio.closest('.hotel-rooms-labels');
+            // console.log('parentDiv', parentDiv);
+            // var selectedRoom = parentDiv.find('input[type="number"]');
+            // var roomCountValue = selectedRoom.val();
+            // var roomId = selectedRoom.attr('name');
+            // console.log('roomCountValue', roomCountValue);
+            // console.log('roomId', roomId);
         /*
         - gl_is_runner
         - gl_title
@@ -1790,7 +2006,6 @@
         - special_message
         - booking_price
         */
-
             // Constructing the POST data
             var data = '&adults_count=' + adultsCount;
             data += '&children_count=' + childrenCount;
@@ -1808,6 +2023,15 @@
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
             data += '&booking_price=' + bookingPrice;
+            data += '&rooms=' + JSON.stringify(hotelRooms);
+            data += '&bibs=' + JSON.stringify(bibsData);
+            data += '&flight_seats=' + JSON.stringify(flightData);
+            data += '&bibs_count=' + JSON.stringify(bibsCount);
+            data += '&nonextras=' + JSON.stringify(nonextrasData);
+            data += '&extras=' + JSON.stringify(hotelExtrasData);
+            // data += '&insurance=' + JSON.stringify([{"insurance_id": 3, "insurance_count": 1}, {"insurance_id": 4, "insurance_count": 1}]);
+            data += '&insurance=' + JSON.stringify(insuranceData);
+            data += '&visitor_list=' + JSON.stringify(extraRunnersData);
             
             var options = { year: 'numeric', month: 'short', day: 'numeric' };
             var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
@@ -1900,19 +2124,22 @@
                 success: function(response) {
                     // Handle success response
                     console.log(response);
-                    alert('Boekingsgegevens succesvol geplaatst!');
-                    var bookingData = {
-                        gl_first_name: $('#gl_first_name').val(),
-                        gl_email: $('#gl_email').val(),
-                        event_name: $('#booking_event').text(),
-                        booking_code: "coming_soon",
-                        summary: encodeURIComponent($('#summary_data').html()),
-                    };
-                    mailBookingData(bookingData);
+                    if(response.successfull){
+                        alert('Boekingsgegevens succesvol geplaatst!');
+                        var bookingData = {
+                            gl_first_name: $('#gl_first_name').val(),
+                            gl_email: $('#gl_email').val(),
+                            event_name: $('#booking_event').text(),
+                            booking_code: response.booking_code,
+                            summary: encodeURIComponent($('#summary_data').html()),
+                        };
+                        mailBookingData(bookingData);
+                    }else{
+                        alert(response.message);
+                    }
                 },
                 error: function(xhr, status, error) {
                     // Handle error response
-                    console.log('data', data);
                     console.error('Fout bij het plaatsen van boekingsgegevens:', error);
                     // if(xhr.status == 200)
                     //     mailBookingData(bookingData);
