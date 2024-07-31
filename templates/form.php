@@ -1876,7 +1876,7 @@
                             );
                         }
                     });
-
+                    console.log('flightData', flightData);
                     if(flightData.length > 2){
                         flightData = [flightData[0], flightData[1]];
                     }
