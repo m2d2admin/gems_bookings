@@ -1054,7 +1054,10 @@
             // getTotals();
         // });
 
-        let bookingPricesArr = [{'bibs': 0}, {'rooms': 0}, {'extras': 0}, {'nonextras': 0}, {'flight_departure': 0}, {'flight_arrival': 0}, {'insurance': 0}];
+        let bookingPricesArr = [
+            {'bibs': 0}, {'rooms': 0}, {'extras': 0}, {'nonextras': 0}, 
+            {'flight_departure': 0}, {'insurance': 0}, {'calamity_fund': 0}, {'sgr_fee': 0}
+        ];
         var travelersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
         function updateBookingPrice(newValue, key) {
             for (var i = 0; i < bookingPricesArr.length; i++) {
@@ -1070,6 +1073,18 @@
                 // Loop through the keys in each object and add their values to the total
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key)) {
+                        total += obj[key];
+                    }
+                }
+                return total;
+            }, 0);
+        }
+
+        function sumSpecificKeys(arr, keysToSum) {
+            return arr.reduce((total, obj) => {
+                // Loop through the keys in each object and add their values if the key is in keysToSum
+                for (let key in obj) {
+                    if (obj.hasOwnProperty(key) && keysToSum.includes(key)) {
                         total += obj[key];
                     }
                 }
@@ -1101,7 +1116,6 @@
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
-                    console.log('bookingPricesArr', bookingPricesArr);
                 }
             })
         }
@@ -1120,7 +1134,6 @@
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
-                    console.log('bookingPricesArr', bookingPricesArr);
                 }
             })
         }
@@ -1136,7 +1149,6 @@
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
-                    console.log('bookingPricesArr', bookingPricesArr);
                 }
             })
         }
@@ -1152,7 +1164,6 @@
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
-                    console.log('bookingPricesArr', bookingPricesArr);
                 }
             })
         }
@@ -1172,11 +1183,202 @@
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
-                    console.log('bookingPricesArr', bookingPricesArr);
                 }
             })
         }
         flightPrice();
+
+        function calculateDaysBetweenDates(endDate, startDate) {
+            // Parse the date strings into Date objects
+            const parsedEndDate = new Date(endDate);
+            const parsedStartDate= new Date(startDate);
+
+            // Calculate the difference in time between the two dates
+            const differenceInTime = parsedEndDate - parsedStartDate;
+
+            // Convert the difference in time to days
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+            return differenceInDays;
+        }
+
+        // calculate sgr fee price
+        function sgrFeePrice() {
+            if(parseInt(travelersCount) > 0){
+                var sgrFee = parseFloat($('#booking_sgr_fee_div').text());
+                var travelers = parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) + parseInt($('#adults_count').val())
+                var sgrFreeTotal = parseFloat(sgrFee*travelers);
+                updateBookingPrice(sgrFreeTotal, 'sgr_fee');
+                let bookingSum = sumBookingPrices(bookingPricesArr);
+                $('#booking_sgr_fee_total').html(sgrFreeTotal);
+                $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
+                $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+            }
+        }
+
+        // calculate the booking base total price (price without sgr fee, insurance and calamity fund)
+        function bookingBaseTotalPrice(arr, keysToSum) {
+            var keysToSum = ['bibs', 'rooms', 'extras', 'nonextras', 'flight_departure'];
+            return parseFloat(sumSpecificKeys(bookingPricesArr, keysToSum)).toFixed(2);
+        }
+
+        // calculate the calamity fund,  calamity fund is EUR 2,50 per booking up to 9 persons. 
+        // If there are more than 9 persons in a booking, it becomes twice EUR 2,50 up to 18 persons, etc.
+        function calamityFundPrice() {
+            const CALAMITY_FUND_PRICE = 2.50;
+            const TRAVELERS_BASE_COUNT_CALAMITY = 9;
+            var travelers = parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) + parseInt($('#adults_count').val())
+            if(parseInt(travelersCount) > 0){
+                if(travelers < TRAVELERS_BASE_COUNT_CALAMITY){
+                    var calamityPrice = parseFloat(CALAMITY_FUND_PRICE);
+                    updateBookingPrice(calamityPrice, 'calamity_fund');
+                    $('#booking_calamity_fund_div').html(calamityPrice);
+                    $('#booking_calamity_fund_total').html(calamityPrice);
+                }else{
+                    var calamityCount = Math.ceil(parseFloat(travelers/TRAVELERS_VASE_COUNT_CALAMITY));
+                    var calamityPrice = parseFloat(CALAMITY_FUND_PRICE*calamityCount);
+                    updateBookingPrice(calamityPrice, 'calamity_fund');
+                    $('#booking_calamity_fund_div').html(CALAMITY_FUND_PRICE);
+                    $('#booking_calamity_fund_total').html(calamityPrice);
+                }
+                let bookingSum = sumBookingPrices(bookingPricesArr);
+                $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
+                $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+            }
+        }
+       
+        // calculate insurance price
+        var excludedInsNames = ["travelinsurance", "cancellation insurance", "injury insurance"];
+        function travelInsurance(insPrice, numberOfDays, travellersCount){
+            const POLICECOST = parseFloat(3.50); // per booking
+            
+            var travelInsurance = (travellersCount * numberOfDays * insPrice) + POLICECOST;
+            // var travelInsurance = parseFloat(travelInsuranceCalc+POLICECOST);
+            console.log('travelInsurance', travelInsurance);
+
+            return parseFloat(travelInsurance);
+        }
+
+        function cancellationInsurance(insPrice, bookingBasePrice){
+            const INSURANCE_TAX  = parseFloat(21); // per booking
+            const POLICECOST = parseFloat(4.24); // per booking
+
+            var cancellation = parseFloat((insPrice * bookingBasePrice) / 100);
+            var tax = parseFloat((INSURANCE_TAX * bookingBasePrice) / 100);
+            var cancellationInsurance = parseFloat(cancellation + tax + POLICECOST);
+            
+            return parseFloat(cancellationInsurance);
+        }
+
+        function injuryInsurance(insPrice, bookingBasePrice){
+            const INSURANCE_TAX  = parseFloat(21); // per booking
+            const POLICECOST = parseFloat(4.24); // per booking
+            
+            var injury = (insPrice * bookingBasePrice) / 100;
+            var tax = (INSURANCE_TAX * bookingBasePrice) / 100;
+            var injuryInsurance = parseFloat(injury + tax + POLICECOST);
+            console.log('injuryInsurance', injuryInsurance);
+            
+            return parseFloat(injuryInsurance);
+        }
+
+        function insurancePrice() {
+            // $(document).on('click', '.insurance-checkbox', function(){
+                var bookingBasePrice = parseFloat(bookingBaseTotalPrice(bookingPricesArr));
+                var sgrFee = parseFloat($('#booking_sgr_fee_total').text());
+                var insuranceBookingTotal = parseFloat(bookingBasePrice) + parseFloat(sgrFee);
+                var travellersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
+                var numberOfDays = calculateDaysBetweenDates($('#booking_end_date').val(), $('#booking_start_date').val());
+
+                if(parseInt(travelersCount) > 0 && bookingBasePrice > 0){
+                    // price type1 = calculation based on total days
+                    // price type2 = calculation based on % of booking base price
+                    $(".insurance-options").each(function(){
+                        var insName = $(this).data('name');
+                        console.log('insName', insName);
+                        var insPrice = parseFloat($(this).data('price'));
+                        console.log('insPrice', insPrice);
+                        var insId = $(this).attr('id');
+                        var insType = $(this).data('price_type');
+                        console.log('insType', insType);
+                        var insPerParticipant = $(this).data('per-participant');
+                         
+                        if(!excludedInsNames.includes(insName.toLowerCase())){
+                            if(insType == 1){
+                                var baseInsPrice = parseFloat(insPrice * numberOfDays);
+                                console.log('baseInsPrice', baseInsPrice);
+                                if(insPerParticipant == 1){
+                                    var totalInsPrice = baseInsPrice*travellersCount;
+                                    $(`#insurance_option_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                }else{
+                                    $(`#insurance_option_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                }
+                            }else{
+                                 var baseInsPrice = ((insPrice * bookingBasePrice) / 100);
+                                 console.log('baseInsPrice != 1', baseInsPrice);
+                                if(insPerParticipant == 1){
+                                    var totalInsPrice = baseInsPrice*travellersCount;
+                                    $(`#insurance_option_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                }else{
+                                    $(`#insurance_option_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                }
+                            }
+                        }else{
+                           if(insName.toLowerCase() == "travelinsurance eu" || insName == "travelinsurance non-eu"){
+                                // console.log('travelInsurance(insPrice)', travelInsurance(ins_price));
+                                var travelIns = travelInsurance(insPrice, numberOfDay, travellersCounts);
+                                $(`.insurance_id_${insId}`).html('€ '+travelIns.toFixed(2));
+                            }else if(insName.toLowerCase() == "cancellation insurance"){
+                                // console.log('cancellationInsurance(insPrice, bookingBasePrice)', cancellationInsurance(ins_price, bookingBasePrice));
+                                var cancalationIns = cancellationInsurance(insPrice, bookingBasePrice);
+                                console.log('cancellationInsurance', cancalationIns);
+                                console.log('insurance_option', `insurance_id_${insId}`);
+                                $(`.insurance_id_${insId}`).html('€ '+cancalationIns.toFixed(2));
+                            }else if(insName.toLowerCase() == "injury insurance"){
+                                // console.log('injuryInsurance(insPrice, bookingBasePrice)', injuryInsurance(ins_price, bookingBasePrice));
+                                var injuryIns = injuryInsurance(insPrice, bookingBasePrice);
+                                $(`.insurance_id_${insId}`).html('€ '+injuryIns.toFixed(2));
+                            }
+                        }
+                    });
+                    // var insurancePrice = parseFloat($('#booking_insurance_fee').val());
+                    // updateBookingPrice(insurancePrice, 'insurance');
+                    // let bookingSum = sumBookingPrices(bookingPricesArr);
+                    // $("#total_booking").html("€ "+bookingSum.toFixed(2));
+                    // $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    // console.log('bookingPricesArr', bookingPricesArr);
+                }
+            // })
+        }
+
+        $(document).on('click', '#insurances_step_btn', function(){
+            calamityFundPrice();
+            sgrFeePrice();
+        })
+        $(document).on('click', '#transport_step_btn', function(){
+            insurancePrice();
+        })
+
+
+        // function excludedIns(insName, insPrice, bookingBasePrice){
+        //     // console.log('insName', insName);
+        //     // console.log('insPrice', insPrice);
+        //     // console.log('bookingBasePrice', bookingBasePrice);
+        //     if(parseFloat(bookingBasePrice) == 0){
+        //         return insPrice;
+        //     }else{
+        //         if(insName == "travelinsurance eu" || insName == "travelinsurance non-eu"){
+        //             console.log('travelInsurance(insPrice)', travelInsurance(insPrice));
+        //             return travelInsurance(insPrice);
+        //         }else if(insName == "cancellation insurance"){
+        //             console.log('cancellationInsurance(insPrice, bookingBasePrice)', cancellationInsurance(insPrice, bookingBasePrice));
+        //             return cancellationInsurance(insPrice, bookingBasePrice);
+        //         }else if(insName == "injury insurance"){
+        //             console.log('injuryInsurance(insPrice, bookingBasePrice)', injuryInsurance(insPrice, bookingBasePrice));
+        //             return injuryInsurance(insPrice, bookingBasePrice);
+        //         }
+        //     }
+        // }
 
         function getTotals() {
             var booking_calamity_fund = parseFloat($('#booking_calamity_fund_div').text());
@@ -1846,6 +2048,7 @@
                     // Process each insurance plan
                     $.each(insurancesData, function(index, item) {
                         // Access insurance details
+                        console.log('insurance item:', item);
             
                         var this_ins_price = 0,
                             total_booking_price = 0,
@@ -1901,7 +2104,7 @@
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
                                 <div class="insurance-options-check">
-                                    <input class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-insurance-id="${index + 1}" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
+                                    <input id="${item.insurance_id}" class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-insurance-id="${index + 1}" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
                                     <label for="extra-bagage" class="insurancetype-check-label">${item.insurance_name}</label>
                                 </div>
                                 <div class="verzekering-description-box">
@@ -1909,7 +2112,7 @@
                                 </div>
                             </td>
                             <td class="verzekering-optie-col">
-                                <span id="insurance_option${index + 1}" class="insurance_option" ${isPriceHidden}>&euro; ${item.price}</span>
+                                <span id="insurance_option${index + 1}" class="insurance_option insurance_id_${item.insurance_id}" ${isPriceHidden}>&euro; ${item.price}</span>
                             </td>
                         </tr>`;
                     });
@@ -3166,7 +3369,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
+                                        <button id="transport_step_btn" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="88" data-toggle="" data-target="#form_section8" data-source="#form_section7" aria-expanded="true" aria-controls="form_section8">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -3302,7 +3505,7 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="100" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
+                                        <button id="insurances_step_btn" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="100" data-toggle="collapse" data-target="#form_section9" data-source="#form_section8" aria-expanded="true" aria-controls="form_section9">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
@@ -3630,7 +3833,10 @@
                                                             SGR fee
                                                         </div>
                                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon</span>
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon 
+                                                                <span style="margin-left:30px;">Totaal: €<span style="margin-left:1px;" id="booking_sgr_fee_total"></span></span>
+                                                            </span>
+                                                            <span id="booking_sgr_fee_total"></span>
                                                         </div>
                                                     </div>
                                                     <div class="row mb-1">
@@ -3646,7 +3852,8 @@
                                                             Calamiteitenfonds
                                                         </div>
                                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span>
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span> per 9 personen
+                                                            <span class="" style="margin-left: 30px;">Totaal: €</span> <span style="margin-left:1px;" id="booking_calamity_fund_total"></span>
                                                         </div>
                                                     </div>
                                                 </div>
