@@ -315,7 +315,7 @@
 
         $(document).on('click', '.insurance-options', function(e) {
 
-            updateSummaryStep8();
+            // updateSummaryStep8();
         });
 
         function goNextStep(step, toggleVal){
@@ -509,6 +509,7 @@
                 percent = parseInt($(this).data('percent')),
                 errorMessage = '';
                 var currentStep = $(this);
+                var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
 
                 var bibsCount = [];
                 var hotelRoomCount = [];
@@ -526,13 +527,13 @@
             if (stepType === 'submit') {
                 postBookingDetails();
             } else {
-                var travelers = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                 $( sourceStep + ' [required]').each(function() {
                     var fieldValue = $(this).val();
                     var fieldType = $(this).prop('nodeName').toLowerCase(); // Get the type of element
                     var fieldName = $(this).attr('name');
                     var fieldTitle = $(this).attr('placeholder');
                     var fieldId = $(this).attr('id');
+                    console.log('fieldTitle', fieldId);
 
                     // Check field type and set appropriate error message
                     if (fieldType === 'input') {
@@ -567,6 +568,23 @@
                         }
                     }
 
+                    if(sourceStep === "#form_section5"){
+                        console.log('hotelRoomCountSum', hotelRoomCountSum);
+                        console.log('travelers', travelers);
+                        console.log('> than', hotelRoomCountSum>travelers);
+                        if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
+                            $(sourceStep).addClass('show');
+                            $(targetStep).removeClass('show');
+                            goNextStep(currentStep, 'null');
+                            errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
+                        }else if(hotelRoomCountSum > travelers){
+                            $(sourceStep).addClass('show');
+                            $(targetStep).removeClass('show');
+                            goNextStep(currentStep, 'null');
+                            errorMessage = 'Het aantal hotelkamer moet gelijk zijn aan het aantal hardlopers <br/>';
+                        }
+                    }
+
                     if (fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
                         
                         // $.each(bibCountPerDay, function(index, value){
@@ -575,7 +593,7 @@
                         
                         // });
 
-                        if (hotelRoomCountSum > 0){
+                        if (hotelRoomCountSum > 0 && hotelRoomCountSum <= travelers){
                             errorMessage = '';
                             $(sourceStep).removeClass('show');
                             $(targetStep).addClass('show');
@@ -591,16 +609,6 @@
                         if(fieldTitle != "Bib" && fieldTitle != "Hotelroom"){
                             errorMessage = 'Vul het volgende in: ' + fieldTitle + '.<br/>';
                         }
-                    }else if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
-                        $(sourceStep).addClass('show');
-                        $(targetStep).removeClass('show');
-                        goNextStep(currentStep, 'null');
-                        errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
-                    }else if(fieldTitle == "Hotelroom" && hotelRoomCountSum > travelers){
-                        $(sourceStep).addClass('show');
-                        $(targetStep).removeClass('show');
-                        goNextStep(currentStep, 'null');
-                        errorMessage = 'Het aantal hotelkamer moet gelijk zijn aan het aantal hardlopers <br/>';
                     }
                     else if($('input[name="flightplan_id_OLD"]:checked').length <= 0 && fieldTitle == "owntransport"){
                         errorMessage = 'Selecteer een vervoer.<br/>';
@@ -1073,7 +1081,7 @@
                 // Loop through the keys in each object and add their values to the total
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key)) {
-                        total += obj[key];
+                        total += parseFloat(obj[key]);
                     }
                 }
                 return total;
@@ -1085,7 +1093,7 @@
                 // Loop through the keys in each object and add their values if the key is in keysToSum
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key) && keysToSum.includes(key)) {
-                        total += obj[key];
+                        total += parseFloat(obj[key]);
                     }
                 }
                 return total;
@@ -1177,7 +1185,6 @@
                 if(parseInt(travelersCount) > 0){
                     var seatPrice = $(this).children('option:selected').data('price');
                     var travelers = parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) + parseInt($('#adults_count').val())
-                    console.log('total travelers', parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val()) + parseInt($('#adults_count').val()));
                     var flightPrice = parseFloat(seatPrice*travelers)
                     updateBookingPrice(flightPrice, 'flight_departure');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
@@ -1217,7 +1224,7 @@
         }
 
         // calculate the booking base total price (price without sgr fee, insurance and calamity fund)
-        function bookingBaseTotalPrice(arr, keysToSum) {
+        function bookingBaseTotalPrice(arr) {
             var keysToSum = ['bibs', 'rooms', 'extras', 'nonextras', 'flight_departure'];
             return parseFloat(sumSpecificKeys(bookingPricesArr, keysToSum)).toFixed(2);
         }
@@ -1248,13 +1255,12 @@
         }
        
         // calculate insurance price
-        var excludedInsNames = ["travelinsurance", "cancellation insurance", "injury insurance"];
+        var excludedInsNames = ["travelinsurance eu", 'travelinsurance non-eu', "cancellation insurance", "injury insurance"];
         function travelInsurance(insPrice, numberOfDays, travellersCount){
             const POLICECOST = parseFloat(3.50); // per booking
             
             var travelInsurance = (travellersCount * numberOfDays * insPrice) + POLICECOST;
             // var travelInsurance = parseFloat(travelInsuranceCalc+POLICECOST);
-            console.log('travelInsurance', travelInsurance);
 
             return parseFloat(travelInsurance);
         }
@@ -1277,7 +1283,6 @@
             var injury = (insPrice * bookingBasePrice) / 100;
             var tax = (INSURANCE_TAX * bookingBasePrice) / 100;
             var injuryInsurance = parseFloat(injury + tax + POLICECOST);
-            console.log('injuryInsurance', injuryInsurance);
             
             return parseFloat(injuryInsurance);
         }
@@ -1295,44 +1300,37 @@
                     // price type2 = calculation based on % of booking base price
                     $(".insurance-options").each(function(){
                         var insName = $(this).data('name');
-                        console.log('insName', insName);
                         var insPrice = parseFloat($(this).data('price'));
-                        console.log('insPrice', insPrice);
                         var insId = $(this).attr('id');
                         var insType = $(this).data('price_type');
-                        console.log('insType', insType);
                         var insPerParticipant = $(this).data('per-participant');
                          
                         if(!excludedInsNames.includes(insName.toLowerCase())){
                             if(insType == 1){
                                 var baseInsPrice = parseFloat(insPrice * numberOfDays);
-                                console.log('baseInsPrice', baseInsPrice);
                                 if(insPerParticipant == 1){
                                     var totalInsPrice = baseInsPrice*travellersCount;
-                                    $(`#insurance_option_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2));
                                 }else{
-                                    $(`#insurance_option_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2));
                                 }
                             }else{
                                  var baseInsPrice = ((insPrice * bookingBasePrice) / 100);
-                                 console.log('baseInsPrice != 1', baseInsPrice);
                                 if(insPerParticipant == 1){
                                     var totalInsPrice = baseInsPrice*travellersCount;
-                                    $(`#insurance_option_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2));
                                 }else{
-                                    $(`#insurance_option_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2));
                                 }
                             }
                         }else{
                            if(insName.toLowerCase() == "travelinsurance eu" || insName == "travelinsurance non-eu"){
                                 // console.log('travelInsurance(insPrice)', travelInsurance(ins_price));
-                                var travelIns = travelInsurance(insPrice, numberOfDay, travellersCounts);
+                                var travelIns = travelInsurance(insPrice, numberOfDays, travellersCount);
                                 $(`.insurance_id_${insId}`).html('€ '+travelIns.toFixed(2));
                             }else if(insName.toLowerCase() == "cancellation insurance"){
                                 // console.log('cancellationInsurance(insPrice, bookingBasePrice)', cancellationInsurance(ins_price, bookingBasePrice));
                                 var cancalationIns = cancellationInsurance(insPrice, bookingBasePrice);
-                                console.log('cancellationInsurance', cancalationIns);
-                                console.log('insurance_option', `insurance_id_${insId}`);
                                 $(`.insurance_id_${insId}`).html('€ '+cancalationIns.toFixed(2));
                             }else if(insName.toLowerCase() == "injury insurance"){
                                 // console.log('injuryInsurance(insPrice, bookingBasePrice)', injuryInsurance(ins_price, bookingBasePrice));
@@ -1350,13 +1348,71 @@
                 }
             // })
         }
+        $(document).on('click', '#transport_step_btn', function(){
+            insurancePrice();
+        })
+
+        function calculateInsPrice(){
+            let totalinsurancePrice = 0;
+            $(document).on('click', '#form_section8 input.insurance-options', function(){
+                // var insName = $(this).data('name');
+                // var insPrice = parseFloat($(this).data('price'));
+                var insId = $(this).attr('id');
+                // var insType = $(this).data('price_type');
+                // var insPerParticipant = $(this).data('per-participant');
+
+                var insPrice = parseFloat($(`.insurance_id_${insId}`).text().replace('€ ', ''));
+            
+               
+                // check if input checkbox is checked
+                if($(this).is(':checked')){
+                    totalinsurancePrice += parseFloat(insPrice);
+                }else{
+                    totalinsurancePrice -=  parseFloat(insPrice);
+                }
+                updateBookingPrice(parseFloat(totalinsurancePrice).toFixed(2), 'insurance');
+                $('#total_insurance_price').val(totalinsurancePrice);
+                $('#total_insurance').html(totalinsurancePrice.toFixed(2));
+            })
+        }
+        calculateInsPrice();
+
+        function addSelectedInsToSummary(){
+            $( '#summary_insurance_div' ).html('');
+            $( '#form_section8 input.insurance-options' ).each(function(){
+                if($(this).is(':checked')){
+                    var insName = $(this).data('name');
+                    var insId = $(this).attr('id');
+                    var insPrice = $(`.insurance_id_${insId}`).text();
+
+                    $('#summary_insurance_div').append(`<div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>${insName}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-8 col-xl-8">
+                            <p>${insPrice}</p>
+                        </div>
+                    </div>`);
+                }
+            })
+        }
 
         $(document).on('click', '#insurances_step_btn', function(){
             calamityFundPrice();
             sgrFeePrice();
-        })
-        $(document).on('click', '#transport_step_btn', function(){
-            insurancePrice();
+            // add insurance price to booking total price
+            let bookingSum = sumBookingPrices(bookingPricesArr);
+            $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
+            $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+
+            // break all the prices
+            $("#insurance_summary").html(`€ ${parseFloat($('#total_insurance').text()).toFixed(2)}`);
+            $("#calamity_summary").html(`€ ${parseFloat($('#booking_calamity_fund_total').text()).toFixed(2)}`);
+            $("#sgrfee_summary").html(`€ ${parseFloat($('#booking_sgr_fee_total').text()).toFixed(2)}`);
+            $("#booking_summary").html(`€ ${parseFloat(bookingBaseTotalPrice(bookingPricesArr)).toFixed(2)}`);
+
+            addSelectedInsToSummary();
+
         })
 
 
@@ -2595,8 +2651,7 @@
                 data: data,
                 success: function(response) {
                     // Handle success response
-                    console.log(response);
-                    if(response.successfull){
+                    if(response.successful){
                         alert('Boekingsgegevens succesvol geplaatst!');
                         var bookingData = {
                             gl_first_name: $('#gl_first_name').val(),
@@ -3424,7 +3479,7 @@
                                                     <tfoot class="verzekering-table-footer">
                                                         <tr>
                                                             <td class="tfoot-col-left-label">Totaal</td>
-                                                            <td class="tfoot-col-right-amount"><span id="total_insurance">0.00</span></td>
+                                                            <td class="tfoot-col-right-amount">€ <span id="total_insurance">0.00</span></td>
                                                         </tr>
                                                     </tfoot>
                                                 </tbody>
@@ -3861,6 +3916,12 @@
                                                     <hr>
                                                 </div>
                                                 <div class="col-12">
+                                                    <div class="col-8 col-sm-8 col-md-8 col-xl-8" style="width:40%;display: flex; flex-direction: column;align-items:flex-start;justify-content:flex-start">
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Verzekering<span id="insurance_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14x;">Calamiteitenfonds<span id="calamity_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">SGR fee<span id="sgrfee_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Boeking<span id="booking_summary" style="margin-left: 50px"></span></p>
+                                                    </div>
                                                     <div class="row mb-2">
                                                         <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
                                                             Totaal
