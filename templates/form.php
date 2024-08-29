@@ -357,6 +357,7 @@
 
         // get hotel room type
         $(document).on('click', '.hotel-btn-form-step', function(){
+            $("#summary_hotel_nights").html(calculateDaysBetweenDates($('#booking_end_date').val(), $('#booking_start_date').val()));
             $('#hotel-room-details').html('');
             $('.rooms_count').each(function(){
                 var selectedRooms = "";
@@ -369,7 +370,7 @@
                             <p>Prijs per nacht: &euro; ${$(this).data('price')}</p>
                         </div>
                         <div class="col-md-2 col-lg-2 col-xl-4">
-                            <p>Nachten: ${$(this).val()}</p>
+                            <p>Antal Kamers: ${$(this).val()}</p>
                         </div>
                         <div class="col-md-2 col-lg-2 col-xl-4">
                             <p>Prijs: &euro; ${(parseFloat($(this).data('price'))*parseInt($(this).val()).toFixed(2))}</p>
@@ -557,21 +558,28 @@
                     var runnersTotalSum = parseInt(bibCountPerDay.length)*runnersCount;
 
                     if(sourceStep === "#form_section3"){
-                        if( fieldTitle == "Bib" && runnersTotalSum == bibArrSum && runnersCount > 0){
-                            errorMessage = '';
-                            $(sourceStep).removeClass('show');
-                            $(targetStep).addClass('show');
-                            goNextStep(currentStep, 'collapse');
-                            $('#progress-bar').css('width', percent + '%').html(percent + '%');
-                        }else{
-                            errorMessage = 'Het aantal startbewijzen moet gelijk zijn aan het aantal hardlopers <br/>';
+                        var bools = [];
+                        for (var i = 0; i < bibCountPerDay.length; i++) {
+                            var sum = bibCountPerDay[i].reduce((acc, val) => acc + val, 0);
+                            if (fieldTitle == "Bib" &&  runnersCount > 0 && bibArrSum > 0 && sum <= runnersCount) {
+                                bools.push(true);
+                            } else {
+                                bools.push(false);
+                            }
+
+                            if(bools.includes(false)){
+                                errorMessage = 'Het aantal startbewijzen moet gelijk zijn aan het aantal hardlopers <br/>';
+                            }else{
+                                errorMessage = '';
+                                $(sourceStep).removeClass('show');
+                                $(targetStep).addClass('show');
+                                goNextStep(currentStep, 'collapse');
+                                $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                            }
                         }
                     }
 
                     if(sourceStep === "#form_section5"){
-                        console.log('hotelRoomCountSum', hotelRoomCountSum);
-                        console.log('travelers', travelers);
-                        console.log('> than', hotelRoomCountSum>travelers);
                         if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
                             $(sourceStep).addClass('show');
                             $(targetStep).removeClass('show');
@@ -1110,6 +1118,20 @@
             });
             return bookingBaseTotalPrice;
         }
+
+        function calculateDaysBetweenDates(endDate, startDate) {
+            // Parse the date strings into Date objects
+            const parsedEndDate = new Date(endDate);
+            const parsedStartDate= new Date(startDate);
+
+            // Calculate the difference in time between the two dates
+            const differenceInTime = parsedEndDate - parsedStartDate;
+
+            // Convert the difference in time to days
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+            return differenceInDays;
+        }
         
         function bibsPrice() {
             var totalBibsPrice = 0;
@@ -1134,11 +1156,10 @@
             var totalRoomPrice = 0;
 
             $(document).on('click', '.room-count-minus, .room-count-plus', function(){
-                // var roomId = $(this).data('room-id');
-                // var roomCount = parseInt($('#rooms_count_' + roomId).val());
-                // var roomPrice = parseFloat($('#rooms_count_' + roomId).data('price'));
                 if(parseInt(travelersCount) > 0){
-                    updateBookingPrice(updateStepPrice('.rooms_count'), 'rooms');
+                    var nights = calculateDaysBetweenDates($('#booking_end_date').val(), $('#booking_start_date').val());
+                    var hotelTotalPrice = updateStepPrice('.rooms_count') * parseInt(nights);
+                    updateBookingPrice(hotelTotalPrice, 'rooms');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
                     $("#total_booking").html("€ "+bookingSum.toFixed(2));
                     $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
@@ -1194,20 +1215,6 @@
             })
         }
         flightPrice();
-
-        function calculateDaysBetweenDates(endDate, startDate) {
-            // Parse the date strings into Date objects
-            const parsedEndDate = new Date(endDate);
-            const parsedStartDate= new Date(startDate);
-
-            // Calculate the difference in time between the two dates
-            const differenceInTime = parsedEndDate - parsedStartDate;
-
-            // Convert the difference in time to days
-            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-
-            return differenceInDays;
-        }
 
         // calculate sgr fee price
         function sgrFeePrice() {
@@ -1373,6 +1380,9 @@
                 updateBookingPrice(parseFloat(totalinsurancePrice).toFixed(2), 'insurance');
                 $('#total_insurance_price').val(totalinsurancePrice);
                 $('#total_insurance').html(totalinsurancePrice.toFixed(2));
+
+                let bookingSum = sumBookingPrices(bookingPricesArr);
+                $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
             })
         }
         calculateInsPrice();
@@ -1401,9 +1411,9 @@
             calamityFundPrice();
             sgrFeePrice();
             // add insurance price to booking total price
-            let bookingSum = sumBookingPrices(bookingPricesArr);
-            $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
-            $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+            // let bookingSum = sumBookingPrices(bookingPricesArr);
+            // $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
+            // $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
 
             // break all the prices
             $("#insurance_summary").html(`€ ${parseFloat($('#total_insurance').text()).toFixed(2)}`);
@@ -3748,6 +3758,7 @@
                                                     <div class="row form-fields-rows" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;">
                                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                                             <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">-</span></p>
+                                                            <p class="summary-table-head-subs">Aantal Nachten: <span id="summary_hotel_nights" class="summary-body-txt">-</span></p>
                                                         </div>
                                                         <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:95%;"></div>
                                                     </div>
