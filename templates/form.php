@@ -3812,7 +3812,7 @@
 
                                                 </div>
                                                 <div class="col-12 my-3 mob-hide summ-head-box">
-                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Transport</span></h3>
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Vervoer</span></h3>
                                                 </div>
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
                                                     <div id="flight-holder">

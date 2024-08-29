@@ -397,7 +397,8 @@ function mail_booking_details() {
 
 		//php mailer variables
 		$from = get_option('admin_email');
-		$subject = $email_settings['email_subject'];
+		// $subject = $email_settings['email_subject'];
+		$subject = 'Bevestiging van uw deelname aan '.$booking_details["event_name"];
 		$headers = 'From: '. $from . "\r\n" .
 			'Reply-To: ' . $from . "\r\n";
 
