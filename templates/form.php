@@ -1249,7 +1249,7 @@
                     $('#booking_calamity_fund_div').html(calamityPrice);
                     $('#booking_calamity_fund_total').html(calamityPrice);
                 }else{
-                    var calamityCount = Math.ceil(parseFloat(travelers/TRAVELERS_VASE_COUNT_CALAMITY));
+                    var calamityCount = Math.ceil(parseFloat(travelers/TRAVELERS_BASE_COUNT_CALAMITY));
                     var calamityPrice = parseFloat(CALAMITY_FUND_PRICE*calamityCount);
                     updateBookingPrice(calamityPrice, 'calamity_fund');
                     $('#booking_calamity_fund_div').html(CALAMITY_FUND_PRICE);
@@ -2273,7 +2273,6 @@
         //     appendSelectedRoom($(this));
         // })
 
-        console.log('hotelRooms', hotelRooms);
 
         var nonextrasData = [];
         function appendSelectedNonExtra(el) {
