@@ -63,6 +63,31 @@
     width: 25%;
 }
 
+/* .rightcol-submit-btn{width:70%; margin-top:-22px;} */
+.rightcol-submit-btn svg {
+    margin-right: 10px;
+}
+
+.sticky-column {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 80px;
+}
+
+.sticky-parent {
+    display: block !important;
+}
+
+.booking-price {
+    border: solid 1px #D5DEE2;
+    background-color: #f8fafd;
+    padding: 10px 10px 0 10px;
+}
+
+.booking-price .rightcol-submit-btn {
+    margin-bottom: -20px;
+}
+
 #booking_form .card {
     border: 0px;
     border-radius: 0;
@@ -98,7 +123,7 @@
 #booking_form form select {
     /* width: 100%; */
     background: transparent;
-    color: #919EA6;
+    color: #000;
     border: 1px solid #4f4f4f;
     outline: none;
     padding: 0 10px;
@@ -114,6 +139,12 @@
     font-size: 13px;
     line-height: 22px;
     font-weight: 200;
+}
+
+#booking_form form input::placeholder,
+#booking_form form select::placeholder {
+    color: #919EA6;
+    opacity: 0.6;
 }
 
 span.required {
@@ -445,7 +476,8 @@ label {
 }
 
 .card-input-element:checked+.card-input {
-    box-shadow: 0 0 10px 2px rgba(0, 173, 239, 0.5);
+    box-shadow: 0 0 6px 1px rgba(197, 231, 29);
+    border: solid 2px #C5E71C !important;
 }
 
 .col-radio-btn-cards-rooms {
@@ -500,6 +532,7 @@ label {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+    border: none;
 }
 
 div#flights_container {
@@ -537,7 +570,12 @@ div#flights_container {
     width: 100%;
     flex: 1 0 auto;
     margin-left: 5px;
-    padding-right: 22px !important;
+    padding-right: 4px !important;
+}
+
+.vervoer-radio-btn-group .card.card-default.card-input {
+    border: solid 1px #D5DEE2 !important;
+    padding: 10px;
 }
 
 .col-flight-baggage-details {
@@ -587,6 +625,7 @@ h5.heenvlucht-details {
 
 .flight-seat-select-box {
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .departure-flight-airport,
@@ -670,7 +709,7 @@ input.insurance-options {
 }
 
 .verzekering-optie-col {
-    padding-top: 18px !important;
+    padding-top: 8px !important;
 }
 
 .insurancetype-check-label,
@@ -679,6 +718,16 @@ input.insurance-options {
     font-size: 16px;
     font-weight: 700;
     color: #0093CB;
+}
+
+.insurancetype-check-label {
+    margin-top: 7px;
+}
+
+.insurance_option {
+    color: #000;
+    font-weight: normal;
+    font-size: 14px;
 }
 
 .verzekering-description-box p {
@@ -694,7 +743,8 @@ input.insurance-options {
 }
 
 /* SAMEVATTING EN BETALING */
-.summary-table-head-subs {
+.summary-table-head-subs,
+h4.summary-table-head-subs {
     font-size: 15px !important;
     font-weight: 600;
     color: #00ADEF;
@@ -737,4 +787,55 @@ span.summ-heading {
 
 .select2-results__options li {
     font-size: 13px !important;
+}
+
+.insurance-totals {
+    font-weight: 700;
+    color: #00ADEF !important;
+    font-size: 16px;
+}
+
+.strtbewijz-col4 {
+    width: 25%;
+}
+
+.col.summ-flight-deets {
+    width: 25%;
+}
+
+.body-14 {
+    font-size: 13px;
+}
+
+.summary-card p,
+.form-fields-rows p {
+    font-size: 13px;
+}
+
+#summary_hotel_name,
+#summary_hotel_nights {
+    font-size: 15px;
+}
+
+.form-label-blue.overigekost span {
+    margin-left: 10px;
+}
+
+/* PROGRESS SECTION -- STICKY */
+.booking-form-section-cont {
+    display: block !important;
+    overflow: visible;
+}
+
+.container {
+    overflow: visible;
+    display: block;
+}
+
+.col-12.sticky-progress {
+    position: sticky;
+    top: 40px;
+    z-index: 99;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
 }

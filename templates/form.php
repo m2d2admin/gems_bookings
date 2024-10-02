@@ -149,6 +149,13 @@
             updateProgressBar();
         }
 
+        function formatPrice(price) {
+            if (isNaN(price) || price === null) {
+                return price;
+            }
+            return price.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace('.', ',');
+        }
+
         function updateSummaryStep3() {
             $( '#summary_bibs_div' ).html('');
             $( '#form_section3 input.bibs_count' ).each(function() {
@@ -158,17 +165,17 @@
                     bibs_price = $(this).data('price');
                 if (bibs_count > 0) {
                     $('#summary_bibs_div').append(`<div class="row form-fields-rows">
-                        <div class="col-md-6 col-lg-4 col-xl-4">
+                        <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                             <p>${bibs_name}</p>
                         </div>
-                        <div class="col-md-4 col-lg-4 col-xl-4">
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
                             <p>${bibs_count}</p>
                         </div>
-                        <div class="col-md-4 col-lg-4 col-xl-4">
-                            <p>&euro; ${bibs_price}</p>
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>&euro; ${formatPrice(bibs_price)}</p>
                         </div>
-                        <div class="col-md-4 col-lg-4 col-xl-4">
-                            <p>&euro; ${bibs_price*bibs_count}</p>
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>&euro; ${formatPrice(bibs_price*bibs_count)}</p>
                         </div>
                     </div>`);
                 }
@@ -193,7 +200,7 @@
                             <p>${extra_count}</p>
                         </div>
                         <div class="col-md-6 col-lg-4 col-xl-4">
-                            <p>&euro; ${extra_price.toFixed(2)}</p>
+                            <p>&euro; ${formatPrice(extra_price)}</p>
                         </div>
                     </div>`);
                 }
@@ -213,7 +220,7 @@
                             <p>${extra_count}</p>
                         </div>
                         <div class="col-md-6 col-lg-4 col-xl-4">
-                            <p>&euro; ${extra_price.toFixed(2)}</p>
+                            <p>&euro; ${formatPrice(extra_price)}</p>
                         </div>
                     </div>`);
                 }
@@ -293,7 +300,7 @@
 
             });
             $('#total_insurance_price').val(parseFloat(total_insurance_price).toFixed(2));
-            $('#total_insurance').html('&euro; ' + parseFloat(total_insurance_price).toFixed(2));
+            $('#total_insurance').html('&euro; ' + parseFloat(total_insurance_price).toFixed(2).replace('.', ','));
             // getTotals();
             updateProgressBar();
         }
@@ -363,17 +370,17 @@
                 var selectedRooms = "";
                 if($(this).val() > 0){
                     selectedRooms += `<div class="row form-fields-rows">
-                        <div class="col-md-5 col-lg-5 col-xl-5">
+                        <div class="col-md-5 col-lg-5 col-xl-5 strtbewijz-col4">
                             <p>Type hotelkamer: ${$(this).data('room_name')}</p>
                         </div>
-                         <div class="col-md-3 col-lg-4 col-xl-4">
-                            <p>Prijs per nacht: &euro; ${$(this).data('price')}</p>
+                         <div class="col-md-3 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>Prijs per nacht: &euro; ${formatPrice($(this).data('price'))}</p>
                         </div>
-                        <div class="col-md-2 col-lg-2 col-xl-4">
+                        <div class="col-md-2 col-lg-2 col-xl-4 strtbewijz-col4">
                             <p>Antal Kamers: ${$(this).val()}</p>
                         </div>
-                        <div class="col-md-2 col-lg-2 col-xl-4">
-                            <p>Prijs: &euro; ${(parseFloat($(this).data('price'))*parseInt($(this).val()).toFixed(2))}</p>
+                        <div class="col-md-2 col-lg-2 col-xl-4 strtbewijz-col4">
+                            <p>Prijs: &euro; ${formatPrice((parseFloat($(this).data('price'))*parseInt($(this).val())))}</p>
                         </div>`;
 
                     $('#hotel-room-details').append(selectedRooms);
@@ -414,8 +421,6 @@
                     var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
                     var flightName = $(this).closest(".vervoer-radio-btn-label").find('#go_flight_details .col-flight-depart-details .departure-flight-airport').html();
                     var returnflightName = $(this).closest('.vervoer-radio-btn-label').find('#return_flight_details .col-flight-depart-details .departure-flight-airport').html();
-                    console.log('flightName', flightName);
-                    console.log('returnflightName', returnflightName);
 
                     // get departure fligth details from #departure_flight_details
                     var goDepartureFlight = $(this).closest('.vervoer-radio-btn-label').find('#go_flight_details .col-flight-depart-details .departure-flight-airport').html();
@@ -460,10 +465,8 @@
                         
                         $("#summary_return_travel_classe").html(seatClass);
                         $("#summary_flight_seats").html(travelers);
-                        $("#summary_flight_price").html('&euro; ' + parseFloat(seatPrice).toFixed(2));
-                        $("#summary_flight_total_price").html('&euro; ' + parseFloat(seatPrice*travelers).toFixed(2));
-                        console.log('classeName', classeName);
-                        console.log('seatPrice', seatPrice);
+                        $("#summary_flight_price").html('&euro; ' + formatPrice(parseFloat(seatPrice).toFixed(2)));
+                        $("#summary_flight_total_price").html('&euro; ' + formatPrice(parseFloat(seatPrice*travelers).toFixed(2)));
                     });
                     
                     // append go flight details
@@ -495,14 +498,107 @@
                 )
             );
         }
-
-        
+         
         // $('#form_section3 input.bibs_count').each(function() {
         //    const filteredInputs = filterInputsByEventDate($(this).data('event-date'));
         //    console.log('filteredInputs', filteredInputs);
         // });
 
+        function validateHotelRooms(numTravelers, numRooms) {
+            // Calculate the minimum and maximum number of rooms
+            const minRooms = Math.ceil(numTravelers / 2); // Round up to nearest integer
+            const maxRooms = numTravelers;
+            
+            // Check if the number of rooms is within the valid range
+            if (numRooms >= minRooms && numRooms <= maxRooms) {
+                return { valid: true, message: `U kunt tussen de ${minRooms} en ${maxRooms} hotelkamers boeken` };
+            } else {
+                return { valid: false, message: `U kunt tussen de ${minRooms} en ${maxRooms} hotelkamers boeken` };
+            }
+        }
+
+        var allotmentCheckResponse = [];
+        var hotelRoomsData = [];
+        var bibsAllotmentData = [];
+        // function checkAllotment(productCategory){
+        //     allotmentCheckResponse = [];
+        //     $.ajax({
+        //         url: '<?php echo $data->api_endpoint; ?>/booking/check-allotment/',
+        //         type: 'GET',
+        //         headers: {
+        //             'e-key': '<?php echo $eventkey;?>',
+        //             'merchant-key': '<?php echo $data->merchant_key; ?>'
+        //         },
+        //         data: {
+        //             bibs: JSON.stringify(bibsAllotmentData),
+        //             rooms: JSON.stringify(hotelRoomsData),
+        //             flight_allotment_seats: JSON.stringify(allotmentFlightData),
+        //             productCategory: productCategory
+        //         },
+        //         success: function(response) {
+        //             localStorage.setItem('allotmentCheckStatus', response.success);
+        //             localStorage.setItem('allotmentCheckMsg', response.message);
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error('Error fetching countries:', error);
+        //             allotmentCheckResponse[0].status = false;
+        //             allotmentCheckResponse[0].message = 'Er is een fout opgetreden bij het controleren van de beschikbaarheid, neem contact op met Loopreizen.be via het contactformulier of +31 10 12345678';
+        //         }
+        //     });
+        // }
+
+        // check bibs allotment
+        // $(document).on('click', '#bibs_form_section', function(){
+        //     bibsAllotmentData = [];
+        //     var parentDiv = $(this).closest('.card-body');
+        //     var bibsForm = parentDiv.find('#bibs_form');
+        //     var bibsInput = bibsForm.find('input.bibs_count');
+        //     bibsInput.each(function() {
+        //         if($(this).val() > 0){
+        //             var bibCountValue = $(this).val();
+        //             var bibId = $(this).data('bib-id');
+        //             bibsAllotmentData.push({
+        //                 bib_id: bibId,
+        //                 bib_count: bibCountValue
+        //             });
+        //         }
+        //     });
+        //     checkAllotment(1);
+        // })
+
+        // check hotel room allotment
+        $(document).on('click', '#hotel_room_form_section', function(){
+            // hotelRoomsData = [];
+            // var parentDiv = $(this).closest('.card-body');
+            // var hotelForm = parentDiv.find('#hotel_form');
+            // var hotelRoomInput = hotelForm.find('input.rooms_count');
+            // hotelRoomInput.each(function() {
+            //     if($(this).val() > 0){
+            //         var roomCountValue = $(this).val();
+            //         var roomId = $(this).attr('name');
+            //         var hotelId = $(this).attr('hotel-id');
+            //         hotelRoomsData.push({
+            //             room_id: roomId,
+            //             room_count: roomCountValue,
+            //             hotel_id: hotelId
+            //         });
+            //     }
+            // });
+            // checkAllotment(2);
+        })
+
+        // // check flight seats allotment
+        //  $(document).on('click', '#transport_step_btn', function(){
+        //     console.log('allotmentFlightData', allotmentFlightData);
+        //     if(allotmentFlightData.length > 0){
+        //         checkAllotment(5);
+        //     }
+        //  })
+
         // Check requited fields before moving to next step
+        function updateMsg(variable, msg){
+            variable = msg; 
+        }
         $(document).on('click', '.btn-form-step', function(e) {
             var stepType     = $(this).attr('type'), 
                 sourceStep   = $(this).data('source'),
@@ -528,143 +624,359 @@
             if (stepType === 'submit') {
                 postBookingDetails();
             } else {
-                $( sourceStep + ' [required]').each(function() {
-                    var fieldValue = $(this).val();
-                    var fieldType = $(this).prop('nodeName').toLowerCase(); // Get the type of element
-                    var fieldName = $(this).attr('name');
-                    var fieldTitle = $(this).attr('placeholder');
-                    var fieldId = $(this).attr('id');
-                    console.log('fieldTitle', fieldId);
+                function validateStep(){
+                    $( sourceStep + ' [required]').each(function() {
+                        var fieldValue = $(this).val();
+                        var fieldType = $(this).prop('nodeName').toLowerCase(); // Get the type of element
+                        var fieldName = $(this).attr('name');
+                        var fieldTitle = $(this).attr('placeholder');
+                        var fieldId = $(this).attr('id');
 
-                    // Check field type and set appropriate error message
-                    if (fieldType === 'input') {
-                        fieldType = $(this).attr('type'); // Get the type attribute for input elements
-                    } else if (fieldType === 'select') {
-                        fieldType = 'select-one'; // For select elements, set type to select-one
-                    }
-                    
-                    // if (fieldName != "hotel_room_count[]" && fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
+                        // Check field type and set appropriate error message
+                        if (fieldType === 'input') {
+                            fieldType = $(this).attr('type'); // Get the type attribute for input elements
+                        } else if (fieldType === 'select') {
+                            fieldType = 'select-one'; // For select elements, set type to select-one
+                        }
+                        
+                        // if (fieldName != "hotel_room_count[]" && fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
 
-                    var bibsCount = [];
-                    var bibFilterDate = [];
-                    $('input[type="number"].bibs_count').each(function() {
-                        bibsCount.push(parseInt($(this).val()) || 0);
-                        const filteredInputs = filterInputsByEventDate($(this).data('event-date'));
-                        bibFilterDate.push(filteredInputs);
-                    });
-                    var bibCountPerDay = removeDuplicateArrays(bibFilterDate);
+                        var bibsCount = [];
+                        var bibFilterDate = [];
+                        $('input[type="number"].bibs_count').each(function() {
+                            bibsCount.push(parseInt($(this).val()) || 0);
+                            const filteredInputs = filterInputsByEventDate($(this).data('event-date'));
+                            bibFilterDate.push(filteredInputs);
+                        });
+                        var bibCountPerDay = removeDuplicateArrays(bibFilterDate);
 
-                    var bibArrSum = bibCountPerDay.flat().reduce((acc, val) => acc + val, 0);
-                    var runnersTotalSum = parseInt(bibCountPerDay.length)*runnersCount;
+                        var bibArrSum = bibCountPerDay.flat().reduce((acc, val) => acc + val, 0);
+                        var runnersTotalSum = parseInt(bibCountPerDay.length)*runnersCount;
 
-                    if(sourceStep === "#form_section3"){
-                        var bools = [];
-                        for (var i = 0; i < bibCountPerDay.length; i++) {
-                            var sum = bibCountPerDay[i].reduce((acc, val) => acc + val, 0);
-                            if (fieldTitle == "Bib" &&  runnersCount > 0 && bibArrSum > 0 && sum <= runnersCount) {
-                                bools.push(true);
-                            } else {
-                                bools.push(false);
-                            }
-
-                            if(bools.includes(false)){
-                                errorMessage = 'Het aantal startbewijzen moet gelijk zijn aan het aantal hardlopers <br/>';
+                        if(sourceStep === "#form_section3"){
+                            var bools = [];
+                            // if(localStorage.getItem('allotmentCheckStatus') == 'false'){
+                            //     errorMessage = localStorage.getItem('allotmentCheckMsg');
+                            // }else{
+                            if(fieldTitle == "Bib" && bibsCountSum == 0){
+                                errorMessage = 'Selecteer ten minste 1 bib.<br/>';
                             }else{
+                                for (var i = 0; i < bibCountPerDay.length; i++) {
+                                    var sum = bibCountPerDay[i].reduce((acc, val) => acc + val, 0);
+                                    if (fieldTitle == "Bib" &&  runnersCount > 0 && bibArrSum > 0 && sum <= runnersCount) {
+                                        bools.push(true);
+                                    } else {
+                                        bools.push(false);
+                                    }
+
+                                    if(bools.includes(false)){
+                                        errorMessage = 'Het aantal startbewijzen mag op iedere dag niet hoger zijn dan het aantal hardlopers <br/>';
+                                    }else{
+                                        errorMessage = '';
+                                        $(sourceStep).removeClass('show');
+                                        $(targetStep).addClass('show');
+                                        goNextStep(currentStep, 'collapse');
+                                        $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                                    }
+                                }
+                            }
+                            // }
+                        }
+
+                        if(sourceStep === "#form_section5"){
+                            // if(localStorage.getItem('allotmentCheckStatus') == 'false'){
+                            //     $(sourceStep).addClass('show');
+                            //     $(targetStep).removeClass('show');
+                            //     goNextStep(currentStep, 'null');
+                            //     errorMessage = localStorage.getItem('allotmentCheckMsg');
+                            // }
+                            if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
+                            }else if(hotelRoomCountSum > travelers){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                errorMessage = 'Het aantal hotelkamers mag niet hoger zijn dan het aantal reizigers <br/>';
+                            }
+                        }
+
+
+                        if (fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
+                            
+                            // $.each(bibCountPerDay, function(index, value){
+                            // var bibSum = value.reduce((total, num) => total + num, 0);
+                            // console.log('bibSum', bibSum);
+                            
+                            // });
+                            //  if(sourceStep === "#form_section5" && localStorage.getItem('allotmentCheckStatus') == 'false'){
+                            //     console.log('#form_section5');
+                            //     $(sourceStep).addClass('show');
+                            //     $(targetStep).removeClass('show');
+                            //     goNextStep(currentStep, 'null');
+                            //     errorMessage = localStorage.getItem('allotmentCheckMsg');
+                            // }
+                            // if(sourceStep === "#form_section7" && localStorage.getItem('allotmentCheckStatus') == 'false'){
+                            //     console.log('#form_section7');
+                            //     $(sourceStep).addClass('show');
+                            //     $(targetStep).removeClass('show');
+                            //     goNextStep(currentStep, 'null');
+                            //     errorMessage = localStorage.getItem('allotmentCheckMsg');
+                            // }
+                            if(sourceStep === "#form_section5" && travelers > 1 && validateHotelRooms(travelers, hotelRoomCountSum).valid === false){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                errorMessage = validateHotelRooms(travelers, hotelRoomCountSum).message;
+                            }else if (hotelRoomCountSum > 0 && hotelRoomCountSum <= travelers){
                                 errorMessage = '';
                                 $(sourceStep).removeClass('show');
                                 $(targetStep).addClass('show');
                                 goNextStep(currentStep, 'collapse');
                                 $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                            }else if(hotelRoomCountSum <= 0 && fieldTitle == "Hotelroom"){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
+                            }
+
+                            if(fieldTitle != "Bib" && fieldTitle != "Hotelroom"){
+                                errorMessage = 'Vul het volgende in: ' + fieldTitle + '.<br/>';
                             }
                         }
-                    }
-
-                    if(sourceStep === "#form_section5"){
-                        if ($('#hotel_rooms_container').children().length == 0 && fieldTitle == "GetHotels") {
-                            $(sourceStep).addClass('show');
-                            $(targetStep).removeClass('show');
-                            goNextStep(currentStep, 'null');
-                            errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
-                        }else if(hotelRoomCountSum > travelers){
-                            $(sourceStep).addClass('show');
-                            $(targetStep).removeClass('show');
-                            goNextStep(currentStep, 'null');
-                            errorMessage = 'Het aantal hotelkamer moet gelijk zijn aan het aantal hardlopers <br/>';
-                        }
-                    }
-
-                    if (fieldType === 'number' && (fieldValue <= 0 || fieldValue == "" )) {
-                        
-                        // $.each(bibCountPerDay, function(index, value){
-                        // var bibSum = value.reduce((total, num) => total + num, 0);
-                        // console.log('bibSum', bibSum);
-                        
-                        // });
-
-                        if (hotelRoomCountSum > 0 && hotelRoomCountSum <= travelers){
-                            errorMessage = '';
-                            $(sourceStep).removeClass('show');
-                            $(targetStep).addClass('show');
-                            goNextStep(currentStep, 'collapse');
-                            $('#progress-bar').css('width', percent + '%').html(percent + '%');
-                        }else if(hotelRoomCountSum <= 0 && fieldTitle == "Hotelroom"){
-                            $(sourceStep).addClass('show');
-                            $(targetStep).removeClass('show');
-                            goNextStep(currentStep, 'null');
-                            errorMessage = 'Selecteer ten minste 1 hotelkamer.<br/>';
-                        }
-
-                        if(fieldTitle != "Bib" && fieldTitle != "Hotelroom"){
-                            errorMessage = 'Vul het volgende in: ' + fieldTitle + '.<br/>';
-                        }
-                    }
-                    else if($('input[name="flightplan_id_OLD"]:checked').length <= 0 && fieldTitle == "owntransport"){
-                        errorMessage = 'Selecteer een vervoer.<br/>';
-                    }else if(fieldTitle == "flighttransport" && $('input[id="flight-transport"]').is(':checked') && $('input[name="flightplan_list"]:checked').length <= 0){
-                        errorMessage = 'Selecteer een vliegtuigvlucht.<br/>';
-                    }
-                    else if(fieldTitle == "Bib" && bibsCountSum == 0){
-                        errorMessage = 'Selecteer ten minste 1 bib.<br/>';
-                    }else if (fieldType === 'text' && fieldValue == "") {
-                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
-                    } else if (fieldType === 'textarea' && fieldValue == "") {
-                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
-                    } else if (fieldType === 'tel' && fieldValue == "") {
-                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
-                    } else if (fieldType === 'email' && fieldValue == "") {
-                        errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
-                    }  else if (fieldType === 'select-one') {
-                        if (!fieldValue) {
-                            errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
-                        }
-                    }else if (fieldType === 'checkbox' || fieldType === 'radio') {
-                        var fieldGroup = $(this).attr('name');
-                        if ($('input[name="' + fieldGroup + '"]:checked').length === 0) {
-                            errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
-                        }
-                        if ($('input[name="flightplan_id_OLD"]:checked').length === 0){
+                        else if($('input[name="flightplan_id_OLD"]:checked').length <= 0 && fieldTitle == "owntransport"){
                             errorMessage = 'Selecteer een vervoer.<br/>';
+                        }else if(fieldTitle == "flighttransport" && $('input[id="flight-transport"]').is(':checked') && $('input[name="flightplan_list"]:checked').length <= 0){
+                            errorMessage = 'Selecteer een vliegtuigvlucht.<br/>';
                         }
-                    
+                        else if(fieldTitle == "Bib" && bibsCountSum == 0){
+                            errorMessage = 'Selecteer ten minste 1 bib.<br/>';
+                        }else if (fieldType === 'text' && fieldValue == "") {
+                            errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
+                        } else if (fieldType === 'textarea' && fieldValue == "") {
+                            errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>';
+                        } else if (fieldType === 'tel' && fieldValue == "") {
+                            errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
+                        } else if (fieldType === 'email' && fieldValue == "") {
+                            errorMessage = 'Vul het volgende in ' + fieldTitle + '.<br/>'; 
+                        }  else if (fieldType === 'select-one') {
+                            if (!fieldValue) {
+                                errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
+                            }
+                        }else if (fieldType === 'checkbox' || fieldType === 'radio') {
+                            var fieldGroup = $(this).attr('name');
+                            if ($('input[name="' + fieldGroup + '"]:checked').length === 0) {
+                                errorMessage = 'Kies een optie voor ' + fieldTitle + '.<br/>';
+                            }
+                            if ($('input[name="flightplan_id_OLD"]:checked').length === 0){
+                                errorMessage = 'Selecteer een vervoer.<br/>';
+                            }
+                        
+                        }
+                    });
+
+                    $( sourceStep + ' .error-message').html(errorMessage);
+
+                    if (errorMessage !== "") {
+                        //alert('Please fill out all required fields.');
+                        //e.stopPropagation();
+                        $(sourceStep).addClass('show');
+                        $(targetStep).removeClass('show');
+                        goNextStep(currentStep, 'null');
+                    } else {
+                        $(sourceStep).removeClass('show');
+                        $(targetStep).addClass('show');
+                        goNextStep(currentStep, 'collapse');
+                        $('#progress-bar').css('width', percent + '%').html(percent + '%');
+                        updateSummaryStep1();
                     }
-                });
-
-                $( sourceStep + ' .error-message').html(errorMessage);
-
-                if (errorMessage !== "") {
-                    //alert('Please fill out all required fields.');
-                    //e.stopPropagation();
-                    $(sourceStep).addClass('show');
-                    $(targetStep).removeClass('show');
-                    goNextStep(currentStep, 'null');
-                } else {
-                    $(sourceStep).removeClass('show');
-                    $(targetStep).addClass('show');
-                    goNextStep(currentStep, 'collapse');
-                    $('#progress-bar').css('width', percent + '%').html(percent + '%');
-                    updateSummaryStep1();
                 }
 
+                if(sourceStep == "#form_section2" || sourceStep == "#form_section4" || sourceStep == "#form_section6" || sourceStep == "#form_section8"){
+                    validateStep();
+                }
+
+                var loaderText = "<p style='font-size:13px;text-transform:capitalize;margin:0px'>In Behandeling...</p>";
+                if(sourceStep == "#form_section1"){
+                    $('#travelers_form_section svg').hide();
+                    $('#travelers_form_txt').html(loaderText);
+                    $.ajax({
+                        url: '<?php echo $data->api_endpoint; ?>/booking/merchant-linkedTo-event/',
+                        type: 'GET',
+                        headers: {
+                            'e-key': '<?php echo $eventkey;?>',
+                            'merchant-key': '<?php echo $data->merchant_key; ?>'
+                        },
+                        success: function(response) {
+                            if (response.success == false){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                alert(response.message);
+                                $('#travelers_form_section svg').show();
+                                $('#travelers_form_txt').append('GA DOOR');
+                            }else{
+                                $('#travelers_form_section svg').show();
+                                $('#travelers_form_txt').append('GA DOOR');
+                                validateStep();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error checking flights allotment:', error);
+                            alert('Er is een fout opgetreden bij het controleren van de beschikbaarheid, neem contact op met Loopreizen.be via het contactformulier of +31 10 12345678');
+                        },
+                    });
+                }
+
+                // check allotment
+                if(sourceStep === "#form_section3"){
+                    $('#bibs_form_section svg').hide();
+                    $('#bibs_form_txt').html(loaderText);
+                    // get bibs data
+                    bibsAllotmentData = [];
+                    var parentDiv = $(this).closest('.card-body');
+                    var bibsForm = parentDiv.find('#bibs_form');
+                    var bibsInput = bibsForm.find('input.bibs_count');
+                    bibsInput.each(function() {
+                        if($(this).val() > 0){
+                            var bibCountValue = $(this).val();
+                            var bibId = $(this).data('bib-id');
+                            bibsAllotmentData.push({
+                                bib_id: bibId,
+                                bib_count: bibCountValue
+                            });
+                        }
+                    });
+
+                    $.ajax({
+                        url: '<?php echo $data->api_endpoint; ?>/booking/check-allotment/',
+                        type: 'GET',
+                        headers: {
+                            'e-key': '<?php echo $eventkey;?>',
+                            'merchant-key': '<?php echo $data->merchant_key; ?>'
+                        },
+                        data: {
+                            bibs: JSON.stringify(bibsAllotmentData),
+                            rooms: JSON.stringify(hotelRoomsData),
+                            flight_allotment_seats: JSON.stringify(allotmentFlightData),
+                            productCategory: 1
+                        },
+                        success: function(response) {
+                            if (response.success == false){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                alert(response.message);
+                                $('#bibs_form_section svg').show();
+                                $('#bibs_form_txt').html('GA DOOR');
+                            }else{
+                                $('#bibs_form_section svg').show();
+                                $('#bibs_form_txt').html('GA DOOR');
+                                validateStep();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error checking bibs allotment:', error);
+                            alert('Er is een fout opgetreden bij het controleren van de beschikbaarheid, neem contact op met Loopreizen.be via het contactformulier of +31 10 12345678');
+                        },
+                    });
+                }else if(sourceStep === "#form_section5"){
+                    $('#hotel_room_form_section svg').hide();
+                    $('#hotel_room_form_txt').html(loaderText);
+                    // get hotel room data
+                    hotelRoomsData = [];
+                    var parentDiv = $(this).closest('.card-body');
+                    var hotelForm = parentDiv.find('#hotel_form');
+                    var hotelRoomInput = hotelForm.find('input.rooms_count');
+                    hotelRoomInput.each(function() {
+                        if($(this).val() > 0){
+                            var roomCountValue = $(this).val();
+                            var roomId = $(this).attr('name');
+                            var hotelId = $(this).attr('hotel-id');
+                            hotelRoomsData.push({
+                                room_id: roomId,
+                                room_count: roomCountValue,
+                                hotel_id: hotelId
+                            });
+                        }
+                    });
+
+                    $.ajax({
+                        url: '<?php echo $data->api_endpoint; ?>/booking/check-allotment/',
+                        type: 'GET',
+                        headers: {
+                            'e-key': '<?php echo $eventkey;?>',
+                            'merchant-key': '<?php echo $data->merchant_key; ?>'
+                        },
+                        data: {
+                            bibs: JSON.stringify(bibsAllotmentData),
+                            rooms: JSON.stringify(hotelRoomsData),
+                            flight_allotment_seats: JSON.stringify(allotmentFlightData),
+                            productCategory: 2
+                        },
+                        success: function(response) {
+                            if (response.success == false){
+                                $(sourceStep).addClass('show');
+                                $(targetStep).removeClass('show');
+                                goNextStep(currentStep, 'null');
+                                alert(response.message);
+                                $('#hotel_room_form_section svg').show()
+                                $('#hotel_room_form_txt').html('GA DOOR');
+                            }else{
+                                $('#hotel_room_form_section svg').show()
+                                $('#hotel_room_form_txt').html('GA DOOR');
+                                validateStep();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error checking hotel rooms allotment:', error);
+                            alert('Er is een fout opgetreden bij het controleren van de beschikbaarheid, neem contact op met Loopreizen.be via het contactformulier of +31 10 12345678');
+                        },
+                    });
+                }
+                else if(sourceStep === "#form_section7"){
+                    if(allotmentFlightData.length > 0){
+                        $('#transport_step_btn svg').hide()
+                        $('#transport_step_txt').html(loaderText);
+                        $.ajax({
+                            url: '<?php echo $data->api_endpoint; ?>/booking/check-allotment/',
+                            type: 'GET',
+                            headers: {
+                                'e-key': '<?php echo $eventkey;?>',
+                                'merchant-key': '<?php echo $data->merchant_key; ?>'
+                            },
+                            data: {
+                                bibs: JSON.stringify(bibsAllotmentData),
+                                rooms: JSON.stringify(hotelRoomsData),
+                                flight_allotment_seats: JSON.stringify(allotmentFlightData),
+                                productCategory: 5
+                            },
+                            success: function(response) {
+                                if (response.success == false){
+                                    $(sourceStep).addClass('show');
+                                    $(targetStep).removeClass('show');
+                                    goNextStep(currentStep, 'null');
+                                    alert(response.message);
+                                    $('#transport_step_btn svg').show()
+                                    $('#transport_step_txt').html('GA DOOR');
+                                }else{
+                                    $('#transport_step_btn svg').show()
+                                    $('#transport_step_txt').html('GA DOOR');
+                                    validateStep();
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error checking flights allotment:', error);
+                                alert('Er is een fout opgetreden bij het controleren van de beschikbaarheid, neem contact op met Loopreizen.be via het contactformulier of +31 10 12345678');
+                            },
+                        });
+                    } else{
+                        validateStep();
+                    }
+                }
             }
 
         });
@@ -967,7 +1279,6 @@
             $('#runners_div').append(htmlToAdd);
 
             $('.form-select').select2();
-            nationalities();
         }
 
         nationalities();
@@ -1003,7 +1314,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-4 col-xl-4">
-                                <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
+                                <p class="summary-table-head-subs">Geboortedatum &amp; nationaliteit</p>
                                 <span>${booking_visitor_birthdate}</span>
                             </div>                                                    
                         </div>
@@ -1144,8 +1455,8 @@
                 if(parseInt(runnersCount) > 0){
                     updateBookingPrice(updateStepPrice('.bibs_count'), 'bibs');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
-                    $("#total_booking").html("€ "+bookingSum.toFixed(2));
-                    $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    $("#total_booking").html("€ "+formatPrice(bookingSum.toFixed(2)));
+                    $('#summary_total_booking').html('€ '+formatPrice(bookingSum.toFixed(2)));
                 }
             })
         }
@@ -1161,8 +1472,8 @@
                     var hotelTotalPrice = updateStepPrice('.rooms_count') * parseInt(nights);
                     updateBookingPrice(hotelTotalPrice, 'rooms');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
-                    $("#total_booking").html("€ "+bookingSum.toFixed(2));
-                    $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    $("#total_booking").html("€ "+formatPrice(bookingSum.toFixed(2)));
+                    $('#summary_total_booking').html('€ '+formatPrice(bookingSum.toFixed(2)));
                 }
             })
         }
@@ -1176,8 +1487,8 @@
                 if(parseInt(travelersCount) > 0){
                     updateBookingPrice(updateStepPrice('.nonextra_count'), 'nonextras');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
-                    $("#total_booking").html("€ "+bookingSum.toFixed(2));
-                    $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    $("#total_booking").html("€ "+formatPrice(bookingSum.toFixed(2)));
+                    $('#summary_total_booking').html('€ '+formatPrice(bookingSum.toFixed(2)));
                 }
             })
         }
@@ -1191,8 +1502,8 @@
                 if(parseInt(travelersCount) > 0){
                     updateBookingPrice(updateStepPrice('.extra_count'), 'extras');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
-                    $("#total_booking").html("€ "+bookingSum.toFixed(2));
-                    $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    $("#total_booking").html("€ "+formatPrice(bookingSum.toFixed(2)));
+                    $('#summary_total_booking').html('€ '+formatPrice(bookingSum.toFixed(2)));
                 }
             })
         }
@@ -1209,8 +1520,8 @@
                     var flightPrice = parseFloat(seatPrice*travelers)
                     updateBookingPrice(flightPrice, 'flight_departure');
                     let bookingSum = sumBookingPrices(bookingPricesArr);
-                    $("#total_booking").html("€ "+bookingSum.toFixed(2));
-                    $('#summary_total_booking').html('€ '+bookingSum.toFixed(2));
+                    $("#total_booking").html("€ "+formatPrice(bookingSum.toFixed(2)));
+                    $('#summary_total_booking').html('€ '+formatPrice(bookingSum.toFixed(2)));
                 }
             })
         }
@@ -1224,9 +1535,9 @@
                 var sgrFreeTotal = parseFloat(sgrFee*travelers);
                 updateBookingPrice(sgrFreeTotal, 'sgr_fee');
                 let bookingSum = sumBookingPrices(bookingPricesArr);
-                $('#booking_sgr_fee_total').html(sgrFreeTotal);
-                $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
-                $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+                $('#booking_sgr_fee_total').html(formatPrice(sgrFreeTotal));
+                $("#total_booking").html("€ "+formatPrice(parseFloat(bookingSum).toFixed(2)));
+                $('#summary_total_booking').html('€ '+formatPrice(parseFloat(bookingSum).toFixed(2)));
             }
         }
 
@@ -1246,18 +1557,18 @@
                 if(travelers < TRAVELERS_BASE_COUNT_CALAMITY){
                     var calamityPrice = parseFloat(CALAMITY_FUND_PRICE);
                     updateBookingPrice(calamityPrice, 'calamity_fund');
-                    $('#booking_calamity_fund_div').html(calamityPrice);
-                    $('#booking_calamity_fund_total').html(calamityPrice);
+                    $('#booking_calamity_fund_div').html(formatPrice(calamityPrice));
+                    $('#booking_calamity_fund_total').html(formatPrice(calamityPrice));
                 }else{
                     var calamityCount = Math.ceil(parseFloat(travelers/TRAVELERS_BASE_COUNT_CALAMITY));
                     var calamityPrice = parseFloat(CALAMITY_FUND_PRICE*calamityCount);
                     updateBookingPrice(calamityPrice, 'calamity_fund');
-                    $('#booking_calamity_fund_div').html(CALAMITY_FUND_PRICE);
-                    $('#booking_calamity_fund_total').html(calamityPrice);
+                    $('#booking_calamity_fund_div').html(formatPrice(CALAMITY_FUND_PRICE));
+                    $('#booking_calamity_fund_total').html(formatPrice(calamityPrice));
                 }
                 let bookingSum = sumBookingPrices(bookingPricesArr);
-                $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
-                $('#summary_total_booking').html('€ '+parseFloat(bookingSum).toFixed(2));
+                $("#total_booking").html("€ "+formatPrice(parseFloat(bookingSum).toFixed(2)));
+                $('#summary_total_booking').html('€ '+formatPrice(parseFloat(bookingSum).toFixed(2)));
             }
         }
        
@@ -1317,32 +1628,32 @@
                                 var baseInsPrice = parseFloat(insPrice * numberOfDays);
                                 if(insPerParticipant == 1){
                                     var totalInsPrice = baseInsPrice*travellersCount;
-                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2).replace('.', ','));
                                 }else{
-                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2).replace('.', ','));
                                 }
                             }else{
                                  var baseInsPrice = ((insPrice * bookingBasePrice) / 100);
                                 if(insPerParticipant == 1){
                                     var totalInsPrice = baseInsPrice*travellersCount;
-                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+totalInsPrice.toFixed(2).replace('.', ','));
                                 }else{
-                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2));
+                                    $(`.insurance_id_${insId}`).html('€ '+baseInsPrice.toFixed(2).replace('.', ','));
                                 }
                             }
                         }else{
                            if(insName.toLowerCase() == "travelinsurance eu" || insName == "travelinsurance non-eu"){
                                 // console.log('travelInsurance(insPrice)', travelInsurance(ins_price));
                                 var travelIns = travelInsurance(insPrice, numberOfDays, travellersCount);
-                                $(`.insurance_id_${insId}`).html('€ '+travelIns.toFixed(2));
+                                $(`.insurance_id_${insId}`).html('€ '+travelIns.toFixed(2).replace('.', ','));
                             }else if(insName.toLowerCase() == "cancellation insurance"){
                                 // console.log('cancellationInsurance(insPrice, bookingBasePrice)', cancellationInsurance(ins_price, bookingBasePrice));
                                 var cancalationIns = cancellationInsurance(insPrice, bookingBasePrice);
-                                $(`.insurance_id_${insId}`).html('€ '+cancalationIns.toFixed(2));
+                                $(`.insurance_id_${insId}`).html('€ '+cancalationIns.toFixed(2).replace('.', ','));
                             }else if(insName.toLowerCase() == "injury insurance"){
                                 // console.log('injuryInsurance(insPrice, bookingBasePrice)', injuryInsurance(ins_price, bookingBasePrice));
                                 var injuryIns = injuryInsurance(insPrice, bookingBasePrice);
-                                $(`.insurance_id_${insId}`).html('€ '+injuryIns.toFixed(2));
+                                $(`.insurance_id_${insId}`).html('€ '+injuryIns.toFixed(2).replace('.', ','));
                             }
                         }
                     });
@@ -1379,7 +1690,7 @@
                 }
                 updateBookingPrice(parseFloat(totalinsurancePrice).toFixed(2), 'insurance');
                 $('#total_insurance_price').val(totalinsurancePrice);
-                $('#total_insurance').html(totalinsurancePrice.toFixed(2));
+                $('#total_insurance').html(totalinsurancePrice.toFixed(2).replace('.', ','));
 
                 let bookingSum = sumBookingPrices(bookingPricesArr);
                 $("#total_booking").html("€ "+parseFloat(bookingSum).toFixed(2));
@@ -1400,7 +1711,7 @@
                             <p>${insName}</p>
                         </div>
                         <div class="col-md-6 col-lg-8 col-xl-8">
-                            <p>${insPrice}</p>
+                            <p>${insPrice.replace('.', ',')}</p>
                         </div>
                     </div>`);
                 }
@@ -1467,8 +1778,8 @@
                 // booking_calamity_fund +
                 // booking_insurance_fee_div;
 
-            $('#total_booking').html('&euro; ' + total_booking.toFixed(2));
-            $('#summary_total_booking').html('&euro; ' + total_booking.toFixed(2));
+            $('#total_booking').html('&euro; ' + formatPrice(total_booking.toFixed(2)));
+            $('#summary_total_booking').html('&euro; ' + formatPrice(total_booking.toFixed(2)));
             // display selected event(s) names
             // $('#form_section3 input.bibs_count' ).each(function(){
             //     $('#selected_events').html();
@@ -1543,9 +1854,9 @@
                     $("#booking_calamity_fund").val(booking_calamity_fund);
                     $("#booking_insurance_fee").val(booking_insurance_fee);
 
-                    $("#booking_sgr_fee_div").html(booking_sgr_fee);
+                    $("#booking_sgr_fee_div").html(formatPrice(booking_sgr_fee));
                     $("#booking_calamity_fund_div").html(booking_calamity_fund);
-                    $("#booking_insurance_fee_div").html(booking_insurance_fee);
+                    $("#booking_insurance_fee_div").html(booking_insurance_fee.replace('.', ','));
 
                     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
                         options_summary = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' },
@@ -1621,7 +1932,7 @@
                                     <div style='background-color: #f0f4f7;'>${item.event_date}</div>
                                     </div>
                                 </label>
-                                <div class="card-title"> &euro; ${item.single_ticket_price} </div>
+                                <div class="card-title"> &euro; ${formatPrice(item.single_ticket_price)} </div>
                                 <div class="input-group plus-minus-input">
                                     <div class="input-group-button">
                                     <span class="button hollow circle value-button-room minus_room bib-count-minus" data-bib-id="${item.id}" data-bibs-max="${travelers}" data-quantity="minus" data-field="quantity">
@@ -1711,7 +2022,7 @@
                                             <div class="card-body-descr">Max. ${item.max_persons_per_room} personen per kamer</div>
                                             <div class="card-body-price-heading">
                                                 <div class="card-body-price-vanaf-sub">Prijs vanaf</div>
-                                                <div class="card-body-price">&#8364; ${item.price_from}</div>
+                                                <div class="card-body-price">&#8364; ${formatPrice(item.price_from)}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -1789,7 +2100,7 @@
                                         <div class="card-body">
                                             <div class="card-body-price-heading">
                                             <div class="card-body-price-vanaf-sub">Prijs vanaf</div>
-                                            <div class="card-body-price room-type-price">&#8364; ${item.price}</div>
+                                            <div class="card-body-price room-type-price">&#8364; ${formatPrice(item.price)}</div>
                                             </div>
                                             <div class="card-body-hotel-room-qty-sel rooms-item">
                                                 <div class="input-group plus-minus-input">
@@ -1799,7 +2110,7 @@
                                                         </span>
                                                     </div>
                                                     <input type="hidden" name="hotel_rooms[]" value="${item.id}">
-                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number hotel-room-count" type="number" id="rooms_count_${item.hotel_room_id}" name="${item.hotel_room_id}" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
+                                                    <input placeholder="Hotelroom" class="input-group-field rooms_count number hotel-room-count" type="number" id="rooms_count_${item.hotel_room_id}" hotel-id="${hotel_id}" name="${item.hotel_room_id}" value="0" required data-room_name="${item.name}" data-quantity="${item.quantity}" data-price="${item.price}">
                                                     <div class="input-group-button">												
                                                         <span class="button hollow room-count-plus circle value-button-room plus_room" data-bib-id="${item.id}" data-quantity="plus" data-hotels-max="${travelers}" data-field="quantity">
                                                             <i class="fa fa-plus" aria-hidden="true"></i>
@@ -1866,7 +2177,7 @@
                                             <div class="card-body-descr">${extras_description}</div>
                                             <div class="card-body-price-heading">
                                             <div class="card-body-price-vanaf-sub">Prijs vanaf</div>
-                                            <div class="card-body-price">&#8364; ${item.price}</div>
+                                            <div class="card-body-price">&#8364; ${formatPrice(item.price)}</div>
                                             </div> 
                                             <div class="card-body-hotel-room-qty-sel hotelextra-item">
                                                 <div class="input-group plus-minus-input">
@@ -1902,7 +2213,7 @@
                                             <div class="card-body-descr">${extras_description}</div>
                                             <div class="card-body-price-heading">
                                             <div class="card-body-price-vanaf-sub">Prijs vanaf</div>
-                                            <div class="card-body-price">&#8364; ${item.price}</div>
+                                            <div class="card-body-price">&#8364; ${formatPrice(item.price)}</div>
                                             </div> 
                                             <div class="card-body-hotel-room-qty-sel nonhotelextra-item">
                                                 <div class="input-group plus-minus-input">
@@ -1983,7 +2294,7 @@
                             if(item.route == 'D') {  //departure
             
                                 // Construct HTML for flight info
-                                flightInfoHtml += `<div class="flight-details-box-row" id="go_flight_details" data-flight-id="${item.flight_id}">
+                                flightInfoHtml += `<div class="flight-details-box-row" id="go_flight_details" data-flight-id="${item.flight_id}" data-flight-plan-id="${item.flight_plan_id}">
                                     <div class="col-flight-depart-details">
                                         <div class="departure-flight-airport">${item.flight_number} --> ${item.departure_port}</div>
                                         <div class="departure-flight-depart">Vertrek</div>
@@ -2003,9 +2314,9 @@
                                         <h5 class="heenvlucht-details">Reisklasse</h5>
                                         <select placeholder="Reisklasse" data-placeholder="Reisklasse" name="flight-seat-flight-one" id="flight-seat-flight-one" class="form-select flight-departure departure-select">
                                             <option value="" data-price="0.00" disabled selected>Reisklasse</option>                                            
-                                            <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${item.economy_ticket_price}</option>
-                                            <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${item.comfort_ticket_price}</option>
-                                            <option value="bus" data-price="${item.business_ticket_price}">Business class - &#8364; ${item.business_ticket_price}</option>
+                                            <option value="eco" data-price="${item.economy_ticket_price}">Economy class - &#8364; ${formatPrice(item.economy_ticket_price)}</option>
+                                            <option value="com" data-price="${item.comfort_ticket_price}">Comfort class - &#8364; ${formatPrice(item.comfort_ticket_price)}</option>
+                                            <option value="bus" data-price="${item.business_ticket_price}">Business class - &#8364; ${formatPrice(item.business_ticket_price)}</option>
                                         </select>
     
                                     </div>
@@ -2090,6 +2401,73 @@
             }
         });
 
+        // handle insurances who depend on other insurances
+        function disable_dependant_insurance(){
+            $('.insurance-options').each(function(){
+                var dependOnId = $(this).data('depend-on');
+                if(dependOnId > 0){
+                    console.log('dependOnId', dependOnId);
+                    // current insurance depends on another insurance
+                    // prevent user from checking current insurance if dependOnId is not checked
+                    $(this).prop('disabled', true);
+                    var dependOnElement = $('#'+dependOnId);
+                    if(dependOnElement.is(':checked')){
+                        $(this).prop('checked', true);
+                    }else{
+                        $(this).prop('checked', false);
+                    }
+                }
+            })
+        }
+
+        function handle_dependent_insurance(){
+            $(document).on('click', '#form_section8 input.insurance-options', function(){
+                var clickedInsId = $(this).attr('id');
+                var clickedIns = $(this);
+                var insurancesParent = $('#insurances_container').children();
+                var insuranceTotal = parseFloat($('#total_insurance').text());
+                $(insurancesParent).each(function(){
+                    var insurances = $(this).find('input');
+                    if(insurances.data('depend-on') > 0){
+                        var dependentId = insurances.data('depend-on');
+                        var insuranceId = insurances.attr('id');
+                        if(dependentId == clickedInsId){
+                            if(clickedIns.is(':checked')){
+                                insurances.removeAttr('disabled');
+                            }else{
+                                insurances.prop('checked', false);
+                                insurances.prop('disabled', true);
+                                // calculateInsPrice();
+                                var insurancePrice = parseFloat(insurances.data('price'));
+                                console.log('insurancePrice', insurancePrice);
+                                console.log('insuranceTotal', insuranceTotal);
+                                insuranceTotal -= insurancePrice;
+                                console.log('insuranceTotal', insuranceTotal);
+                                $('#total_insurance').html(insuranceTotal.toFixed(2));
+                                updateBookingPrice(parseFloat(insuranceTotal).toFixed(2), 'insurance');
+                                // check if the dependent insurance has another insurance that depends on it
+                                var recursiveDependent = $(`input[data-depend-on="${insuranceId}"]`);
+                                if(recursiveDependent.length > 0){
+                                    // handle_dependent_insurance();
+                                    recursiveDependent.prop('checked', false);
+                                    recursiveDependent.prop('disabled', true);
+
+                                    var recursiveDependentPrice = parseFloat(recursiveDependent.data('price'));
+                                    console.log('recursiveDependentPrice', recursiveDependentPrice);
+                                    console.log('insuranceTotal', insuranceTotal);
+                                    insuranceTotal -= recursiveDependentPrice;
+                                    console.log('insuranceTotal2', insuranceTotal);
+                                    $('#total_insurance').html(insuranceTotal.toFixed(2));
+                                    updateBookingPrice(parseFloat(insuranceTotal).toFixed(2), 'insurance');
+                                }
+                            }
+                        }
+                    }
+                })
+            })
+        }
+        // handle_dependent_insurance();
+
         // Make an AJAX request to the API endpoint for available insurance
 		$.ajax({
 			url: '<?php echo $data->api_endpoint; ?>/booking/available-insurance',
@@ -2114,7 +2492,6 @@
                     // Process each insurance plan
                     $.each(insurancesData, function(index, item) {
                         // Access insurance details
-                        console.log('insurance item:', item);
             
                         var this_ins_price = 0,
                             total_booking_price = 0,
@@ -2167,10 +2544,12 @@
                         //     isPriceHidden =  'style="display:none;"';
                         // }
                         // Construct HTML for flight plan
+                        console.log('item', item);
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
                                 <div class="insurance-options-check">
-                                    <input id="${item.insurance_id}" class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-insurance-id="${index + 1}" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" value="1" />
+                                    <input id="${item.insurance_id}" class="insurance-options form-input-checkbox" type="checkbox" name="insurance_id[${index + 1}]" data-insurance-id="${index + 1}" data-name="${item.insurance_name}" ${isOptionChecked} data-price="${item.price}" 
+                                    data-price_type="${item.price_type}" data-price_per_participant="${item.price_per_participant}" data-depend-on="${item.depend_on_insurance_id}" value="1" />
                                     <label for="extra-bagage" class="insurancetype-check-label">${item.insurance_name}</label>
                                 </div>
                                 <div class="verzekering-description-box">
@@ -2178,16 +2557,17 @@
                                 </div>
                             </td>
                             <td class="verzekering-optie-col">
-                                <span id="insurance_option${index + 1}" class="insurance_option insurance_id_${item.insurance_id}" ${isPriceHidden}>&euro; ${item.price}</span>
+                                <span id="insurance_option${index + 1}" class="insurance_option insurance_id_${item.insurance_id}" ${isPriceHidden}>&euro; ${item.price.replace('.', ',')}</span>
                             </td>
                         </tr>`;
                     });
  
                     // Append all insurance HTML to container
                     $('#insurances_container').html(insuranceHtml);
-                    $('#total_insurance_price').val(total_insurance.toFixed(2));
-                    $('#total_insurance').html('&euro; ' + total_insurance.toFixed(2));
+                    $('#total_insurance_price').val(total_insurance.toFixed(2).replace('.', ','));
+                    $('#total_insurance').html(total_insurance.toFixed(2).replace('.', ','));
 
+                    // disable_dependant_insurance();
 				} else {
 					// Handle the case when the response type is not success
 					console.error('Error: ' + response.message);
@@ -2257,9 +2637,11 @@
                 if($(this).val() > 0){
                     var roomCountValue = $(this).val();
                     var roomId = $(this).attr('name');
+                    var hotelId = $(this).attr('hotel-id');
                     hotelRooms.push({
                         room_id: roomId,
-                        room_count: roomCountValue
+                        room_count: roomCountValue,
+                        hotel_id: hotelId
                     });
                 }
             });
@@ -2272,7 +2654,6 @@
         // $(document).on('click', '.room-count-plus', function(e){
         //     appendSelectedRoom($(this));
         // })
-
 
         var nonextrasData = [];
         function appendSelectedNonExtra(el) {
@@ -2351,12 +2732,16 @@
 
         // get flightsFormData
         var flightData = [];
+        var allotmentFlightData = [];
         $(document).on('click', 'input[name="flightplan_id_OLD"]', function(e){
             if($('input[id="own-transport"]').is(':checked')){
                 flightData = [];
+                allotmentFlightData = [];
             }else{
                 $(document).on('click', 'input[name="flightplan_list"]', function(e){
                     flightData = [];
+                    allotmentFlightData = [];
+                    var travellersCount = parseInt($('#adults_count').val()) + parseInt($('#children_count').val()) + parseInt($('#children_under_3_count').val());
                     var checkedValue = $('input[type="radio"][name="flightplan_list"]:checked').val();
                     $('input[type="radio"][name="flightplan_list"]').each(function() {
                         if ($(this).val() == checkedValue) {
@@ -2365,9 +2750,10 @@
                             var goFlightDetails = cardDiv.find('#go_flight_details');  
                             var go_select_box = cardDiv.find('.flight-seat-select-box');
                             var go_select = go_select_box.find('.departure-select');
-                            console.log('go_select_box', go_select_box);
                             // get flight id from goFlightDetails select
                             var go_flight_id = goFlightDetails.data('flight-id');
+                            // var go_flight_plan_id = goFlightDetails.data('flight-plan-id');
+                            var go_flight_plan_id = $(this).data("flight-id");
                             var goFlightSelect = goFlightDetails.find('.select2-selection__rendered');
                             // var departureClass = goFlightSelect.text();
                             
@@ -2406,6 +2792,14 @@
                                     ]
                                 }
                             );
+                            // get flight data to check allotment
+                            allotmentFlightData.push(
+                                {
+                                    flight_plan_id: go_flight_plan_id,
+                                    ticket_type: "",
+                                    seat_count: travellersCount
+                                }
+                            );
                         }
                     });
                 
@@ -2413,9 +2807,13 @@
                         // localStorage.setItem('departureClass', e.target.value);
                         var seatClass = $(this).children('option:selected').val();
                         flightData[0].flight_type[0].info = seatClass;
+                        allotmentFlightData[0].ticket_type = seatClass;
                     })
                     if(flightData.length > 2){
                         flightData = [flightData[0], flightData[1]];
+                    }
+                    if(allotmentFlightData.length > 1){
+                        allotmentFlightData = [allotmentFlightData[0]];
                     }
                 })
             }
@@ -2563,6 +2961,7 @@
             data += '&rooms=' + JSON.stringify(hotelRooms);
             data += '&bibs=' + JSON.stringify(bibsData);
             data += '&flight_seats=' + JSON.stringify(flightData);
+            data += '&flight_allotment_seats=' + JSON.stringify(allotmentFlightData);
             data += '&bibs_count=' + JSON.stringify(bibsCount);
             data += '&nonextras=' + JSON.stringify(nonextrasData);
             data += '&extras=' + JSON.stringify(hotelExtrasData);
@@ -2688,16 +3087,10 @@
     
 </script>
 
-<div class="booking_section">
+<div class="booking_section booking-form-section-cont">
     <div class="container">
 
-        <div class="row">
-            <div class="col-12">
-                <h2 id="booking_event">[Event]</h2>
-            </div>
-        </div>
-
-        <div class="row">
+    <!-- <div class="row"> -->
             <div class="col-12 sticky-progress">
                 <div class="mt-4">
                     <div class="progress">
@@ -2705,7 +3098,15 @@
                     </div>
                 </div>
             </div>
+        <!-- </div> -->
+
+        <div class="row">
+            <div class="col-12">
+                <h2 id="booking_event">[Event]</h2>
+            </div>
         </div>
+
+        
         <div class="row booking-form-section">
             <div class="col-sm-8 booking_leftcol">
                 <!-- [Left column] -->
@@ -2795,14 +3196,14 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
+                                            <button id="travelers_form_section" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="11" data-toggle="" data-target="#form_section2" data-source="#form_section1" aria-expanded="true" aria-controls="form_section2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                                         <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                     </g>
                                                 </svg>
-                                                Ga door
+                                                <span id="travelers_form_txt">Ga door</span>
                                             </button>   
 
                                         </div>                   
@@ -3120,14 +3521,14 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="null" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
+                                        <button id="travellers_form_section" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="22" data-toggle="null" data-target="#form_section3" data-source="#form_section2" aria-expanded="true" aria-controls="form_section3">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="travellers_step_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3166,14 +3567,14 @@
                                     <div class="row">
                                         <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                            <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
+                                            <button id="bibs_form_section" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="33" data-toggle="" data-target="#form_section4" data-source="#form_section3" aria-expanded="true" aria-controls="form_section4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                     <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                         <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                                         <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                     </g>
                                                 </svg>
-                                                Ga door
+                                                <span id="bibs_form_txt">Ga door</span>
                                             </button>   
 
                                         </div>                   
@@ -3217,14 +3618,14 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
+                                        <button id="event_date_form_section" class="btn btn-link btn-block btn-form-step text-left" type="button" data-percent="44" data-toggle="" data-target="#form_section5" data-source="#form_section4" aria-expanded="true" aria-controls="form_section5">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="event_date_form_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3272,14 +3673,14 @@
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
 
-                                        <button class="btn btn-link btn-block btn-form-step text-left hotel-btn-form-step" type="button" data-percent="55" data-toggle="" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
+                                        <button id="hotel_room_form_section" class="btn btn-link btn-block btn-form-step text-left hotel-btn-form-step" type="button" data-percent="55" data-toggle="" data-target="#form_section6" data-source="#form_section5" aria-expanded="true" aria-controls="form_section6">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16.667" height="16.871" viewBox="0 0 16.667 16.871">
                                                 <g id="remote-control-fast-forward-button" transform="translate(-2.767 0)">
                                                     <path id="Path_226" data-name="Path 226" d="M3.263,16.871a.5.5,0,0,1-.5-.5V.5A.5.5,0,0,1,3.581.114l9.527,7.939a.5.5,0,0,1,0,.762L3.581,16.756A.5.5,0,0,1,3.263,16.871Zm.5-15.316v13.76l8.256-6.88Z" transform="translate(0 0)" fill="#fff" />
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="hotel_room_form_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3316,7 +3717,7 @@
                                         <label class="card-title" id="hotel_extra_title">Hotel extras</label>		
                                         <div class="radio-btn-grp-row" id="hotel_extras_details_div"></div>
 
-                                        <label class="card-title">Non-Hotel extras</label>		
+                                        <label class="card-title">Extra's van het hotel</label>		
                                         <div class="radio-btn-grp-row" id="non_hotel_extras_details_div"></div>
         
                                     </div>
@@ -3332,7 +3733,7 @@
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="extra_form_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3396,7 +3797,7 @@
     
                                                 <div class="card card-default card-input">
                                                     <div class="card-header">
-                                                        <div class="card-title">Per vlucht</div>
+                                                        <div class="card-title">Met het vliegtuig</div>
                                                         <div class="card-title-icon">
                                                             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 959.192 959.192" xml:space="preserve">
                                                                 <path d="M923.777,2.34l-101.5,46.2c-6.5,3-12.5,7.1-17.6,12.2l-165.4,165.5l-569.6-68.3c-10.3-1.2-20.7,2.3-28,9.7l-31.7,31.7
@@ -3440,7 +3841,7 @@
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="transport_step_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3487,8 +3888,8 @@
  
                                                     <tfoot class="verzekering-table-footer">
                                                         <tr>
-                                                            <td class="tfoot-col-left-label">Totaal</td>
-                                                            <td class="tfoot-col-right-amount">€ <span id="total_insurance">0.00</span></td>
+                                                            <td class="tfoot-col-left-label insurance-totals">Totaal</td>
+                                                            <td class="tfoot-col-right-amount insurance-totals">€ <span id="total_insurance">0,00</span></td>
                                                         </tr>
                                                     </tfoot>
                                                 </tbody>
@@ -3576,7 +3977,7 @@
                                                     <path id="Path_227" data-name="Path 227" d="M169.6,16.872a.5.5,0,0,1-.5-.5V13.917a.5.5,0,0,1,.992,0v1.4l8.256-6.88L170.1,1.556v1.4a.5.5,0,0,1-.992,0V.5a.5.5,0,0,1,.814-.381l9.527,7.939a.5.5,0,0,1,0,.762l-9.527,7.939A.5.5,0,0,1,169.6,16.872Z" transform="translate(-160.194 -0.001)" fill="#fff" />
                                                 </g>
                                             </svg>
-                                            Ga door
+                                            <span id="insurances_step_txt">Ga door</span>
                                         </button>   
 
                                     </div>                   
@@ -3666,8 +4067,8 @@
 
                                                     <div class="row form-fields-rows">
                                                         <div class="col-md-6 col-lg-4 col-xl-4">
-                                                            <p class="summary-table-head-subs">Naam</p>
-                                                            <span class="summary-sub-headings-txt">Hoofdboeker:</span> <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
+                                                            <p class="summary-table-head-subs">Hoofdboeker</p>
+                                                            <span class="summary-sub-headings-txt"></span> <span id="booking_visitor_title_div"></span>&nbsp;<span id="booking_visitor_name_div"></span><br>   
                                                         </div>
                                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                                             <p class="summary-table-head-subs">Contactgegevens</p>
@@ -3679,7 +4080,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6 col-lg-4 col-xl-4">
-                                                            <p class="summary-table-head-subs">Geboortedatum &amp; Nationaliteit</p>
+                                                            <p class="summary-table-head-subs">Geboortedatum &amp; nationaliteit</p>
                                                             <span id="booking_visitor_birthdate_div"></span>
                                                         </div>                                                    
                                                     </div>
@@ -3688,11 +4089,21 @@
 
                                                     </div>
 
-                                                    <div class="row form-fields-rows">
-                                                        <div class="col-md-6 col-lg-4 col-xl-4">
-                                                            <span class="summary-sub-headings-txt">Thuisblijver:</span> <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
+                                                    <div class="row form-fields-rows thuisblijver-row">
+                                                    <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <p class="summary-table-head-subs">Thuisblijver</p>
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <p class="summary-table-head-subs">Contactgegevens</p>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="row form-fields-rows thuisblijver-row">
+                                                        <div class="col">
+                                                        
+                                                            <span id="booking_stayathome_title_div"></span>&nbsp;<span id="booking_stayathome_name_div"></span><br>   
                                                         </div>
-                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="col">
                                                             <div class="d-flex">
                                                                 <!-- <div class="mr-2">
                                                                     <i class="fa-solid fa-location-dot"></i>
@@ -3700,6 +4111,7 @@
                                                                 <div class="address"><span id="booking_stayathome_address_div"></span><br></div>
                                                             </div>
                                                         </div>
+                                                        <div class="col"></div>
                                                         <!-- <div class="col-md-6 col-lg-4 col-xl-4">
                                                             <span id="booking_stayathome_birthdate_div">
                                                         </div>                                                     -->
@@ -3712,16 +4124,16 @@
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
                                                     <div class="row form-fields-rows">
-                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                             <p class="summary-table-head-subs">Challenge</p>
                                                         </div>
-                                                        <div class="col-md-4 col-lg-4 col-xl-4">
-                                                            <p class="summary-table-head-subs">Startbewijzen</p>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Aantal</p>
                                                         </div>
-                                                        <div class="col-md-4 col-lg-4 col-xl-4">
-                                                            <p class="summary-table-head-subs">Prijs per bib</p>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Prijs per stuk</p>
                                                         </div>
-                                                         <div class="col-md-4 col-lg-4 col-xl-4">
+                                                         <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
                                                             <p class="summary-table-head-subs">Prijs</p>
                                                         </div>
                                                     </div>
@@ -3768,7 +4180,7 @@
                                                     <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra's</span></h3>
                                                 </div>
                                                 <div class="col-12 mob-hide">
-                                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's van hotel</h4>
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Extra's van hotel</h4>
                                                 </div>
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -3789,7 +4201,7 @@
 
                                                 </div>
                                                 <div class="col-12 mt-3 mob-hide">
-                                                    <h4 class="body-14  regular-400 gray-1 mb-1">Extra's buiten het hotel</h4>
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Extra's buiten het hotel</h4>
                                                 </div>
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -3816,53 +4228,54 @@
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
                                                     <div id="flight-holder">
                                                         <div class="row form-fields-rows">
-                                                            <h4 class="body-14  regular-400 gray-1 mb-1">Heenvlucht</h4>
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Heenvlucht</h4>
                                                         </div>
                                                         <div class="row form-fields-rows">
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
-                                                                <p class="summary-table-head-subs">Vlucht</p>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs summary-table-head-subs">Vlucht</p>
                                                                 <span id="summary_go_flight_name" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Vertrek</p>
                                                                 <span id="summary_go_departure" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Aankomst</p>
                                                                 <span id="summary_go_arrival" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Reisklasse</p>
                                                                 <span id="summary_go_travel_classe" class="summary-body-txt">-</span>
                                                             </div>
                                                         </div>
 
                                                         <div class="row form-fields-rows">
-                                                            <h4 class="body-14  regular-400 gray-1 mb-1">Retourvlucht</h4>
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Retourvlucht</h4>
                                                         </div>
                                                         <div class="row form-fields-rows">
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Vlucht</p>
                                                                 <span id="summary_return_flight_name" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Vertrek</p>
                                                                 <span id="summary_return_departure" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Aankomst</p>
                                                                 <span id="summary_return_arrival" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
                                                                 <p class="summary-table-head-subs">Reisklasse</p>
                                                                 <span id="summary_return_travel_classe" class="summary-body-txt">-</span>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-8 col-lg-8 col-xl-8">
+                                                        <div class="row summ-flight-deets-row">
                                                             <!-- <p class="summary-table-head-subs">Reisklasse</p> -->
-                                                            <p class="summary-body-txt">Aantal stoelen: <span id="summary_flight_seats"></span></p>
-                                                            <p class="summary-body-txt">Pris per stoel: <span id="summary_flight_price"></span></p>
-                                                            <p class="summary-body-txt">Pris: <span id="summary_flight_total_price"></span></p>
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Aantal stoelen: <span id="summary_flight_seats"></span></p></div>
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Prijs per stoel: <span id="summary_flight_price"></span></p></div>
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Prijs: <span id="summary_flight_total_price"></span></p></div>
+                                                            <div class="col summ-flight-deets"></div>
                                                         </div>
                                                     </div>
 
@@ -3872,7 +4285,7 @@
 
                                                 </div>
                                                 <div class="col-12 my-3 mob-hide summ-head-box">
-                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekering</span></h3>
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekeringen</span></h3>
                                                 </div>
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
@@ -3890,7 +4303,7 @@
     
                                                 </div>
                                                 <div class="col-12 my-3 box-padding-mob">
-                                                    <h3 class="form-label-blue">Overige kosten</h3>
+                                                    <h3 class="form-label-blue overigekost"><span class="summ-heading">Overige kosten<span class="summ-heading"></h3>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="row mb-1">
@@ -3898,9 +4311,11 @@
                                                             SGR fee
                                                         </div>
                                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
-                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon 
-                                                                <span style="margin-left:30px;">Totaal: €<span style="margin-left:1px;" id="booking_sgr_fee_total"></span></span>
-                                                            </span>
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div"></span> <span class="summary-sub-headings-txt">per persoon</span>
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                                <span>Totaal: €<span style="margin-left:1px;" id="booking_sgr_fee_total"></span></span>
+                                                            
                                                             <span id="booking_sgr_fee_total"></span>
                                                         </div>
                                                     </div>
@@ -3918,7 +4333,9 @@
                                                         </div>
                                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
                                                             <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div"></span> per 9 personen
-                                                            <span class="" style="margin-left: 30px;">Totaal: €</span> <span style="margin-left:1px;" id="booking_calamity_fund_total"></span>
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">    
+                                                            <span class="">Totaal: €</span> <span style="margin-left:1px;" id="booking_calamity_fund_total"></span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -3926,12 +4343,12 @@
                                                     <hr>
                                                 </div>
                                                 <div class="col-12">
-                                                    <div class="col-8 col-sm-8 col-md-8 col-xl-8" style="width:40%;display: flex; flex-direction: column;align-items:flex-start;justify-content:flex-start">
+                                                    <!-- <div class="col-8 col-sm-8 col-md-8 col-xl-8" style="width:40%;display: flex; flex-direction: column;align-items:flex-start;justify-content:flex-start">
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Verzekering<span id="insurance_summary" style="margin-left: 50px"></span></p>
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14x;">Calamiteitenfonds<span id="calamity_summary" style="margin-left: 50px"></span></p>
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">SGR fee<span id="sgrfee_summary" style="margin-left: 50px"></span></p>
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Boeking<span id="booking_summary" style="margin-left: 50px"></span></p>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="row mb-2">
                                                         <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
                                                             Totaal
