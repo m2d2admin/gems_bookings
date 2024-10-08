@@ -1182,10 +1182,15 @@
                     // Check if response is valid
                     if (response && response.type === 'success') {
                         var nationalities = response.data;
+                        // nationalitiesArr = response.data;
 
                         $.each(nationalities, function(index, nationality) {
-                            $('select[name="gl_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
-                            $('select[name="v_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
+                            if (!$('select[name="gl_nationality"] option[value="' + nationality.id + '"]').length) {
+                                $('select[name="gl_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
+                            }
+                            if (!$('select[name="v_nationality"] option[value="' + nationality.id + '"]').length) {
+                                $('select[name="v_nationality"]').append('<option value="' + nationality.id + '">' + nationality.name + '</option>');
+                            }
                         });
                     } else {
                         console.error('Failed to fetch nationalities:', response.message);
@@ -1279,6 +1284,7 @@
             $('#runners_div').append(htmlToAdd);
 
             $('.form-select').select2();
+            nationalities();
         }
 
         nationalities();
