@@ -599,6 +599,45 @@
         function updateMsg(variable, msg){
             variable = msg; 
         }
+
+        function saveBookingData(data){
+            $.ajax({
+                url: '<?php echo $data->api_endpoint; ?>/booking/save',
+                type: 'POST',
+                headers: {
+                    'e-key': '<?php echo $eventkey;?>',
+                    'merchant-key': '<?php echo $data->merchant_key; ?>'
+                },
+                data: data,
+                success: function(response) {
+                    // Handle success response
+                    console.log('response', response);
+                    if(response.successful){
+                        alert('Boekingsgegevens succesvol geplaatst!');
+                        var bookingData = {
+                            gl_first_name: $('#gl_first_name').val(),
+                            gl_email: $('#gl_email').val(),
+                            event_name: $('#booking_event').text(),
+                            booking_code: response.booking_code,
+                            summary: encodeURIComponent($('#summary_data').html()),
+                        };
+                        mailBookingData(bookingData);
+                        // redirect to checkout page
+                        window.location.href = response.checkout_url;
+                    }else{
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    console.error('Fout bij het plaatsen van boekingsgegevens:', error);
+                    // if(xhr.status == 200)
+                    //     mailBookingData(bookingData);
+                    alert('Fout bij het plaatsen van boekingsgegevens. Probeer het opnieuw.');
+                }
+            });
+        }
+
         $(document).on('click', '.btn-form-step', function(e) {
             var stepType     = $(this).attr('type'), 
                 sourceStep   = $(this).data('source'),
@@ -2550,7 +2589,6 @@
                         //     isPriceHidden =  'style="display:none;"';
                         // }
                         // Construct HTML for flight plan
-                        console.log('item', item);
                         insuranceHtml += `<tr class="type-verzekering-body">
                             <td class="type-verzekering-col">
                                 <div class="insurance-options-check">
@@ -2594,6 +2632,7 @@
                 data: { action: 'mail_booking_details', bookingData: bookingData },
                 success: function(data) {
                     var result = JSON.parse(data);
+                    alert('boekingsgegevens succesvol gemaild!');
                     console.log('boekingsgegevens succesvol gemaild!');
                 },
                 error: function(xhr, status, error) {
@@ -3055,40 +3094,10 @@
             // mailBookingData(bookingData);
 
             // Ajax call to post data
-            $.ajax({
-                url: '<?php echo $data->api_endpoint; ?>/booking/save',
-                type: 'POST',
-                headers: {
-                    'e-key': '<?php echo $eventkey;?>',
-                    'merchant-key': '<?php echo $data->merchant_key; ?>'
-                },
-                data: data,
-                success: function(response) {
-                    // Handle success response
-                    if(response.successful){
-                        alert('Boekingsgegevens succesvol geplaatst!');
-                        var bookingData = {
-                            gl_first_name: $('#gl_first_name').val(),
-                            gl_email: $('#gl_email').val(),
-                            event_name: $('#booking_event').text(),
-                            booking_code: response.booking_code,
-                            summary: encodeURIComponent($('#summary_data').html()),
-                        };
-                        mailBookingData(bookingData);
-                    }else{
-                        alert(response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Handle error response
-                    console.error('Fout bij het plaatsen van boekingsgegevens:', error);
-                    // if(xhr.status == 200)
-                    //     mailBookingData(bookingData);
-                    alert('Fout bij het plaatsen van boekingsgegevens. Probeer het opnieuw.');
-                }
-            });
+            saveBookingData(data);
         }
 
+        
     });
     
 </script>
@@ -4422,7 +4431,7 @@
 		<div class="col-sm-4 booking_rightcol sticky-parent">
                 <!-- [Right column] -->
                 <div class="booking-price sticky-column">
-                    <div class="price"><span>Prijsindicatie</span>
+                    <div class="price"><span>Prijs</span>
                         <div class="price-value"><span id="total_booking">&euro; 0.00</span></div>
                     </div>
                     <!-- <div id="event_names">

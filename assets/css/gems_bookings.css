@@ -839,3 +839,69 @@ span.summ-heading {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     background-color: #fff;
 }
+
+/* *********************************** BOOKING CONFIRMATION PAGE STYLES ********************************** */
+h2.thankyouheading {
+    color: var(--e-global-color-5d2e2cf);
+    font-family: "Poppins", Sans-serif;
+    font-size: 90px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-style: normal;
+    text-decoration: none;
+    text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.62);
+    text-align: center;
+}
+
+p.thankyoumsg-success-content {
+    font-family: "rucksack", Sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+    text-transform: none;
+    color: #FFFFFF;
+    line-height: normal;
+    text-align: center;
+    text-shadow: 0 0 5px black;
+}
+
+.row.booking-details-confirmation-sect {
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 2px 2px 10px 4px rgba(0, 0, 0, 0.8);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.page-id-13858 .table-responsive {
+    overflow-x: visible !important;
+}
+
+.row.mb-2.total-price-container {
+    margin-top: 10px;
+    margin-bottom: 10px !important;
+    border-top: solid 1px #919EA6;
+    border-bottom: solid 1px #919EA6;
+    padding: 12px 0;
+}
+
+span.final-total-text {
+    color: #0093CB;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.container.thankyoumsg_container {
+    text-align: center;
+}
+
+button.mailusbtn {
+    border: none;
+    padding: 10px 50px;
+    border-radius: 0px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8);
+    margin-top: 20px;
+}
+
+button.mailusbtn a {
+    color: #fff;
+}

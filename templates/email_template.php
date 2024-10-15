@@ -53,7 +53,6 @@ function non_extra_hotel($non_hotel_extras){
     return $temp;
 }
 function email_template($booking_details, $email_settings, $email, $name) {
-    var_dump($booking_details);
     $footer = "";
     $footer_segments = explode(";", $email_settings["email_footer"]);
     foreach ($footer_segments as $segment) {

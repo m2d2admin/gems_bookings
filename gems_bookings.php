@@ -175,6 +175,44 @@ function gems_bookings_shortcode($atts) {
 }
 add_shortcode('gems_bookings', 'gems_bookings_shortcode');
 
+//paymentconfirmation shortcode
+function gems_payment_confirmation_shortcode($atts) {
+	if (is_string($atts)) {
+		$atts = array();
+	}
+	$atts = shortcode_atts(array(
+		'type'               => 'paymentconfirmation',
+		'template'           => '',
+	), $atts, 'gems_payment_confirmation');
+
+	ob_start();
+
+	try {
+
+		$GEMS_template = new GEMStemplate(get_option('gems_merchant_key'), get_option('gems_api_endpoint'));
+
+		switch ($atts['type']) {
+			case 'paymentconfirmation':
+				$GEMS_template->paymentconfirmation($atts);
+				break;
+			case '-b-':
+				// $GEMS_template->showStandings($atts);
+				break;
+			case '-c-':
+				// $GEMS_template->showResults($atts);
+				break;
+			case '-d-':
+				// $GEMS_template->showMatchDetail($atts);
+				break;
+		}
+	} catch (Exception $e) {
+		echo '<div class="gems-error"><p>Er is een probleem opgetreden</p></div>';
+	}
+
+	return ob_get_clean();
+}
+add_shortcode('gems_payment_confirmation', 'gems_payment_confirmation_shortcode');
+
 
 /***********************************************************************
  Rendering options page

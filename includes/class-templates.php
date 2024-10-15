@@ -40,5 +40,13 @@ class GEMStemplate {
       ->get_template_part('form', '');
   }
 
+  // payment status page
+  public function paymentconfirmation() {
+    // Load the correct template
+    $this->template
+      ->set_template_data(array('merchant_key' => $this->merchant_key, 'img_endpoint' => $this->img_endpoint, 'api_endpoint' => $this->api_endpoint ))
+      ->get_template_part('payment_confirmation', '');
+  }
+
 }
 ?>
