@@ -600,7 +600,7 @@
             variable = msg; 
         }
 
-        function saveBookingData(data){
+        function saveBookingData(data, summary){
             $.ajax({
                 url: '<?php echo $data->api_endpoint; ?>/booking/save',
                 type: 'POST',
@@ -611,7 +611,6 @@
                 data: data,
                 success: function(response) {
                     // Handle success response
-                    console.log('response', response);
                     if(response.successful){
                         alert('Boekingsgegevens succesvol geplaatst!');
                         var bookingData = {
@@ -621,9 +620,9 @@
                             booking_code: response.booking_code,
                             summary: encodeURIComponent($('#summary_data').html()),
                         };
-                        mailBookingData(bookingData);
-                        // redirect to checkout page
-                        window.location.href = response.checkout_url;
+                        mailBookingData(bookingData, response.checkout_url);
+                        // save booking summary to local storage
+                        localStorage.setItem('booking_summary', summary);
                     }else{
                         alert(response.message);
                     }
@@ -2623,7 +2622,7 @@
 			}
 		});
 
-        function mailBookingData(bookingData){
+        function mailBookingData(bookingData, checkoutUrl){
             var url = "<?php echo admin_url('admin-ajax.php'); ?>";
             $.ajax({
                 method: "POST",
@@ -2632,14 +2631,17 @@
                 data: { action: 'mail_booking_details', bookingData: bookingData },
                 success: function(data) {
                     var result = JSON.parse(data);
-                    alert('boekingsgegevens succesvol gemaild!');
+                    // redirect to checkout page
+                    window.location.href = checkoutUrl;
                     console.log('boekingsgegevens succesvol gemaild!');
                 },
                 error: function(xhr, status, error) {
                     if(xhr.status == 200)
-                        alert('boekingsgegevens succesvol gemaild!');
+                        // redirect to checkout page
+                        window.location.href = checkoutUrl;
                     else
-                        alert('Fout bij het verzenden van e-mail');
+                        // redirect to checkout page
+                        window.location.href = checkoutUrl;
                     console.error('Fout bij het verzenden van e-mail:', error);
                 }
             });
@@ -3002,7 +3004,8 @@
             data += '&' + flightsFormData;
             data += '&' + insuranceFormData;
             data += '&special_message=' + specialMessage;
-            data += '&booking_price=' + bookingPrice;
+            // data += '&booking_price=' + bookingPrice;
+            data += '&booking_price=' + $('#total_booking').text();
             data += '&rooms=' + JSON.stringify(hotelRooms);
             data += '&bibs=' + JSON.stringify(bibsData);
             data += '&flight_seats=' + JSON.stringify(flightData);
@@ -3013,6 +3016,7 @@
             // data += '&insurance=' + JSON.stringify([{"insurance_id": 3, "insurance_count": 1}, {"insurance_id": 4, "insurance_count": 1}]);
             data += '&insurance=' + JSON.stringify(insuranceData);
             data += '&visitor_list=' + JSON.stringify(extraRunnersData);
+            // data += '&summary=' + JSON.stringify(encodeURIComponent($('#summary_data').html()));
             
             var options = { year: 'numeric', month: 'short', day: 'numeric' };
             var birthdate_visitor = new Date( $('#gl_dateofbirth').val() );
@@ -3094,7 +3098,8 @@
             // mailBookingData(bookingData);
 
             // Ajax call to post data
-            saveBookingData(data);
+            var summary = JSON.stringify(encodeURIComponent($('#summary_data').html()));
+            saveBookingData(data, summary);
         }
 
         
