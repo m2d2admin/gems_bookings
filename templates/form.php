@@ -116,6 +116,21 @@
 
         }
 
+        // // change input date format to NL
+        // $("#gl_dateofbirth").on("change", function() {
+        //     this.setAttribute(
+        //         "data-date",
+        //         moment(this.value, "YYYY-MM-DD")
+        //         .format( this.getAttribute("data-date-format") )
+        //     )
+        // }).trigger("change")
+        // $('#gl_dateofbirth').on('input', function(e) {
+        //     let input = e.target.value.replace(/\D/g, ''); // Only keep digits
+        //     if (input.length >= 2) input = input.slice(0, 2) + '-' + input.slice(2);
+        //     if (input.length >= 5) input = input.slice(0, 5) + '-' + input.slice(5, 9);
+        //     e.target.value = input;
+        // });
+
         function updateSummaryStep2() {
             var options = { year: 'numeric', month: 'short', day: 'numeric' },
                 birthdate_visitor = new Date( $('#gl_dateofbirth').val() ),
@@ -180,7 +195,24 @@
                     </div>`);
                 }
             });
+        }
 
+        function formatDate(date) {
+            // If the input is a string, convert it to a Date object
+            if (typeof date === 'string') {
+                date = new Date(date);
+            }
+
+            // Check if the date is valid
+            if (isNaN(date)) {
+                console.error('Invalid date format');
+                return null;
+            }
+
+            var options = { year: 'numeric', month: 'short', day: 'numeric' };
+            
+            // Return the date formatted in Dutch style
+            return date.toLocaleDateString("nl-NL", options);
         }
 
         function updateSummaryStep6() {
@@ -637,6 +669,408 @@
             });
         }
 
+        $(document).on('click', '#sendmail', function(e){
+            var summary = `
+                <div class="col-12 my-3" id="summary_data">
+                                                <div class="box-padding-mob col-12 mb-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">01</span><span class="summ-heading">bezoekers</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Volwassene(n)</p>
+                                                            <span id="summary_adults_count">1</span>    
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Kinderen</p>
+                                                            <span id="summary_children_count">0</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Baby's</p>
+                                                            <span id="summary_children_under_3_count">0</span>
+                                                        </div>                                                    
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">02</span><span class="summ-heading">Bezoekersinformatie</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Hoofdboeker</p>
+                                                            <span class="summary-sub-headings-txt"></span> <span id="booking_visitor_title_div">dhr.</span>&nbsp;<span id="booking_visitor_name_div">testuser  user</span><br>   
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Contactgegevens</p>
+                                                            <div class="d-flex">
+                                                                <div class="mr-2">
+                                                                    <!-- <i class="fa-solid fa-location-dot"></i> -->
+                                                                </div>
+                                                                <div class="address"><span id="booking_visitor_address_div">ustraat 90, 7865rt, adam | 6789897978 | yanick.assignon@m2-d2.com</span><br></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Geboortedatum &amp; nationaliteit</p>
+                                                            <span id="booking_visitor_birthdate_div">11 nov 1990 | Bermuda | Burger van Bosnië-Herzegovina</span>
+                                                        </div>                                                    
+                                                    </div>
+
+                                                    <div id="extra_runners"></div>
+
+                                                    <div class="row form-fields-rows thuisblijver-row">
+                                                    <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <p class="summary-table-head-subs">Thuisblijver</p>
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <p class="summary-table-head-subs">Contactgegevens</p>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="row form-fields-rows thuisblijver-row">
+                                                        <div class="col">
+                                                        
+                                                            <span id="booking_stayathome_title_div">dhr.</span>&nbsp;<span id="booking_stayathome_name_div">thuis  bl</span><br>   
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="d-flex">
+                                                                <!-- <div class="mr-2">
+                                                                    <i class="fa-solid fa-location-dot"></i>
+                                                                </div> -->
+                                                                <div class="address"><span id="booking_stayathome_address_div">9087-90-809-8 | yanick.assignon@m2-d2.com</span><br></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col"></div>
+                                                        <!-- <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <span id="booking_stayathome_birthdate_div">
+                                                        </div>                                                     -->
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">03</span><span class="summ-heading">Startbewijzen</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Challenge</p>
+                                                        </div>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Aantal</p>
+                                                        </div>
+                                                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Prijs per stuk</p>
+                                                        </div>
+                                                         <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_bibs_div"><div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>NEW BIB</p>
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>1</p>
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>€ 36,00</p>
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>€ 36,00</p>
+                        </div>
+                    </div></div>
+
+                                                </div>
+
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">04</span><span class="summ-heading">Datums</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-8 col-xl-8">
+                                                            <p class="summary-table-head-subs">Vertrek</p>
+                                                            <span id="summary_departure_date" class="summary-body-txt">ma 16 okt 2023</span>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Aankomst</p>
+                                                            <span id="summary_arrival_date" class="summary-body-txt">vr 20 okt 2023</span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">05</span><span class="summ-heading">Hotel</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">9Hotel Opera</span></p>
+                                                            <p class="summary-table-head-subs">Aantal nachten: <span id="summary_hotel_nights" class="summary-body-txt">4</span></p>
+                                                        </div>
+                                                        <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:95%;"><div class="row form-fields-rows">
+                        <div class="col-md-5 col-lg-5 col-xl-5 strtbewijz-col4">
+                            <p>Type hotelkamer: Business</p>
+                        </div>
+                         <div class="col-md-3 col-lg-4 col-xl-4 strtbewijz-col4">
+                            <p>Prijs per nacht: € 75,00</p>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-4 strtbewijz-col4">
+                            <p>Antal Kamers: 1</p>
+                        </div>
+                        <div class="col-md-2 col-lg-2 col-xl-4 strtbewijz-col4">
+                            <p>Prijs: € 75,00</p>
+                        </div></div></div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">06</span><span class="summ-heading">Extra's</span></h3>
+                                                </div>
+                                                <div class="col-12 mob-hide">
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Extra's van hotel</h4>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows hotel-extras" style="display: none;">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Opties</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Personen</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_extra_div"><p>Geen extra's geselecteerd</p></div>
+
+                                                </div>
+                                                <div class="col-12 mt-3 mob-hide">
+                                                    <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Extra's buiten het hotel</h4>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows hotel-extras" style="display: none;">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Opties</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Personen</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_nonextra_div"><div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>Onderbroek</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>1</p>
+                        </div>
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>€ 100,00</p>
+                        </div>
+                    </div></div>
+
+
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">07</span><span class="summ-heading">Vervoer</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+                                                    <div id="flight-holder" style="display: block;">
+                                                        <div class="row form-fields-rows">
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Heenvlucht</h4>
+                                                        </div>
+                                                        <div class="row form-fields-rows">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs summary-table-head-subs">Vlucht</p>
+                                                                <span id="summary_go_flight_name" class="summary-body-txt">QQ --&gt; 123</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Vertrek</p>
+                                                                <span id="summary_go_departure" class="summary-body-txt">ma 16 okt 2023 - 09:00:00</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Aankomst</p>
+                                                                <span id="summary_go_arrival" class="summary-body-txt">ma 16 okt 2023 - 10:00:00</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Reisklasse</p>
+                                                                <span id="summary_go_travel_classe" class="summary-body-txt">-</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row form-fields-rows">
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs" style="margin-top:20px;">Retourvlucht</h4>
+                                                        </div>
+                                                        <div class="row form-fields-rows">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Vlucht</p>
+                                                                <span id="summary_return_flight_name" class="summary-body-txt">RR --&gt; www</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Vertrek</p>
+                                                                <span id="summary_return_departure" class="summary-body-txt">vr 20 okt 2023 - 06:00:00</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Aankomst</p>
+                                                                <span id="summary_return_arrival" class="summary-body-txt">vr 20 okt 2023 - 07:00:00</span>
+                                                            </div>
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                                <p class="summary-table-head-subs">Reisklasse</p>
+                                                                <span id="summary_return_travel_classe" class="summary-body-txt">Economy Class</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row summ-flight-deets-row">
+                                                            <!-- <p class="summary-table-head-subs">Reisklasse</p> -->
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Aantal stoelen: <span id="summary_flight_seats">1</span></p></div>
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Prijs per stoel: <span id="summary_flight_price">€ 88,00</span></p></div>
+                                                            <div class="col summ-flight-deets"><p class="summary-body-txt">Prijs: <span id="summary_flight_total_price">€ 88,00</span></p></div>
+                                                            <div class="col summ-flight-deets"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_flight_div"></div>
+
+
+                                                </div>
+                                                <div class="col-12 my-3 mob-hide summ-head-box">
+                                                    <h3 class="form-label-blue"><span class="badge badge-highlight">08</span><span class="summ-heading">Verzekeringen</span></h3>
+                                                </div>
+                                                <div class="col-12 table-responsive overflow-y-clip mob-hide">
+
+                                                    <div class="row form-fields-rows">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                            <p class="summary-table-head-subs">Verzekering</p>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-8 col-xl-8">
+                                                            <p class="summary-table-head-subs">Prijs</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="summary_insurance_div"><div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>Travelinsurance eu</p>
+                        </div>
+                        <div class="col-md-6 col-lg-8 col-xl-8">
+                            <p>€ 11,18</p>
+                        </div>
+                    </div><div class="row form-fields-rows">
+                        <div class="col-md-6 col-lg-4 col-xl-4">
+                            <p>Cancellation insurance</p>
+                        </div>
+                        <div class="col-md-6 col-lg-8 col-xl-8">
+                            <p>€ 140,48</p>
+                        </div>
+                    </div></div>
+    
+                                                </div>
+                                                <div class="col-12 my-3 box-padding-mob">
+                                                    <h3 class="form-label-blue overigekost"><span class="summ-heading">Overige kosten<span class="summ-heading"></span></span></h3>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row mb-1">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            SGR fee
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_sgr_fee_div">12,25</span> <span class="summary-sub-headings-txt">per persoon</span>
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                                <span>Totaal: €<span style="margin-left:1px;" id="booking_sgr_fee_total">12,00</span></span>
+                                                            
+                                                            <span id="booking_sgr_fee_total"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            Administratiekosten verzekering
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            + <span id="booking_insurance_fee_div">0,00</span> <span class="summary-sub-headings-txt">% per verzekering</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
+                                                            Calamiteitenfonds
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">
+                                                            <span class="summary-sub-headings-txt">+ €</span> <span id="booking_calamity_fund_div">2,50</span> per 9 personen
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-body-txt">    
+                                                            <span class="">Totaal: €</span> <span style="margin-left:1px;" id="booking_calamity_fund_total">2,50</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr>
+                                                </div>
+                                                <div class="col-12">
+                                                    <!-- <div class="col-8 col-sm-8 col-md-8 col-xl-8" style="width:40%;display: flex; flex-direction: column;align-items:flex-start;justify-content:flex-start">
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Verzekering<span id="insurance_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14x;">Calamiteitenfonds<span id="calamity_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">SGR fee<span id="sgrfee_summary" style="margin-left: 50px"></span></p>
+                                                        <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Boeking<span id="booking_summary" style="margin-left: 50px"></span></p>
+                                                    </div> -->
+                                                    <div class="row mb-2">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black" style="font-size:18px;font-weight:bold;">
+                                                            Totaal
+                                                        </div>
+                                                        <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
+                                                            <span id="summary_total_booking" style="font-size:17px;font-weight:bold;">€ 689,50</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <hr>
+                                                </div>
+                                            </div>
+            `;
+            // var summary = "%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2\
+            // 0%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-12%20mb-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22b\
+            // adge%20badge-highlight%22%3E01%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3Ebezoekers%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2\
+            // 0%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob\
+            // -hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%\
+            // 20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%\
+            // 20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-t\
+            // able-head-subs%22%3EVolwassene(n)%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_adults_count%22%3E1%3C%2Fspan%3E%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EKinderen%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_children_count%22%3E0%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EBaby\
+            // 's%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_children_under_3_count%22%3E0%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E02%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EBezoekersinformatie%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20\
+            // overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EHoofdboeker%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22summary-sub-headings-txt%22%3E%3C%2Fspan%3E%20%3Cspan%20id%3D%22booking_visitor_title_div%22%3Edhr.%3C%2Fspan%3E%26nbsp%3B%3Cspan%20id%3D%22booking_visitor_name_div%22%3EAndrea%20%20G%3C%2Fspan%3E%3Cbr%3E%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EContactgegevens%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22d-flex%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22mr-2%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C!--%20%3Ci%20class%3D%22fa-solid%20fa-location-dot%22%3E%3C%2Fi%3E%20--%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22address%22%3E%3Cspan%20id%3D%22booking_visitor_address_div%22%3Egstraat%2098%2C%207623qe%2C%20rdam%20%7C%20563477654675%20%7C%20andrea.gericke%40m2-d2.com%3C%2Fspan%3E%3Cbr%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EGeboortedatum%20%26amp%3B%20nationaliteit%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22booking_visitor_birthdate_div%22%3E11%20nov%201990%20%7C%20Bosni%C3%AB%20en%20Herzegovina%20%7C%20Bengalese%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22extra_runners%22%3E%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%20thuisblijver-row%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EThuisblijver%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EContactgegevens%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%20thuisblijver-row%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22booking_stayathome_title_div%22%3Edhr.%3C%2Fspan%3E%26nbsp%3B%3Cspan%20id%3D%22booking_stayathome_name_div%22%3Ethuis%20%20bl%3C%2Fspan%3E%3Cbr%3E%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22d-flex%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C!--%20%3Cdiv%20class%3D%22mr-2%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ci%20class%3D%22fa-solid%20fa-location-dot%22%3E%3C%2Fi%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%20--%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22address%22%3E%3Cspan%20id%3D%22booking_stayathome_address_div%22%3E80790987%20%7C%20andrea.gericke%40m2-d2.com%3C%2Fspan%3E%3Cbr%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%22%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C!--%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22booking_stayathome_birthdate_div%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20--%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20\
+            // %20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E03%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EStartbewijzen%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EChallenge%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EAantal%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPrijs%20per%20stuk%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPrijs%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22summary_bibs_div%22%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EDe%2010k%20run%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E1%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%2\
+            // 0%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%2012%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%2012%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3ENEW%20BIB%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E1%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%2036%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-4%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%2036%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E04%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EDatums%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-8%20col-xl-8%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EVertrek%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_departure_date%22%20class%3D%22summary-body-txt%22%3Ema%2016%20okt%202023%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EAankomst%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_arrival_date%22%20class%3D%22summary-body-txt%22%3Evr%2020%20okt%202023%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%\
+            // 20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E05%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EHotel%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%20style%3D%22display%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Aflex-start%3Balign-content%3Aflex-start%3B%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EHotel%20naam%3A%20%3Cspan%20id%3D%22summary_hotel_name%22%20class%3D%22summary-body-txt%22%3E9Hotel%20Opera%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EAantal%20nachten%3A%20%3Cspan%20id%3D%22summary_hotel_nights%22%20class%3D%22summary-body-txt%22%3E4%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22hotel-room-details%22%20style%3D%22display%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Aflex-start%3Balign-content%3Aflex-start%3Bwidth%3A95%25%3B%22%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-5%20col-lg-5%20col-xl-5%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EType%20hotelkamer%3A%20Basic%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-3%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EPrijs%20per%20nacht%3A%20%E2%82%AC%2050%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-2%20col-lg-2%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EAntal%20Kamers%3A%201%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-2%20col-lg-2%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EPrijs%3A%20%E2%82%AC%2050%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3C%2Fdiv%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E06%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%\
+            // 3EExtra's%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20mob-hide%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch4%20class%3D%22body-14%20%20regular-400%20gray-1%20mb-1%20summary-table-head-subs%22%3EExtra's%20van%20hotel%3C%2Fh4%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%20hotel-extras%22%20style%3D%22display%3A%20none%3B%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EOpties%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPersonen%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPrijs%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22summary_extra_div%22%3E%3Cp%3EGeen%20extra's%20geselecteerd%3C%2Fp%3E%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20mt-3%20mob-hide%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch4%20class%3D%22body-14%20%20regular-400%20gray-1%20mb-1%20summary-table-head-subs%22%3EExtra's%20buiten%20het%20hotel%3C%2Fh4%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%20hotel-extras%22%20style%3D%22display%3A%20none%3B%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2\
+            // 0%3Cp%20class%3D%22summary-table-head-subs%22%3EOpties%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPersonen%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPrijs%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22summary_nonextra_div%22%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3EOnderbroek%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E1%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%20100%2C00%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3C%2Fdiv%3E%0A%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E07%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EVervoer%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22flight-holder%22%20style%3D%22display%3A%20block%3B%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch4%20class%3D%22body-14%20%20regular-400%20gray-1%20mb-1%20summary-table-head-subs%22%3EHeenvlucht%3C%2Fh4%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%\
+            // 20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%20summary-table-head-subs%22%3EVlucht%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_go_flight_name%22%20class%3D%22summary-body-txt%22%3EQQ%20--%26gt%3B%20123%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EVertrek%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_go_departure%22%20class%3D%22summary-body-txt%22%3Ema%2016%20okt%202023%20-%2009%3A00%3A00%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EAankomst%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_go_arrival%22%20class%3D%22summary-body-txt%22%3Ema%2016%20okt%202023%20-%2010%3A00%3A00%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EReisklasse%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_go_travel_classe%22%20class%3D%22summary-body-txt%22%3E-%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch4%20class%3D%22body-14%20%20regular-400%20gray-1%20mb-1%20summary-table-head-subs%22%20style%3D%22margin-top%3A20px%3B%22%3ERetourvlucht%3C%2Fh4%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EVlucht%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_return_flight_name%22%20class%3D%22summary-body-txt%22%3ERR%20--%26gt%3B%20www%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EVertrek%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_return_departure%22%20class%3D%22summary-body-txt%22%3Evr%2020%20okt%202023%20-%2006%3A00%3A00%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EAankomst%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_return_arrival%22%20class%3D%22summary-body-txt%22%3Evr%2020%20okt%202023%20-%2007%3A00%3A00%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%20strtbewijz-col4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EReisklasse%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_return_travel_classe%22%20class%3D%22summary-body-txt%22%3EEconomy%20Class%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20summ-flight-deets-row%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C!--%20%3Cp%20class%3D%22summary-table-head-subs%22%3EReisklasse%3C%2Fp%3E%20--%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%20summ-flight-deets%22%3E%3Cp%20class%3D%22summary-body-txt%22%3EAantal%20stoelen%3A%20%3Cspan%20id%3D%22summary_flight_seats%22%3E1%3C%2Fspan%3E%3C%2Fp%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%20summ-flight-deets%22%3E%3Cp%20class%3D%22summary-body-txt%22%3EPrijs%20per%20stoel%3A%20%3Cspan%20id%3D%22summary_flight_price%22%3E%E2%82%AC%2088%2C00%3C%2Fspan%3E%3C%2Fp%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%20summ-flight-deets%22%3E%3Cp%20class%3D%22summary-body-txt%22%3EPrijs%3A%20%3Cspan%20id%3D%22summary_flight_total_price%22%3E%E2%82%AC%2088%2C00%3C%2Fspan%3E%3C%2Fp%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col%20summ-flight-deets%22%3E%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22summary_flight_div%22%3E%3C%2Fdiv%3E%0A%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20mob-hide%20summ-head-box%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%22%3E%3Cspan%20class%3D%22badge%20badge-highlight%22%3E08%3C%2Fspan%3E%3Cspan%20class%3D%22summ-heading%22%3EVerzekeringen%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20table-responsive%20overflow-y-clip%20mob-hide%22%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EVerzekering%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-8%20col-xl-8%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22summary-table-head-subs%22%3EPrijs%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22summary_insurance_div%22%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3ETravelinsurance%20eu%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-8%20col-xl-8%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%2011%2C18%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3Cdiv%20class%3D%22row%20form-fields-rows%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-4%20col-xl-4%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3ECancellation%20insurance%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-md-6%20col-lg-8%20col-xl-8%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%3E%E2%82%AC%20117%2C60%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%3C%2Fdiv%3E%0A%20%20%20%20%0A%20%\
+            // 20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%20my-3%20box-padding-mob%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ch3%20class%3D%22form-label-blue%20overigekost%22%3E%3Cspan%20class%3D%22summ-heading%22%3EOverige%20kosten%3Cspan%20class%3D%22summ-heading%22%3E%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fh3%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20mb-1%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-7%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-table-head-subs%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20SGR%20fee%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-body-txt%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22summary-sub-headings-txt%22%3E%2B%20%E2%82%AC%3C%2Fspan%3E%20%3Cspan%20id%3D%22booking_sgr_fee_div%22%3E12%2C25%3C%2Fspan%3E%20%3Cspan%20class%3D%22summary-sub-headings-txt%22%3Eper%20persoon%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-body-txt%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%3ETotaal%3A%20%E2%82%AC%3Cspan%20style%3D%22margin-left%3A1px%3B%22%20id%3D%22booking_sgr_fee_total%22%3E12%2C00%3C%2Fspan%3E%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22booking_sgr_fee_total%22%3E%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20mb-1%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-7%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-table-head-subs%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Administratiekosten%20verzekering%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-body-txt%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2B%20%3Cspan%20id%3D%22booking_insurance_fee_div%22%3E0%2C00%3C%2Fspan%3E%20%3Cspan%20class%3D%22summary-sub-headings-txt%22%3E%25%20per%20verzekering%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-7%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-table-head-subs%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Calamiteitenfonds%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-body-txt%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22summary-sub-headings-txt%22%3E%2B%20%E2%82%AC%3C%2Fspan%3E%20%3Cspan%20id%3D%22booking_calamity_fund_div%22%3E2%2C50%3C%2Fspan%3E%20per%209%20personen%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20body-14%20medium-500%20gray-6%20summary-body-txt%22%3E%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20class%3D%22%22%3ETotaal%3A%20%E2%82%AC%3C%2Fspan%3E%20%3Cspan%20style%3D%22margin-left%3A1px%3B%22%20id%3D%22booking_calamity_fund_total%22%3E2%2C50%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Chr%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C!--%20%3Cdiv%20class%3D%22col-8%20col-sm-8%20col-md-8%20col-xl-8%22%20style%3D%22width%3A40%25%3Bdisplay%3A%20flex%3B%20flex-direction%3A%20column%3Balign-items%3Aflex-start%3Bjustify-content%3Aflex-start%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20style%3D%22width%3A100%25%3Bdisplay%3Aflex%3Bflex-direction%3Arow%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bmargin-bottom%3A0px%3Btext-align%3Aleft%3Bfont-size%3A14px%3B%22%3EVerzekering%3Cspan%20id%3D%22insurance_summary%22%20style%3D%22margin-left%3A%2050px%22%3E%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20style%3D%22width%3A100%25%3Bdisplay%3Aflex%3Bflex-direction%3Arow%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bmargin-bottom%3A0px%3Btext-align%3Aleft%3Bfont-size%3A14x%3B%22%3ECalamiteitenfonds%3Cspan%20id%3D%22calamity_summary%22%20style%3D%22margin-left%3A%2050px%22%3E%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20style%3D%22width%3A100%25%3Bdisplay%3Aflex%3Bflex-direction%3Arow%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bmargin-bottom%3A0px%3Btext-align%3Aleft%3Bfont-size%3A14px%3B%22%3ESGR%20fee%3Cspan%20id%3D%22sgrfee_summary%22%20style%3D%22margin-left%3A%2050px%22%3E%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cp%20style%3D%22width%3A100%25%3Bdisplay%3Aflex%3Bflex-direction%3Arow%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bmargin-bottom%3A0px%3Btext-align%3Aleft%3Bfont-size%3A14px%3B%22%3EBoeking%3Cspan%20id%3D%22booking_summary%22%20style%3D%22margin-left%3A%2050px%22%3E%3C%2Fspan%3E%3C%2Fp%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%20--%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22row%20mb-2%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-7%20col-md-6%20col-xl-4%20caption%20text-black%22%20style%3D%22font-size%3A18px%3Bfont-weight%3Abold%3B%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20Totaal%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22box-padding-mob%20col-6%20col-sm-5%20col-md-6%20col-xl-4%20caption%20theme-primary%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cspan%20id%3D%22summary_total_booking%22%20style%3D%22font-size%3A17px%3Bfont-weight%3Abold%3B%22%3E%E2%82%AC%20578%2C50%3C%2Fspan%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22col-12%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Chr%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fdiv%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20";
+            var bookingData = {
+                gl_first_name: "Andrea",
+                gl_email: "andrea.gericke@m2-d2.com",
+                // gl_email: "yanick.assignon@m2-d2.com",
+                event_name: $('#booking_event').text(),
+                booking_code: "test_booking_code",
+                // summary: encodeURIComponent($('#summary_data').html()),
+                summary: encodeURIComponent(summary)
+            };
+            mailBookingData(bookingData, "");
+    });
+
         $(document).on('click', '.btn-form-step', function(e) {
             var stepType     = $(this).attr('type'), 
                 sourceStep   = $(this).data('source'),
@@ -833,11 +1267,26 @@
                     }
                 }
 
+                // check if emails are the same
+                if(sourceStep == "#form_section2"){
+                    if($('#gl_email').val() != $('#gl_email_confirm').val() || $('#sah_email').val() != $('#sah_email_confirm').val()){
+                        errorMessage = 'E-mails komen niet overeen';
+                        $(sourceStep).addClass('show');
+                        $(targetStep).removeClass('show');
+                        goNextStep(currentStep, 'null');
+                    }else{
+                        errorMessage = '';
+                        $(sourceStep).removeClass('show');
+                        $(targetStep).addClass('show');
+                        goNextStep(currentStep, 'collapse');
+                    }
+                }
+
                 if(sourceStep == "#form_section2" || sourceStep == "#form_section4" || sourceStep == "#form_section6" || sourceStep == "#form_section8"){
                     validateStep();
                 }
 
-                var loaderText = "<p style='font-size:13px;text-transform:capitalize;margin:0px'>In Behandeling...</p>";
+                var loaderText = "<p style='font-size:13px;text-transform:uppercase;margin:0px'>In Behandeling...</p>";
                 if(sourceStep == "#form_section1"){
                     $('#travelers_form_section svg').hide();
                     $('#travelers_form_txt').html(loaderText);
@@ -855,10 +1304,10 @@
                                 goNextStep(currentStep, 'null');
                                 alert(response.message);
                                 $('#travelers_form_section svg').show();
-                                $('#travelers_form_txt').append('GA DOOR');
+                                $('#travelers_form_txt').html('GA DOOR');
                             }else{
                                 $('#travelers_form_section svg').show();
-                                $('#travelers_form_txt').append('GA DOOR');
+                                $('#travelers_form_txt').html('GA DOOR');
                                 validateStep();
                             }
                         },
@@ -1240,8 +1689,34 @@
             });
         }
 
+        function addMainTravellerDob() {
+            $("#main-traveller-dob").html();
+            var dob = `
+                <div class="form-group">
+                    <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
+                    <input class="form-control" type="date" id="gl_dateofbirth" name="gl_dateofbirth" placeholder="Geboortedatum" required>
+                </div>
+            `;
+            // Append the HTML to the runners_div
+            $('#main-traveller-dob').html(dob);
+        }
+        addMainTravellerDob();
+
+        
+        function addStayHomeDob() {
+            $("#stay-home-dob").html();
+            var dob = `
+                <div class="form-group">
+                    <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
+                    <input class="form-control" type="date" id="gl_dateofbirth" name="gl_dateofbirth" placeholder="Geboortedatum" required>
+                </div>
+            `;
+            // Append the HTML to the runners_div
+            $('#stay-home-dob').html(dob);
+        }
+        addStayHomeDob();
+
         function addTravellerToForm(i = 1) {
-    
             var htmlToAdd = `
                 <div class="runner_info extra_runners_info">
                     <div class="row">
@@ -1264,7 +1739,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row form-fields-rows">
+                    <div class="row form-fields-rows fm-rws-travelers">
                         <div class="col-4">
                             <div class="form-group">
                                 <label class="form-label field-label">Titel <span class="required">*</span></label>
@@ -1293,7 +1768,7 @@
                             
                         </div>
                     </div>
-                    <div class="row form-fields-rows">
+                    <div class="row form-fields-rows  fm-rws-travelers">
                         <div class="col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
                                 <label class="form-label field-label">Voornaam (volgens paspoort)  <span class="required">*</span></label>
@@ -1331,8 +1806,8 @@
         extraRunnersData = [];
         $(document).on('click', '.btn-form-step', function(e) {
            if($(this).data('source') == "#form_section2"){
-            console.log('nation selected', $(this).find('select[name="gl_nationality"] option:selected').text());
-            console.log('nation text()', $(this).find('select[name="gl_nationality"]').text());
+            // console.log('nation selected', $(this).find('select[name="gl_nationality"] option:selected').text());
+            // console.log('nation text()', $(this).find('select[name="gl_nationality"]').text());
                 $('#extra_runners').html('');
                 $(".extra_runners_info").each(function(){
                     var options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -1973,7 +2448,7 @@
                                         <div class="col race-distance-txt">${item.running_distance}km</div>
                                         </div>
                                     </div>
-                                    <div style='background-color: #f0f4f7;'>${item.event_date}</div>
+                                    <div style='background-color: #f0f4f7;padding: 0 10px;'>${formatDate(item.event_date)}</div>
                                     </div>
                                 </label>
                                 <div class="card-title"> &euro; ${formatPrice(item.single_ticket_price)} </div>
@@ -2632,7 +3107,8 @@
                 success: function(data) {
                     var result = JSON.parse(data);
                     // redirect to checkout page
-                    window.location.href = checkoutUrl;
+                    // window.location.href = checkoutUrl;
+                    alert('Mail sent successfully!');
                     console.log('boekingsgegevens succesvol gemaild!');
                 },
                 error: function(xhr, status, error) {
@@ -3253,7 +3729,7 @@
 
                                     <input type="hidden" name="travellers_amount" id="travellers_amount" value="1">
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-12">
                                             <div class="visitor">
                                                 <div class="align-self-center">
@@ -3276,6 +3752,7 @@
                                     </div>
 
                                     <div class="row">
+										<div class="row fm-rws-travelers">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Geslacht <span class="required">*</span></label>
@@ -3285,11 +3762,11 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 col-xl-4 col-12">
-                                            <div class="form-group">
+                                        <div class="col-md-4 col-xl-4 col-12" id="main-traveller-dob">
+                                            <!-- <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required">*</span> </label>
                                                 <input class="form-control" type="date" id="gl_dateofbirth" name="gl_dateofbirth" placeholder="Geboortedatum" required>
-                                            </div>
+                                            </div> -->
                                         </div>
                                         <div class="col-md-4 col-xl-4 col-12">
                                         <div class="form-group">
@@ -3308,8 +3785,9 @@
                                             
                                         </div>
                                     </div>
+										</div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-md-4 col-xl-4 col-12">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Voornaam (volgens paspoort)  <span class="required">*</span></label>
@@ -3333,11 +3811,11 @@
                                         </div>
                                     </div>
 
-                                    <!-- <div id="runners_div">
+                                    <!-- <div id="runners_div" class="row">
 
                                     </div> -->
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Straat <span class="required">*</span></label>
@@ -3352,7 +3830,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Postcode <span class="required">*</span></label>
@@ -3378,7 +3856,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
                                             <label class="form-label field-label">Vast telefoonnummer <span class="required">*</span></label>
@@ -3393,7 +3871,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12 email-field">
                                         <div class="form-group">
                                             <label class="form-label field-label">E-mailadres <span class="required">*</span></label>
@@ -3410,17 +3888,18 @@
                                         </div>
                                     </div>
 
-                                    <div id="runners_div">
+                                    <div id="runners_div" class="row fm-rws-travelers">
 
                                     </div>
 
                                 </form>
-
+							
+							<div class="row fm-rws-travelers">		
                                 <form name="sah_form" id="sah_form" method="POST">
                                     <p class="caption theme-color-secondary mb-0 form-label-blue">Thuisblijversinformatie</p>
                                     <p class="body-text-regular">Deze persoon wordt gecontacteerd in geval van nood</p>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Geslacht* <span class="required"></span></label>
@@ -3430,18 +3909,18 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-4">
-                                        <div class="form-group">
+                                        <div class="col-4" id="stay-home-dob">
+                                            <!-- <div class="form-group">
                                                 <label class="form-label field-label">Geboortedatum <span class="required"></span> </label>
                                                 <input class="form-control" type="date" id="sah_dateofbirth" name="sah_dateofbirth" placeholder="Geboortedatum">
-                                            </div>
+                                            </div> -->
                                         </div>
                                         <div class="col-4">
                                             
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row  fm-rws-travelers">
                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Voornaam* <span class="required"></span></label>
@@ -3464,7 +3943,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-8">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Straat <span class="required"></span></label>
@@ -3479,7 +3958,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row form-fields-rows">
+                                    <div class="row form-fields-rows fm-rws-travelers">
                                         <div class="col-md-4 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label class="form-label field-label">Postcode <span class="required"></span></label>
@@ -3504,7 +3983,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
                                             <label class="form-label field-label">Vast telefoonnummer <span class="required"></span></label>
@@ -3519,7 +3998,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row fm-rws-travelers">
                                         <div class="col-sm-6 col-md-6 col-lg-6 col-12">
                                         <div class="form-group">
                                             <label class="form-label field-label">E-mailadres*<span class="required"></span></label>
@@ -3537,6 +4016,7 @@
                                     </div>
 
                                 </form>
+							</div>	
 
                                 <div class="row">
                                     <div class="col-md-4 col-xl-4 col-12 mt-3 d-flex">
@@ -4189,7 +4669,7 @@
                                                     <div class="row form-fields-rows" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;">
                                                         <div class="col-md-6 col-lg-4 col-xl-4">
                                                             <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">-</span></p>
-                                                            <p class="summary-table-head-subs">Aantal Nachten: <span id="summary_hotel_nights" class="summary-body-txt">-</span></p>
+                                                            <p class="summary-table-head-subs">Aantal nachten: <span id="summary_hotel_nights" class="summary-body-txt">-</span></p>
                                                         </div>
                                                         <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:95%;"></div>
                                                     </div>
@@ -4270,7 +4750,7 @@
                                                         </div>
 
                                                         <div class="row form-fields-rows">
-                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Retourvlucht</h4>
+                                                            <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs" style="margin-top:20px;">Retourvlucht</h4>
                                                         </div>
                                                         <div class="row form-fields-rows">
                                                             <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
@@ -4370,11 +4850,11 @@
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Boeking<span id="booking_summary" style="margin-left: 50px"></span></p>
                                                     </div> -->
                                                     <div class="row mb-2">
-                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black">
+                                                        <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 caption text-black" style="font-size:18px;font-weight:bold;">
                                                             Totaal
                                                         </div>
                                                         <div class="box-padding-mob col-6 col-sm-5 col-md-6 col-xl-4 caption theme-primary">
-                                                            <span id="summary_total_booking">0.00</span>
+                                                            <span id="summary_total_booking" style="font-size:17px;font-weight:bold;">0.00</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -4437,7 +4917,7 @@
                 <!-- [Right column] -->
                 <div class="booking-price sticky-column">
                     <div class="price"><span>Prijs</span>
-                        <div class="price-value"><span id="total_booking">&euro; 0.00</span></div>
+                        <div class="price-value"><span id="total_booking">&euro; 0,00</span></div>
                     </div>
                     <!-- <div id="event_names">
                         <div class="row form-fields-rows">
@@ -4458,7 +4938,8 @@
                             </g>
                         </svg>Rond de boeking af & betaal
                     </button>
-                </div>            
+                </div>   
+                <button id="sendmail" style="margin-top: 50px">Send Mail</button>         
             </div>
 		
     </div>
