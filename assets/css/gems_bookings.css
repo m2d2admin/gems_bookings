@@ -363,6 +363,11 @@ span.required {
     font-size: 16px;
 }
 
+.row.fm-rws-travelers {
+    padding-right: 0px;
+    --bs-gutter-x: 25px !important;
+}
+
 
 /* HOTELS AND ROOMS */
 
@@ -503,6 +508,9 @@ label {
     margin-top: 30px;
 }
 
+#hotel_rooms_container {
+    --bs-gutter-y: 0.5rem;
+}
 
 /* EXTRAS */
 .row.extras-details-row:before {
@@ -904,4 +912,8 @@ button.mailusbtn {
 
 button.mailusbtn a {
     color: #fff;
+}
+
+#booking-summary {
+    font-size: 13px;
 }

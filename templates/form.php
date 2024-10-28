@@ -809,11 +809,11 @@
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
                                                     <div class="row form-fields-rows" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;">
-                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4 hotel-headings-column">
                                                             <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">9Hotel Opera</span></p>
                                                             <p class="summary-table-head-subs">Aantal nachten: <span id="summary_hotel_nights" class="summary-body-txt">4</span></p>
                                                         </div>
-                                                        <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:95%;"><div class="row form-fields-rows">
+                                                        <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:100%;"><div class="row form-fields-rows">
                         <div class="col-md-5 col-lg-5 col-xl-5 strtbewijz-col4">
                             <p>Type hotelkamer: Business</p>
                         </div>
@@ -893,19 +893,19 @@
                                                             <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Heenvlucht</h4>
                                                         </div>
                                                         <div class="row form-fields-rows">
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs summary-table-head-subs">Vlucht</p>
                                                                 <span id="summary_go_flight_name" class="summary-body-txt">QQ --&gt; 123</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Vertrek</p>
                                                                 <span id="summary_go_departure" class="summary-body-txt">ma 16 okt 2023 - 09:00:00</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Aankomst</p>
                                                                 <span id="summary_go_arrival" class="summary-body-txt">ma 16 okt 2023 - 10:00:00</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Reisklasse</p>
                                                                 <span id="summary_go_travel_classe" class="summary-body-txt">-</span>
                                                             </div>
@@ -915,19 +915,19 @@
                                                             <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs" style="margin-top:20px;">Retourvlucht</h4>
                                                         </div>
                                                         <div class="row form-fields-rows">
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Vlucht</p>
                                                                 <span id="summary_return_flight_name" class="summary-body-txt">RR --&gt; www</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Vertrek</p>
                                                                 <span id="summary_return_departure" class="summary-body-txt">vr 20 okt 2023 - 06:00:00</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Aankomst</p>
                                                                 <span id="summary_return_arrival" class="summary-body-txt">vr 20 okt 2023 - 07:00:00</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-email">
                                                                 <p class="summary-table-head-subs">Reisklasse</p>
                                                                 <span id="summary_return_travel_classe" class="summary-body-txt">Economy Class</span>
                                                             </div>
@@ -979,7 +979,7 @@
                                                 <div class="col-12 my-3 box-padding-mob">
                                                     <h3 class="form-label-blue overigekost"><span class="summ-heading">Overige kosten<span class="summ-heading"></span></span></h3>
                                                 </div>
-                                                <div class="col-12">
+                                                <div class="col-12 row">
                                                     <div class="row mb-1">
                                                         <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                             SGR fee
@@ -1001,7 +1001,7 @@
                                                             + <span id="booking_insurance_fee_div">0,00</span> <span class="summary-sub-headings-txt">% per verzekering</span>
                                                         </div>
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row mb-1">
                                                         <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                             Calamiteitenfonds
                                                         </div>
@@ -1016,7 +1016,7 @@
                                                 <div class="col-12">
                                                     <hr>
                                                 </div>
-                                                <div class="col-12">
+                                                <div class="col-12 row">
                                                     <!-- <div class="col-8 col-sm-8 col-md-8 col-xl-8" style="width:40%;display: flex; flex-direction: column;align-items:flex-start;justify-content:flex-start">
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14px;">Verzekering<span id="insurance_summary" style="margin-left: 50px"></span></p>
                                                         <p style="width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0px;text-align:left;font-size:14x;">Calamiteitenfonds<span id="calamity_summary" style="margin-left: 50px"></span></p>
@@ -4667,11 +4667,11 @@
                                                 <div class="col-12 table-responsive overflow-y-clip mob-hide">
 
                                                     <div class="row form-fields-rows" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;">
-                                                        <div class="col-md-6 col-lg-4 col-xl-4">
+                                                        <div class="col-md-6 col-lg-4 col-xl-4 hotel-headings-column">
                                                             <p class="summary-table-head-subs">Hotel naam: <span id="summary_hotel_name" class="summary-body-txt">-</span></p>
                                                             <p class="summary-table-head-subs">Aantal nachten: <span id="summary_hotel_nights" class="summary-body-txt">-</span></p>
                                                         </div>
-                                                        <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:95%;"></div>
+                                                        <div id="hotel-room-details" style="display:flex;flex-direction:column;justify-content:flex-start;align-content:flex-start;width:100%;"></div>
                                                     </div>
 
                                                 </div>
@@ -4730,20 +4730,20 @@
                                                         <div class="row form-fields-rows">
                                                             <h4 class="body-14  regular-400 gray-1 mb-1 summary-table-head-subs">Heenvlucht</h4>
                                                         </div>
-                                                        <div class="row form-fields-rows">
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                        <div class="row form-fields-rows flight-summ-row">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-cols">
                                                                 <p class="summary-table-head-subs summary-table-head-subs">Vlucht</p>
                                                                 <span id="summary_go_flight_name" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-cols">
                                                                 <p class="summary-table-head-subs">Vertrek</p>
                                                                 <span id="summary_go_departure" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-cols">
                                                                 <p class="summary-table-head-subs">Aankomst</p>
                                                                 <span id="summary_go_arrival" class="summary-body-txt">-</span>
                                                             </div>
-                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4">
+                                                            <div class="col-md-6 col-lg-4 col-xl-4 strtbewijz-col4 flight-summ-cols">
                                                                 <p class="summary-table-head-subs">Reisklasse</p>
                                                                 <span id="summary_go_travel_classe" class="summary-body-txt">-</span>
                                                             </div>
@@ -4805,7 +4805,7 @@
                                                 <div class="col-12 my-3 box-padding-mob">
                                                     <h3 class="form-label-blue overigekost"><span class="summ-heading">Overige kosten<span class="summ-heading"></h3>
                                                 </div>
-                                                <div class="col-12">
+                                                <div class="col-12 row">
                                                     <div class="row mb-1">
                                                         <div class="box-padding-mob col-6 col-sm-7 col-md-6 col-xl-4 body-14 medium-500 gray-6 summary-table-head-subs">
                                                             SGR fee
